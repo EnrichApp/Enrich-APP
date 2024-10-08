@@ -4,9 +4,9 @@ import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
-class InitialPage extends StatelessWidget {
-  const InitialPage({super.key});
-  //Pendente: quando teclado abrir, evitar problema de overflow
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,12 +19,12 @@ class InitialPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  './assets/images/logo_enrich.png',
-                  height: 300,
-                ),
-                const TitleText(text: 'Faça seu login'),
+                const TitleText(text: 'Faça seu cadastro'),
                 const SizedBox(height: 20),
+                const FormWidget(hintText: 'Digite o seu primeiro nome.'),
+                const SizedBox(height: 12),
+                const FormWidget(hintText: 'Digite a sua data de nascimento.'),
+                const SizedBox(height: 12),
                 const FormWidget(hintText: 'Digite o seu e-mail.'),
                 const SizedBox(height: 12),
                 const FormWidget(
@@ -32,8 +32,13 @@ class InitialPage extends StatelessWidget {
                   obscureText: true,
                 ),
                 const SizedBox(height: 12),
+                const FormWidget(
+                  hintText: 'Confirme a sua senha.',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 12),
                 RoundedTextButton(
-                    text: 'Acessar',
+                    text: 'Prosseguir',
                     width: 300,
                     height: 55,
                     fontSize: 17,
@@ -42,10 +47,10 @@ class InitialPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const LittleText(text: 'Ainda não tem uma conta? '),
+                    const LittleText(text: 'Já tem uma conta? '),
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed('/register_page');
+                        //Ir para página Cadastro
                       },
                       child: LittleText(
                         text: 'Clique aqui.',

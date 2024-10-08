@@ -1,4 +1,5 @@
 import 'package:enrich/pages/initial_page.dart';
+import 'package:enrich/pages/register_page.dart';
 import 'package:enrich/themes/theme_data.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class Enrich extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const InitialPage(),
+        '/register_page': (context) => const RegisterPage(),
       },
     );
   }
