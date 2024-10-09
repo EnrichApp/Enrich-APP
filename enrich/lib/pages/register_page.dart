@@ -9,7 +9,8 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold();
+    /*
       body: Container(
         color: Theme.of(context).colorScheme.background,
         child: Column(
@@ -56,6 +57,6 @@ class RegisterPage extends StatelessWidget {
               )
             ]),
       ),
-    );
+    );*/
   }
 }

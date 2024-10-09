@@ -23,7 +23,9 @@ class FormWidget extends StatelessWidget {
       height: height,
       width: width,
       child: TextFormField(
-        onChanged: onChanged(),
+        onChanged: (value) {
+          onChanged(value);
+        },
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
