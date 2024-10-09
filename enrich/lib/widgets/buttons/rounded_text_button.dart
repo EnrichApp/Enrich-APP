@@ -6,7 +6,7 @@ class RoundedTextButton extends StatelessWidget {
   final double width;
   final double height;
   final double fontSize;
-  final Function() onPressed;
+  final Function onPressed;
 
   const RoundedTextButton({
     super.key,
@@ -20,7 +20,7 @@ class RoundedTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onPressed(),
       child: Container(
         width: width,
         height: height,

@@ -5,14 +5,17 @@ class FormWidget extends StatelessWidget {
   final double height;
   final double width;
   final bool obscureText;
+  final TextEditingController controller;
+  final Function onChanged;
 
   const FormWidget(
       {super.key,
       required this.hintText,
       this.height = 55,
       this.width = 300,
-      this.obscureText = false
-  });
+      this.obscureText = false,
+      required this.controller,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +23,8 @@ class FormWidget extends StatelessWidget {
       height: height,
       width: width,
       child: TextFormField(
+        onChanged: onChanged(),
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           filled: true,
