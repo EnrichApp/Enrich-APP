@@ -37,7 +37,9 @@ class RegisterPage extends StatelessWidget {
                   width: 300,
                   height: 55,
                   fontSize: 17,
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/email_confirm_page');
+                  }),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

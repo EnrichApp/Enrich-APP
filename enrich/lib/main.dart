@@ -1,3 +1,5 @@
+import 'package:enrich/pages/email_confirm_page.dart';
+import 'package:enrich/pages/info_to_user_page.dart';
 import 'package:enrich/pages/initial_page.dart';
 import 'package:enrich/pages/register_page.dart';
 import 'package:enrich/themes/theme_data.dart';
@@ -19,6 +21,8 @@ class Enrich extends StatelessWidget {
       routes: {
         '/': (context) => const InitialPage(),
         '/register_page': (context) => const RegisterPage(),
+        '/email_confirm_page': (context) => const EmailConfirmPage(),
+        '/info_to_user_page': (context) => const InfoToUserPage(),
       },
     );
   }
