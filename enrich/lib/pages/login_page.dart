@@ -74,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               //TODO: Chamada pra API
               print(email);
               print(senha);
+              Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
             },
           ),
           const SizedBox(height: 20),
