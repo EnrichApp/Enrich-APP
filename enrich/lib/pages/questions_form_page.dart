@@ -1,6 +1,5 @@
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/form_widget.dart';
-import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
 class QuestionsFormPage extends StatefulWidget {
@@ -12,11 +11,11 @@ class QuestionsFormPage extends StatefulWidget {
 
 class _QuestionsFormPageState extends State<QuestionsFormPage> {
   final TextEditingController rendaFixaController = TextEditingController();
-  final TextEditingController nomeRendaExtraController =
-      TextEditingController();
+  final TextEditingController nomeRendaExtraController = TextEditingController();
 
-  bool isHoveringSim = false;
-  bool isHoveringNao = false;
+  bool isSimPressed = false;
+  bool isNaoPressed = false;
+  bool showRendaVariavelForm = false;
 
   String rendaFixaMensal = '';
   String nomeRendaExtra = '';
@@ -37,45 +36,45 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      text: 'Qual a sua renda fixa líquida\nmensal, em reais? ',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      children: [
-                        WidgetSpan(
-                          child: Tooltip(
-                            message:
-                                'Renda Fixa Líquida Mensal é o valor que você recebe mensalmente após descontos de impostos e outras taxas.',
-                            child: Icon(
-                              Icons.info_outline,
-                              size: 18, // Ajusta o tamanho do ícone
-                            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    text: 'Qual a sua renda fixa líquida\nmensal, em reais? ',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: [
+                      WidgetSpan(
+                        child: Tooltip(
+                          message:
+                              'Renda Fixa Líquida Mensal é o valor que você recebe mensalmente após descontos de impostos e outras taxas.',
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 18, // Ajusta o tamanho do ícone
                           ),
                         ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center, // Centraliza o texto
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              FormWidget(
-                hintText: 'Ex.: 2000.00',
-                controller: rendaFixaController,
-                onChanged: (value) {
-                  setState(() {
-                    rendaFixaMensal = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 30),
+                  textAlign: TextAlign.center, // Centraliza o texto
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            FormWidget(
+              hintText: 'Ex.: 2000.00',
+              controller: rendaFixaController,
+              onChanged: (value) {
+                setState(() {
+                  rendaFixaMensal = value;
+                });
+              },
+            ),
+            const SizedBox(height: 30),
               const Text.rich(
                 TextSpan(
                   text: 'Você possui alguma fonte de\nrenda extra variável?',
@@ -87,86 +86,79 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 15),
+
+              // Botões Sim e Não
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Botão "Sim"
-                  MouseRegion(
-                    onEnter: (_) {
+                  Listener(
+                    onPointerDown: (_) {
                       setState(() {
-                        isHoveringSim = true;
+                        isSimPressed = true;
+                        isNaoPressed = false;
+                        showRendaVariavelForm = true; // Mostra o formulário
                       });
                     },
-                    onExit: (_) {
+                    onPointerUp: (_) {
                       setState(() {
-                        isHoveringSim = false;
+                        isSimPressed = false;
                       });
                     },
                     child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          // Lógica para o botão "Sim"
-                        });
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            isHoveringSim ? Colors.green : Colors.white,
+                            isSimPressed ? Colors.green : Colors.white,
                         side: const BorderSide(color: Colors.black, width: 0.5),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(0), // Botão quadrado
+                          borderRadius: BorderRadius.circular(0),
                         ),
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 50),
+                        splashFactory: NoSplash.splashFactory,
                       ),
                       child: Text(
                         'Sim',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isHoveringSim
-                              ? Colors.white
-                              : Colors.green, // Texto branco no hover
+                          color: isSimPressed ? Colors.white : Colors.green,
                         ),
                       ),
                     ),
                   ),
 
                   // Botão "Não"
-                  MouseRegion(
-                    onEnter: (_) {
+                  Listener(
+                    onPointerDown: (_) {
                       setState(() {
-                        isHoveringNao = true;
+                        isNaoPressed = true;
+                        isSimPressed = false;
+                        showRendaVariavelForm = false; // Esconde o formulário
                       });
                     },
-                    onExit: (_) {
+                    onPointerUp: (_) {
                       setState(() {
-                        isHoveringNao = false;
+                        isNaoPressed = false;
                       });
                     },
                     child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          // Lógica para o botão "Não"
-                        });
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isHoveringNao ? Colors.red : Colors.white,
+                        backgroundColor: isNaoPressed ? Colors.red : Colors.white,
                         side: const BorderSide(color: Colors.black, width: 0.5),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(0), // Botão quadrado
+                          borderRadius: BorderRadius.circular(0),
                         ),
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 50),
+                        splashFactory: NoSplash.splashFactory,
                       ),
                       child: Text(
                         'Não',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isHoveringNao
-                              ? Colors.white
-                              : Colors.red, // Texto branco no hover
+                          color: isNaoPressed ? Colors.white : Colors.red,
                         ),
                       ),
                     ),
@@ -174,26 +166,31 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                 ],
               ),
               const SizedBox(height: 30),
-              const Text.rich(
-                TextSpan(
-                  text: 'Qual o nome da sua renda variável?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+
+              // Exibe o formulário de renda variável somente se "Sim" for pressionado
+              if (showRendaVariavelForm) ...[
+                const Text.rich(
+                  TextSpan(
+                    text: 'Qual o nome da sua renda variável?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 15),
-              FormWidget(
-                hintText: 'Ex.: Vendas de Roupas',
-                controller: nomeRendaExtraController,
-                onChanged: (value) {
-                  setState(() {
-                    nomeRendaExtra = value;
-                  });
-                },
-              ),
+                const SizedBox(height: 15),
+                FormWidget(
+                  hintText: 'Ex.: Vendas de Roupas',
+                  controller: nomeRendaExtraController,
+                  onChanged: (value) {
+                    setState(() {
+                      nomeRendaExtra = value;
+                    });
+                  },
+                ),
+              ],
+
               const SizedBox(height: 18),
               RoundedTextButton(
                   text: 'Finalizar Cadastro',
