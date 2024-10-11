@@ -28,7 +28,9 @@ class InfoToUserPage extends StatelessWidget {
                   width: 300,
                   height: 55,
                   fontSize: 17,
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/questions_form_page');
+                  }),
             ]),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:enrich/pages/questions_form_page.dart';
 import 'package:enrich/pages/verify_email_page.dart';
 import 'package:enrich/pages/info_to_user_page.dart';
 import 'package:enrich/pages/login_page.dart';
@@ -23,6 +24,7 @@ class Enrich extends StatelessWidget {
         '/register_page': (context) => const RegisterPage(),
         '/verify_email_page': (context) => const VerifyEmailPage(),
         '/info_to_user_page': (context) => const InfoToUserPage(),
+        '/questions_form_page': (context) => const QuestionsFormPage(),
       },
     );
   }
