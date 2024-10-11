@@ -6,6 +6,8 @@ import 'package:enrich/pages/register_page.dart';
 import 'package:enrich/themes/theme_data.dart';
 import 'package:flutter/material.dart';
 
+import 'pages/navigation/bottom_navigation_page.dart';
+
 void main() {
   runApp(const Enrich());
 }
@@ -25,6 +27,7 @@ class Enrich extends StatelessWidget {
         '/verify_email_page': (context) => const VerifyEmailPage(),
         '/info_to_user_page': (context) => const InfoToUserPage(),
         '/questions_form_page': (context) => const QuestionsFormPage(),
+        '/bottom_navigation_page': (context) => const BottomNavigationPage(),
       },
     );
   }

@@ -20,7 +20,9 @@ class InfoToUserPage extends StatelessWidget {
               const SizedBox(height: 15),
               const Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: const SubtitleText(text: 'Para te ajudarmos a melhorar a sua vida financeira, precisaremos de algumas informações sobre a sua renda atual.'),
+                child: const SubtitleText(
+                    text:
+                        'Para te ajudarmos a melhorar a sua vida financeira, precisaremos de algumas informações sobre a sua renda atual.'),
               ),
               const SizedBox(height: 15),
               RoundedTextButton(
