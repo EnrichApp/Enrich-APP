@@ -8,7 +8,7 @@ ThemeData themeData = ThemeData(
     tertiary: const Color(0xFF2D8BBA), //azul
     surface: const Color(0xFFEB3034), //vermelho
     onPrimary: Colors.white, //branco
-    background: const Color(0xFFF4F4F4), //cinza
+    onSurface: const Color(0xFFF4F4F4),  //cinza
   ),
   //fontFamily: 
   useMaterial3: true,

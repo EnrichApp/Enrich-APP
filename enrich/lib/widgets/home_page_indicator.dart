@@ -8,19 +8,25 @@ class HomePageIndicator extends StatelessWidget {
   final String indicator;
   final String value;
   final Color valueTextColor;
+  final double spacementValue;
 
   const HomePageIndicator(
       {super.key,
       required this.icon,
       required this.indicator,
       required this.value,
-      required this.valueTextColor});
+      required this.valueTextColor,
+      this.spacementValue = 0.0,
+      });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         icon,
+        SizedBox(
+          width: spacementValue,
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

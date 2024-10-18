@@ -31,7 +31,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.onSurface,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,6 +46,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                     children: [
                       WidgetSpan(
@@ -81,6 +82,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black
                   ),
                 ),
                 textAlign: TextAlign.center,
@@ -198,7 +200,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                   height: 55,
                   fontSize: 17,
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/home');
+                    Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
                   }),
               const SizedBox(height: 20),
             ]),

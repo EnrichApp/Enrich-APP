@@ -7,23 +7,23 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Theme.of(context).colorScheme.background, // Cor de fundo da tela
+          Theme.of(context).colorScheme.onSurface, // Cor de fundo da tela
       appBar: AppBar(
         title: const Text('Configurações',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
       ),
       body: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.8, // Ajusta a largura
+          width: MediaQuery.of(context).size.width * 0.8,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20), // Bordas arredondadas
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.3), // Sombra
+                color: Colors.grey.withOpacity(0.3),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -61,10 +61,14 @@ Widget _buildListTile(BuildContext context, String title, Widget page) {
       ListTile(
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => page));
         },
       ),
       const Divider(height: 1),

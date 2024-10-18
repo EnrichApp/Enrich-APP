@@ -52,7 +52,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
         _pages[_currentIndex],
         if (_currentIndex == 1) ...[
           Padding(
-            padding: const EdgeInsets.only(left: 330.0, top: 30.0),
+            padding: const EdgeInsets.only(left: 330.0, top: 40.0),
             child: IconButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacementNamed('/');
