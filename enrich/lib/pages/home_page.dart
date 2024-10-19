@@ -5,6 +5,7 @@ import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import '../widgets/little_list_tile.dart';
 import '../widgets/texts/title_text.dart';
 
 class HomePage extends StatelessWidget {
@@ -93,7 +94,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 30),
           Container(
             height: 150,
-            width: 300,
+            width: 320,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onPrimary,
               borderRadius: BorderRadius.circular(20),
@@ -108,21 +109,53 @@ class HomePage extends StatelessWidget {
                     fontSize: 15,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 150.0),
-                  child: SizedBox(
-                          height: 100,
-                          child: SfCircularChart(
-                            series: <CircularSeries>[
-                                  PieSeries<ChartData, String>(
-                                      dataSource: chartData,
-                                      pointColorMapper:(ChartData data, _) => data.color,
-                                      xValueMapper: (ChartData data, _) => data.x,
-                                      yValueMapper: (ChartData data, _) => data.y
-                                  )
-                              ]
-                          ),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                            height: 110,
+                            width: 100,
+                            child: SfCircularChart(
+                              series: <CircularSeries>[
+                                    PieSeries<ChartData, String>(
+                                        dataSource: chartData,
+                                        pointColorMapper:(ChartData data, _) => data.color,
+                                        xValueMapper: (ChartData data, _) => data.x,
+                                        yValueMapper: (ChartData data, _) => data.y
+                                    )
+                                ]
+                            ),
+                    ),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                      LittleListTile(
+                        circleColor: Color(0xFFF82E52),
+                        category: "Essenciais",
+                        percentage: "55%",
+                      ),
+                      LittleListTile(
+                        circleColor: Color(0xFFFFCE06),
+                        category: "Lazer",
+                        percentage: "10%",
+                      ),
+                      LittleListTile(
+                        circleColor: Color(0xFF2D8BBA),
+                        category: "Investimentos",
+                        percentage: "20%",
+                      ),
+                      LittleListTile(
+                        circleColor: Color(0xFF5FAF46),
+                        category: "Educação",
+                        percentage: "5%",
+                      ),
+                      LittleListTile(
+                        circleColor: Color(0xFFCB6CE6),
+                        category: "Dívidas",
+                        percentage: "10%",
+                      ),
+                    ],)
+                  ],
                 ),
               ],
             ),
