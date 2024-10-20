@@ -1,4 +1,6 @@
 import 'package:enrich/pages/home_page.dart';
+import 'package:enrich/widgets/texts/little_text.dart';
+import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
 import '../extra_income_page.dart';
@@ -51,13 +53,62 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
       body: Stack(children: [
         _pages[_currentIndex],
         if (_currentIndex == 1) ...[
-          Padding(
-            padding: const EdgeInsets.only(left: 330.0, top: 40.0),
-            child: IconButton(
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/');
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.white,
+                          title: TitleText(text: 'Sair'),
+                          content: LittleText(
+                            text:
+                                "Você deseja realmente voltar para a tela de login?",
+                            fontSize: 15,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: TitleText(
+                                fontSize: 15,
+                                color: Theme.of(context).colorScheme.surface,
+                                text: "Cancelar"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pushReplacementNamed(
+                                    '/');
+                              },
+                              child: TitleText(
+                                fontSize: 15,
+                                color: Theme.of(context).colorScheme.primary,
+                                text: "Sim"),
+                            ),
+                          ],
+                        );
+                      });
                 },
-                icon: Icon(Icons.exit_to_app)),
+                child: Container(
+                  child: Row(children: [
+                    Icon(
+                      Icons.exit_to_app,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'Sair',
+                      style: TextStyle(color: Colors.black),
+                    )
+                  ]),
+                )),
           ),
         ]
       ]),
