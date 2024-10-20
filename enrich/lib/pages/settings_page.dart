@@ -1,5 +1,8 @@
 import 'package:enrich/pages/settings_pages/about_page.dart';
 import 'package:enrich/pages/settings_pages/account_page.dart';
+import 'package:enrich/pages/settings_pages/invite_friend_page.dart';
+import 'package:enrich/pages/settings_pages/notifications_page.dart';
+import 'package:enrich/pages/settings_pages/rate_us_page.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -39,11 +42,11 @@ class SettingsPage extends StatelessWidget {
               _buildDivider(),
               _buildListTile(context, 'Sobre', AboutPage()),
               _buildDivider(),
-              _buildListTile(context, 'Convidar amigos', ConvidarAmigosPage()),
+              _buildListTile(context, 'Convidar amigos', InviteFriendsPage()),
               _buildDivider(),
-              _buildListTile(context, 'Notificações', NotificacoesPage()),
+              _buildListTile(context, 'Preferências de Notificações', NotificationPreferencesPage()),
               _buildDivider(),
-              _buildListTile(context, 'Avalie-nos', AvalieNosPage()),
+              _buildListTile(context, 'Avalie-nos', RateUsPage()),
             ],
           ),
         ),
@@ -83,72 +86,6 @@ Widget _buildDivider() {
 }
 
 // Páginas temporárias
-
-
-class AjudaPage extends StatelessWidget {
-  const AjudaPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ajuda'),
-      ),
-      body: const Center(
-        child: Text('Página de Ajuda'),
-      ),
-    );
-  }
-}
-
-class TelaPage extends StatelessWidget {
-  const TelaPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tela'),
-      ),
-      body: const Center(
-        child: Text('Página de Tela'),
-      ),
-    );
-  }
-}
-
-class SobrePage extends StatelessWidget {
-  const SobrePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sobre'),
-      ),
-      body: const Center(
-        child: Text('Página Sobre Nós'),
-      ),
-    );
-  }
-}
-
-class ConvidarAmigosPage extends StatelessWidget {
-  const ConvidarAmigosPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Convidar Amigos'),
-      ),
-      body: const Center(
-        child: Text('Página para Convidar Amigos'),
-      ),
-    );
-  }
-}
-
 class NotificacoesPage extends StatelessWidget {
   const NotificacoesPage({super.key});
 

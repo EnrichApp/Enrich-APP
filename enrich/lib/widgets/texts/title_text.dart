@@ -6,13 +6,16 @@ class TitleText extends StatelessWidget {
   final double fontSize;
   final Color color;
   final bool sublined;
+  final TextAlign textAlign;
 
   const TitleText(
       {super.key,
       required this.text,
       this.fontSize = 23,
       this.color = Colors.black,
-      this.sublined = false});
+      this.sublined = false,
+      this.textAlign = TextAlign.start, 
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class TitleText extends StatelessWidget {
         decoration: sublined ? TextDecoration.underline : TextDecoration.none,
         decorationColor: color,
       ),
+      textAlign: textAlign,
     );
   }
 }
