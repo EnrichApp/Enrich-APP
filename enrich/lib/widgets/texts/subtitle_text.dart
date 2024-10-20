@@ -5,12 +5,14 @@ class SubtitleText extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color color;
+  final TextAlign textAlign;
 
   const SubtitleText({
     super.key,
     required this.text,
     this.fontSize = 16,
     this.color = Colors.black,
+    this.textAlign = TextAlign.center
   });
 
   @override
@@ -22,7 +24,7 @@ class SubtitleText extends StatelessWidget {
         fontWeight: FontWeight.normal,
         color: color,
       ),
-      textAlign: TextAlign.center,
+      textAlign: textAlign,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:enrich/pages/settings_pages/about_page.dart';
+import 'package:enrich/pages/settings_pages/account_page.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -33,13 +35,9 @@ class SettingsPage extends StatelessWidget {
           child: ListView(
             shrinkWrap: true,
             children: [
-              _buildListTile(context, 'Conta', ContaPage()),
+              _buildListTile(context, 'Conta', AccountPage()),
               _buildDivider(),
-              _buildListTile(context, 'Ajuda', AjudaPage()),
-              _buildDivider(),
-              _buildListTile(context, 'Tela', TelaPage()),
-              _buildDivider(),
-              _buildListTile(context, 'Sobre', SobrePage()),
+              _buildListTile(context, 'Sobre', AboutPage()),
               _buildDivider(),
               _buildListTile(context, 'Convidar amigos', ConvidarAmigosPage()),
               _buildDivider(),
@@ -85,21 +83,7 @@ Widget _buildDivider() {
 }
 
 // Páginas temporárias
-class ContaPage extends StatelessWidget {
-  const ContaPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Conta'),
-      ),
-      body: const Center(
-        child: Text('Página de Conta'),
-      ),
-    );
-  }
-}
 
 class AjudaPage extends StatelessWidget {
   const AjudaPage({super.key});
