@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:enrich/widgets/home_page_divida_widget.dart';
 import 'package:enrich/widgets/home_page_indicator.dart';
 import 'package:enrich/widgets/texts/little_text.dart';

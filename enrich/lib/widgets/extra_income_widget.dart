@@ -1,14 +1,17 @@
+import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
-class HomePageWidget extends StatelessWidget {
+class ExtraIncomeWidget extends StatelessWidget {
   final String titleText;
+  final String littleText;
   final Widget content;
   final Function onPressed;
 
-  const HomePageWidget(
+  const ExtraIncomeWidget(
       {super.key,
       required this.titleText,
+      required this.littleText,
       required this.content,
       required this.onPressed
       });
@@ -16,7 +19,7 @@ class HomePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 250,
       width: 320,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onPrimary,
@@ -32,6 +35,14 @@ class HomePageWidget extends StatelessWidget {
                 child: TitleText(
                   text: titleText,
                   fontSize: 15,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, top: 14.0),
+                child: LittleText(
+                  text: littleText,
+                  fontSize: 8,
+                  textAlign: TextAlign.start,
                 ),
               ),
               content

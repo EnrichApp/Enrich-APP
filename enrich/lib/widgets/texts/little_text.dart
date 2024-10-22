@@ -5,12 +5,14 @@ class LittleText extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color color;
+  final TextAlign textAlign;
 
   const LittleText({
     super.key,
     required this.text,
     this.fontSize = 12,
     this.color = Colors.black,
+    this.textAlign = TextAlign.center
   });
 
   @override
@@ -19,6 +21,7 @@ class LittleText extends StatelessWidget {
       text,
       style: GoogleFonts.montserrat(
           fontSize: fontSize, fontWeight: FontWeight.normal, color: color),
+      textAlign: textAlign,
     );
   }
 }

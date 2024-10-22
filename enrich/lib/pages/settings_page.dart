@@ -1,7 +1,6 @@
 import 'package:enrich/pages/settings_pages/about_page.dart';
 import 'package:enrich/pages/settings_pages/account_page.dart';
 import 'package:enrich/pages/settings_pages/invite_friend_page.dart';
-import 'package:enrich/pages/settings_pages/notifications_page.dart';
 import 'package:enrich/pages/settings_pages/rate_us_page.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +11,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Theme.of(context).colorScheme.onSurface, // Cor de fundo da tela
+          Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
         title: const Text('Configurações',
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
@@ -43,8 +42,6 @@ class SettingsPage extends StatelessWidget {
               _buildListTile(context, 'Sobre', AboutPage()),
               _buildDivider(),
               _buildListTile(context, 'Convidar amigos', InviteFriendsPage()),
-              _buildDivider(),
-              _buildListTile(context, 'Preferências de Notificações', NotificationPreferencesPage()),
               _buildDivider(),
               _buildListTile(context, 'Avalie-nos', RateUsPage()),
             ],
@@ -83,37 +80,4 @@ Widget _buildDivider() {
     thickness: 1,
     color: Colors.black,
   );
-}
-
-// Páginas temporárias
-class NotificacoesPage extends StatelessWidget {
-  const NotificacoesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notificações'),
-      ),
-      body: const Center(
-        child: Text('Página de Notificações'),
-      ),
-    );
-  }
-}
-
-class AvalieNosPage extends StatelessWidget {
-  const AvalieNosPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Avalie-nos'),
-      ),
-      body: const Center(
-        child: Text('Página para Avaliações'),
-      ),
-    );
-  }
 }
