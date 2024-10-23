@@ -1,5 +1,9 @@
+import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/widgets/dotted_button.dart';
 import 'package:enrich/widgets/extra_income_widget.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
+import 'package:enrich/widgets/texts/amount_text.dart';
+import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -16,11 +20,19 @@ class ExtraIncomePage extends StatelessWidget {
       ChartData('Abril', 30, Colors.green),
       ChartData('Maio', 40, Colors.green),
     ];
+
+    // Definindo o lucro atual e a meta
+    final double currentValue = 1900.00;
+    final double targetValue = 2000.00;
+    final double progress = currentValue / targetValue;
+
     return Scaffold(
         body: Container(
       color: Theme.of(context).colorScheme.onSurface,
       child: ListView(padding: EdgeInsets.zero, children: [
-        const SizedBox(height: 30,),
+        const SizedBox(
+          height: 30,
+        ),
         const Padding(
           padding: EdgeInsets.only(left: 20.0, top: 20.0),
           child: TitleText(
@@ -28,12 +40,33 @@ class ExtraIncomePage extends StatelessWidget {
             fontSize: 20,
           ),
         ),
-        const SizedBox(height: 30),
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const InvestmentQuizPage()),
+            );
+          },
+          child: const Padding(
+            padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
+            child: Text(
+              'Ver sugestões personalizadas de fontes de renda extra.',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.green,
+                fontSize: 11,
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ),
         Container(
           color: Theme.of(context).colorScheme.onSurface,
           child: Column(
             children: [
-              // TODO link teste
               ExtraIncomeWidget(
                 titleText: "Seu Progresso",
                 littleText:
@@ -71,9 +104,65 @@ class ExtraIncomePage extends StatelessWidget {
               const SizedBox(height: 20),
               HomePageWidget(
                   titleText: "Venda de Brigadeiros",
-                  content: const SizedBox(height: 10),
+                  content: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, top: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const TitleText(
+                              text: "Lucro do mês atual",
+                              textAlign: TextAlign.start,
+                              fontSize: 12,
+                            ),
+                            const AmountText(amount: '1.900,00'),
+                            Row(
+                              children: const [
+                                LittleText(
+                                  text: "de ",
+                                  fontSize: 8,
+                                  textAlign: TextAlign.start,
+                                ),
+                                AmountText(
+                                  amount: "2.000,00",
+                                  fontSize: 8,
+                                  color: Colors.black87,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            // Barra de progresso
+                            SizedBox(
+                              width: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Canto arredondado
+                                child: LinearProgressIndicator(
+                                  value: progress, // Progresso atual
+                                  backgroundColor:
+                                      Colors.grey[300], // Cor de fundo
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                    Colors.green,
+                                  ), // Cor do progresso
+                                  minHeight: 6, // Altura da barra
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   onPressed: () {}),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+              const DottedButton(
+                icon: Icon(Icons.add_circle_outline), // Ícone customizado
+                text: "Adicionar nova fonte de renda extra", // Texto customizado
+                textSize: 14, // Tamanho do texto customizado
+                iconSize: 20, // Tamanho do ícone customizado
+              ),             
             ],
           ),
         ),

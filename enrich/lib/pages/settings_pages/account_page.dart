@@ -1,5 +1,4 @@
 import 'package:enrich/pages/settings_pages/change_password_page.dart';
-import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';

@@ -55,12 +55,6 @@ class ExtraIncomeWidget extends StatelessWidget {
               onTap: () {
                 onPressed();
               },
-              child: TitleText(
-                fontSize: 13,
-                text: "Ver mais",
-                color: Theme.of(context).colorScheme.primary,
-                sublined: true,
-              ),
             ),
           )
         ],
