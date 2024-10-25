@@ -67,6 +67,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
                           content: LittleText(
                             text:
                                 "Você deseja realmente voltar para a tela de login?",
+                                textAlign: TextAlign.left,
                             fontSize: 15,
                           ),
                           actions: [

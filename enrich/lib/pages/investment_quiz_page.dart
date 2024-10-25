@@ -9,6 +9,8 @@ class InvestmentQuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.onSurface, iconTheme: IconThemeData(color: Colors.black),),
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: Column(

@@ -1,5 +1,6 @@
 import 'package:enrich/widgets/home_page_divida_widget.dart';
 import 'package:enrich/widgets/home_page_indicator.dart';
+import 'package:enrich/widgets/texts/amount_text.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:flutter/material.dart';
@@ -19,25 +20,29 @@ class HomePage extends StatelessWidget {
       ChartData('Jack', 34),
       ChartData('Others', 52)
     ];
+
+    final double valorAtualReservaEmergencia = 1500.00;
+    final double valorMetaReservaEmergencia = 20000.00;
+    final double progressoReservaEmergencia = valorAtualReservaEmergencia / valorMetaReservaEmergencia;
+
     return Scaffold(
         body: Container(
+      color: Theme.of(context).colorScheme.onSurface,
+      child: ListView(padding: EdgeInsets.zero, children: [
+        Container(
           color: Theme.of(context).colorScheme.onSurface,
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
             children: [
               Container(
-                color: Theme.of(context).colorScheme.onSurface,
+                height: 210,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 child: Column(
-                children: [
-                  Container(
-                    height: 210,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child:
-                        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       const SizedBox(
                         height: 30,
                       ),
@@ -70,7 +75,8 @@ class HomePage extends StatelessWidget {
                             ),
                             indicator: 'Ganhos',
                             value: 'R\$1500',
-                            valueTextColor: Theme.of(context).colorScheme.secondary,
+                            valueTextColor:
+                                Theme.of(context).colorScheme.secondary,
                           ),
                           HomePageIndicator(
                             icon: Icon(
@@ -80,7 +86,8 @@ class HomePage extends StatelessWidget {
                             ),
                             indicator: 'Gastos',
                             value: 'R\$ 700',
-                            valueTextColor: Theme.of(context).colorScheme.surface,
+                            valueTextColor:
+                                Theme.of(context).colorScheme.surface,
                           ),
                           const HomePageIndicator(
                             icon: Icon(
@@ -96,134 +103,230 @@ class HomePage extends StatelessWidget {
                         ],
                       )
                     ]),
-                  ),
-                  const SizedBox(height: 30),
-                  HomePageWidget(
-                    titleText: "Planejamento Financeiro",
-                    onPressed: () {},
-                    content: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 110,
-                            width: 100,
-                            child: SfCircularChart(series: <CircularSeries>[
-                              PieSeries<ChartData, String>(
-                                  dataSource: chartData,
-                                  pointColorMapper: (ChartData data, _) => data.color,
-                                  xValueMapper: (ChartData data, _) => data.x,
-                                  yValueMapper: (ChartData data, _) => data.y)
-                            ]),
-                          ),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              LittleListTile(
-                                circleColor: Color(0xFFF82E52),
-                                category: "Essenciais",
-                                percentage: "55%",
-                              ),
-                              LittleListTile(
-                                circleColor: Color(0xFFFFCE06),
-                                category: "Lazer",
-                                percentage: "10%",
-                              ),
-                              LittleListTile(
-                                circleColor: Color(0xFF2D8BBA),
-                                category: "Investimentos",
-                                percentage: "20%",
-                              ),
-                              LittleListTile(
-                                circleColor: Color(0xFF5FAF46),
-                                category: "Educação",
-                                percentage: "5%",
-                              ),
-                              LittleListTile(
-                                circleColor: Color(0xFFCB6CE6),
-                                category: "Dívidas",
-                                percentage: "10%",
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                  ),
-                  SizedBox(height: 20),
-                  HomePageWidget(
-                    titleText: "Metas",
-                    content: Row(
+              ),
+              const SizedBox(height: 30),
+              HomePageWidget(
+                titleText: "Planejamento Financeiro",
+                onPressed: () {},
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 110,
+                      width: 100,
+                      child: SfCircularChart(series: <CircularSeries>[
+                        PieSeries<ChartData, String>(
+                            dataSource: chartData,
+                            pointColorMapper: (ChartData data, _) => data.color,
+                            xValueMapper: (ChartData data, _) => data.x,
+                            yValueMapper: (ChartData data, _) => data.y)
+                      ]),
+                    ),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(width: 17,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LittleText(
+                        LittleListTile(
+                          circleColor: Color(0xFFF82E52),
+                          category: "Essenciais",
+                          percentage: "55%",
+                        ),
+                        LittleListTile(
+                          circleColor: Color(0xFFFFCE06),
+                          category: "Lazer",
+                          percentage: "10%",
+                        ),
+                        LittleListTile(
+                          circleColor: Color(0xFF2D8BBA),
+                          category: "Investimentos",
+                          percentage: "20%",
+                        ),
+                        LittleListTile(
+                          circleColor: Color(0xFF5FAF46),
+                          category: "Educação",
+                          percentage: "5%",
+                        ),
+                        LittleListTile(
+                          circleColor: Color(0xFFCB6CE6),
+                          category: "Dívidas",
+                          percentage: "10%",
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              HomePageWidget(
+                  titleText: "Metas",
+                  content: Row(
+                    children: [
+                      SizedBox(
+                        width: 17,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LittleText(
                             text: "- Comprar carro: 55%",
                             fontSize: 12,
                           ),
-                          LittleText(
-                            text: "- Viajar para Gramado: 20%"
-                          )
+                          LittleText(text: "- Viajar para Gramado: 20%")
+                        ],
+                      ),
+                    ],
+                  ),
+                  onPressed: () {}),
+              SizedBox(height: 20),
+              HomePageWidget(
+                  titleText: "Dívidas",
+                  content: const Row(
+                    children: [
+                      SizedBox(
+                        width: 17,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 5),
+                          HomePageDividaWidget(
+                            category: "Em atraso",
+                            debtName: "- Desenvolvedor.IO: 29/09/2024",
+                          ),
+                          SizedBox(height: 7),
+                          HomePageDividaWidget(
+                            category: "Data próxima",
+                            debtName: "- Cartão Nubank: 05/10/2024",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  onPressed: () {}),
+              SizedBox(
+                height: 20,
+              ),
+              HomePageWidget(
+                  titleText: "Dívidas",
+                  content: const Row(
+                    children: [
+                      SizedBox(
+                        width: 17,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 5),
+                          HomePageDividaWidget(
+                            category: "Em atraso",
+                            debtName: "- Desenvolvedor.IO: 29/09/2024",
+                          ),
+                          SizedBox(height: 7),
+                          HomePageDividaWidget(
+                            category: "Data próxima",
+                            debtName: "- Cartão Nubank: 05/10/2024",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  onPressed: () {}),
+              SizedBox(
+                height: 20,
+              ),
+              HomePageWidget(
+                  titleText: "Reserva de Emergência",
+                  content: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, top: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AmountText(
+                                amount: '${valorAtualReservaEmergencia}'),
+                            Row(
+                              children: [
+                                const LittleText(
+                                  text: "de ",
+                                  fontSize: 8,
+                                  textAlign: TextAlign.start,
+                                ),
+                                AmountText(
+                                  amount: '${valorMetaReservaEmergencia}',
+                                  fontSize: 8,
+                                  color: Colors.black87,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              width: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                    10),
+                                child: LinearProgressIndicator(
+                                  value:
+                                      progressoReservaEmergencia, 
+                                  backgroundColor:
+                                      Colors.grey[300],
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                    Colors.green,
+                                  ),
+                                  minHeight: 6,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                    onPressed: () {}
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 20),
-                  HomePageWidget(
-                    titleText: "Dívidas",
-                    content: const Row(
-                      children: [
-                        SizedBox(width: 17,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          SizedBox(height: 5),
-                          HomePageDividaWidget(
-                            category: "Em atraso",
-                            debtName: "- Desenvolvedor.IO: 29/09/2024",
-                          ),
-                          SizedBox(height: 7),
-                          HomePageDividaWidget(
-                            category: "Data próxima",
-                            debtName: "- Cartão Nubank: 05/10/2024",
-                          ),
-                        ],),
-                      ],
-                    ),
-                    onPressed: () {}
-                  ),
+                  onPressed: () {}),
                   SizedBox(height: 20,),
                   HomePageWidget(
-                    titleText: "Reserva de Emergência",
-                    content: const Row(
-                      children: [
-                        SizedBox(width: 17,),
-                        Column(
+                  titleText: "Investimentos",
+                  content: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, top: 2),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          SizedBox(height: 5),
-                          HomePageDividaWidget(
-                            category: "Em atraso",
-                            debtName: "- Desenvolvedor.IO: 29/09/2024",
-                          ),
-                          SizedBox(height: 7),
-                          HomePageDividaWidget(
-                            category: "Data próxima",
-                            debtName: "- Cartão Nubank: 05/10/2024",
-                          ),
-                        ],),
-                      ],
-                    ),
-                    onPressed: () {}
+                            Row(
+                              children: [
+                                AmountText(
+                                    amount: '29.657,92',
+                                    color: Theme.of(context).colorScheme.tertiary,
+                                ),
+                                LittleText(
+                                  fontSize: 8,
+                                  text: '  investidos',),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TitleText(
+                                  text: 'Próximo investimento programado:',
+                                  fontSize: 13,
+                                ),
+                                LittleText(text: '05/10/2024',)
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 90),
-                ],
-              ),
-              ),]
+                  onPressed: () {}),
+              SizedBox(height: 90),
+            ],
           ),
-        ));
+        ),
+      ]),
+    ));
   }
 }
 
