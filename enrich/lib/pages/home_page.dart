@@ -1,3 +1,6 @@
+import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/login_page.dart';
+import 'package:enrich/pages/reports_page.dart';
 import 'package:enrich/widgets/home_page_divida_widget.dart';
 import 'package:enrich/widgets/home_page_indicator.dart';
 import 'package:enrich/widgets/texts/amount_text.dart';
@@ -23,7 +26,8 @@ class HomePage extends StatelessWidget {
 
     final double valorAtualReservaEmergencia = 1500.00;
     final double valorMetaReservaEmergencia = 20000.00;
-    final double progressoReservaEmergencia = valorAtualReservaEmergencia / valorMetaReservaEmergencia;
+    final double progressoReservaEmergencia =
+        valorAtualReservaEmergencia / valorMetaReservaEmergencia;
 
     return Scaffold(
         body: Container(
@@ -34,7 +38,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                height: 210,
+                height: 330,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -44,7 +48,7 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(
-                        height: 30,
+                        height: 50,
                       ),
                       const TitleText(
                         text: 'Olá, Amanda!',
@@ -54,60 +58,84 @@ class HomePage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SubtitleText(
-                            text: 'Setembro - 2024',
+                            text: 'Setembro de 2024 - ',
                             fontSize: 13,
                           ),
                           GestureDetector(
-                            child: Icon(Icons.keyboard_arrow_down),
-                            onTap: () {},
-                          )
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const ReportsPage()),
+                              );
+                            },
+                            child: TitleText(
+                                color: Theme.of(context).colorScheme.primary,
+                                text: 'Exibir relatórios',
+                                fontSize: 13,
+                                sublined: true),
+                          ),
                         ],
                       ),
-                      SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          HomePageIndicator(
-                            icon: Icon(
-                              Icons.north,
-                              color: Theme.of(context).colorScheme.secondary,
-                              size: 40,
+                      SizedBox(height: 20),
+                      ListTile(
+                        leading: Icon(Icons.north,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30),
+                        title: Row(
+                          children: [
+                            LittleText(text: 'Ganhos:  '),
+                            TitleText(
+                              color: Theme.of(context).colorScheme.primary,
+                              text: 'R\$1500.00',
+                              fontSize: 17,
                             ),
-                            indicator: 'Ganhos',
-                            value: 'R\$1500',
-                            valueTextColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                          HomePageIndicator(
-                            icon: Icon(
-                              Icons.south,
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.south,
+                            color: Theme.of(context).colorScheme.surface,
+                            size: 30),
+                        title: Row(
+                          children: [
+                            LittleText(text: 'Gastos:  '),
+                            TitleText(
                               color: Theme.of(context).colorScheme.surface,
-                              size: 40,
+                              text: 'R\$700.00',
+                              fontSize: 17,
                             ),
-                            indicator: 'Gastos',
-                            value: 'R\$ 700',
-                            valueTextColor:
-                                Theme.of(context).colorScheme.surface,
-                          ),
-                          const HomePageIndicator(
-                            icon: Icon(
-                              Icons.wallet_sharp,
-                              color: Colors.black,
-                              size: 40,
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.wallet_sharp,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        title: Row(
+                          children: [
+                            LittleText(text: 'Total:  '),
+                            TitleText(
+                              text: 'R\$800.00',
+                              fontSize: 17,
                             ),
-                            indicator: 'Gastos',
-                            value: 'R\$ 700',
-                            valueTextColor: Colors.black,
-                            spacementValue: 5.0,
-                          ),
-                        ],
-                      )
+                          ],
+                        ),
+                      ),
                     ]),
               ),
               const SizedBox(height: 30),
               HomePageWidget(
                 titleText: "Planejamento Financeiro",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                    builder: (context) => const ReportsPage()),
+                  );
+                },
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -262,13 +290,10 @@ class HomePage extends StatelessWidget {
                             SizedBox(
                               width: 150,
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                    10),
+                                borderRadius: BorderRadius.circular(10),
                                 child: LinearProgressIndicator(
-                                  value:
-                                      progressoReservaEmergencia, 
-                                  backgroundColor:
-                                      Colors.grey[300],
+                                  value: progressoReservaEmergencia,
+                                  backgroundColor: Colors.grey[300],
                                   valueColor:
                                       const AlwaysStoppedAnimation<Color>(
                                     Colors.green,
@@ -283,8 +308,10 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   onPressed: () {}),
-                  SizedBox(height: 20,),
-                  HomePageWidget(
+              SizedBox(
+                height: 20,
+              ),
+              HomePageWidget(
                   titleText: "Investimentos",
                   content: Column(
                     children: [
@@ -296,12 +323,13 @@ class HomePage extends StatelessWidget {
                             Row(
                               children: [
                                 AmountText(
-                                    amount: '29.657,92',
-                                    color: Theme.of(context).colorScheme.tertiary,
+                                  amount: '29.657,92',
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                                 LittleText(
                                   fontSize: 8,
-                                  text: '  investidos',),
+                                  text: '  investidos',
+                                ),
                               ],
                             ),
                             const SizedBox(height: 10),
@@ -312,7 +340,9 @@ class HomePage extends StatelessWidget {
                                   text: 'Próximo investimento programado:',
                                   fontSize: 13,
                                 ),
-                                LittleText(text: '05/10/2024',)
+                                LittleText(
+                                  text: '05/10/2024',
+                                )
                               ],
                             )
                           ],
