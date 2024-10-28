@@ -1,6 +1,8 @@
+import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/debts_page.dart';
 import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/pages/login_page.dart';
 import 'package:enrich/pages/reports_page.dart';
 import 'package:enrich/widgets/home_page_divida_widget.dart';
@@ -231,7 +233,7 @@ class HomePage extends StatelessWidget {
                           SizedBox(height: 7),
                           HomePageDividaWidget(
                             category: "Data próxima",
-                            debtName: "- Cartão Nubank: 05/10/2024",
+                            debtName: "- Curso de Marketing: 05/10/2024",
                           ),
                         ],
                       ),
@@ -242,6 +244,40 @@ class HomePage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const DebtsPage()),
+                              );
+                  }),
+              SizedBox(
+                height: 20,
+              ),
+              HomePageWidget(
+                  titleText: "Faturas de Cartão",
+                  content: const Row(
+                    children: [
+                      SizedBox(
+                        width: 17,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 5),
+                          HomePageDividaWidget(
+                            category: "Em atraso",
+                            debtName: "- Cartão de Crédito Nubank: 29/09/2024",
+                          ),
+                          SizedBox(height: 7),
+                          HomePageDividaWidget(
+                            category: "Data próxima",
+                            debtName: "- Cartão de Crédito PicPay: 05/10/2024",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const CreditCardsInvoicePage()),
                               );
                   }),
               SizedBox(
@@ -293,7 +329,9 @@ class HomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    
+                  }),
               SizedBox(
                 height: 20,
               ),
@@ -336,7 +374,13 @@ class HomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const InvestmentsPage()),
+                              );
+                  }),
               SizedBox(height: 90),
             ],
           ),

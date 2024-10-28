@@ -29,6 +29,7 @@ class InvestmentQuizPage extends StatelessWidget {
               const SubtitleText(text: ' Está pronto(a) para começar?'),
               const SizedBox(height: 15),
               RoundedTextButton(
+                  buttonColor: Theme.of(context).colorScheme.tertiary,
                   text: 'Sim, estou pronto(a)!',
                   width: 300,
                   height: 55,

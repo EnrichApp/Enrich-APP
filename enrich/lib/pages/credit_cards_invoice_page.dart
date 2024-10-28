@@ -9,8 +9,8 @@ import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
-class DebtsPage extends StatelessWidget {
-  const DebtsPage({super.key});
+class CreditCardsInvoicePage extends StatelessWidget {
+  const CreditCardsInvoicePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class DebtsPage extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(left: 30.0, top: 20.0),
               child: TitleText(
-                text: 'Dívidas',
+                text: 'Faturas de Cartão',
                 fontSize: 20,
               ),
             ),
@@ -66,7 +66,7 @@ class DebtsPage extends StatelessWidget {
                 children: [
                   const SizedBox(height: 20),
                   HomePageWidget(
-                      titleText: "Desenvolvedor.IO",
+                      titleText: "Cartão de Crédito Nubank",
                       menuIcon: GestureDetector(
                           onTap: () {}, child: Icon(Icons.more_vert, size: 22)),
                       content: Column(
@@ -77,7 +77,7 @@ class DebtsPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TitleText(
-                                    text: "Próxima parcela", fontSize: 12),
+                                    text: "Fatura Atual", fontSize: 12),
                                 SubtitleText(
                                   text: "Data final: $finalDate",
                                   fontSize: 10,
@@ -97,7 +97,7 @@ class DebtsPage extends StatelessWidget {
                                 Row(
                                   children: [
                                     RoundedTextButton(
-                                        text: "Parcela Paga",
+                                        text: "Fatura Paga",
                                         width: 90,
                                         height: 20,
                                         fontSize: 9,
@@ -126,7 +126,7 @@ class DebtsPage extends StatelessWidget {
                       onPressed: () {}),
                       SizedBox(height: 20),
                       HomePageWidget(
-                      titleText: "Curso de Marketing",
+                      titleText: "Cartão de Crédito PicPay",
                       menuIcon: GestureDetector(
                           onTap: () {}, child: Icon(Icons.more_vert, size: 22)),
                       content: Column(
@@ -137,7 +137,7 @@ class DebtsPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TitleText(
-                                    text: "Próxima parcela", fontSize: 12),
+                                    text: "Fatura Atual", fontSize: 12),
                                 SubtitleText(
                                   text: "Data final: $finalDate",
                                   fontSize: 10,
@@ -157,7 +157,7 @@ class DebtsPage extends StatelessWidget {
                                 Row(
                                   children: [
                                     RoundedTextButton(
-                                        text: "Parcela Paga",
+                                        text: "Fatura Paga",
                                         width: 90,
                                         height: 20,
                                         fontSize: 9,
@@ -187,7 +187,7 @@ class DebtsPage extends StatelessWidget {
                   const SizedBox(height: 10),
                   const DottedButton(
                     icon: Icon(Icons.add_circle_outline), // Ícone customizado
-                    text: "Adicionar nova dívida", // Texto customizado
+                    text: "Adicionar nova fatura", // Texto customizado
                     textSize: 14, // Tamanho do texto customizado
                     iconSize: 20, // Tamanho do ícone customizado
                   ),
