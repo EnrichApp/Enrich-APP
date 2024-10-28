@@ -1,3 +1,5 @@
+import 'package:enrich/pages/debts_page.dart';
+import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/investment_quiz_page.dart';
 import 'package:enrich/pages/login_page.dart';
 import 'package:enrich/pages/reports_page.dart';
@@ -203,7 +205,13 @@ class HomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const GoalsPage()),
+                              );
+                  }),
               SizedBox(height: 20),
               HomePageWidget(
                   titleText: "Dívidas",
@@ -229,35 +237,13 @@ class HomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {}),
-              SizedBox(
-                height: 20,
-              ),
-              HomePageWidget(
-                  titleText: "Dívidas",
-                  content: const Row(
-                    children: [
-                      SizedBox(
-                        width: 17,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 5),
-                          HomePageDividaWidget(
-                            category: "Em atraso",
-                            debtName: "- Desenvolvedor.IO: 29/09/2024",
-                          ),
-                          SizedBox(height: 7),
-                          HomePageDividaWidget(
-                            category: "Data próxima",
-                            debtName: "- Cartão Nubank: 05/10/2024",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const DebtsPage()),
+                              );
+                  }),
               SizedBox(
                 height: 20,
               ),

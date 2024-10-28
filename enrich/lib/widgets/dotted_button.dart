@@ -30,7 +30,7 @@ class DottedButton extends StatelessWidget {
             // Ação do botão
           },
           child: Container(
-            height: 60,
+            height: 50,
             width: double.infinity, // Botão de largura cheia
             alignment: Alignment.center,
             decoration: BoxDecoration(

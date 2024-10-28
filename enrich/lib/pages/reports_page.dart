@@ -24,6 +24,7 @@ class ReportsPage extends StatelessWidget {
               const LittleText(
                 text: 'Voltar',
                 fontSize: 14,
+                underlined: true,
               ),
             ],
           ),

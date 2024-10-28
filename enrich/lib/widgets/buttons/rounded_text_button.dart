@@ -7,6 +7,9 @@ class RoundedTextButton extends StatelessWidget {
   final double height;
   final double fontSize;
   final Function onPressed;
+  final Color? buttonColor;
+  final Color? borderColor; // Borda opcional
+  final double? borderWidth; // Largura opcional
 
   const RoundedTextButton({
     super.key,
@@ -15,10 +18,15 @@ class RoundedTextButton extends StatelessWidget {
     required this.height,
     required this.fontSize,
     required this.onPressed,
+    this.buttonColor,
+    this.borderColor = Colors.black, // Cor padrão da borda
+    this.borderWidth = 1.0, // Largura padrão
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color backgroundColor = buttonColor ?? Theme.of(context).primaryColor;
+
     return GestureDetector(
       onTap: () {
         onPressed();
@@ -27,12 +35,14 @@ class RoundedTextButton extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.black,
-            width: 1,
-          ),
+          border: (borderColor != null && borderWidth != null && borderWidth! > 0)
+              ? Border.all(
+                  color: borderColor!, 
+                  width: borderWidth!, 
+                )
+              : null, // Se borderColor ou borderWidth for null ou 0, sem borda
         ),
         child: Center(
           child: Text(
