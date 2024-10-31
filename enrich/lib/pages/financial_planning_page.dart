@@ -154,10 +154,10 @@ class FinancialPlanningPage extends StatelessWidget {
                       onPressed: () {}),
                   const SizedBox(height: 10),
                   const DottedButton(
-                    icon: Icon(Icons.add_circle_outline), // Ícone customizado
-                    text: "Criar planejamento personalizado", // Texto customizado
-                    textSize: 14, // Tamanho do texto customizado
-                    iconSize: 20, // Tamanho do ícone customizado
+                    icon: Icon(Icons.add_circle_outline),
+                    text: "Criar planejamento personalizado",
+                    textSize: 14,
+                    iconSize: 20,
                   ),
                 ],
               ),
