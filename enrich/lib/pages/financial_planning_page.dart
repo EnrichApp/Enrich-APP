@@ -68,116 +68,94 @@ class FinancialPlanningPage extends StatelessWidget {
                   HomePageWidget(
                       height: 165,
                       titleText: "Método das 6 Jarras",
-                      content: Stack(
-                        children: [
-                          Padding(
-                          padding: const EdgeInsets.only(left: 17.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                      height: 70,
-                                      width: 180,
-                                      child: LittleText(
-                                        text:
-                                            'O Método das 6 Jarras organiza a renda em seis categorias para equilibrar despesas, poupança e investimentos.',
-                                        textAlign: TextAlign.left,
-                                        fontSize: 11,
-                                      )),
-                                  SizedBox(height: 10),
-                                  RoundedTextButton(
+                      content: Padding(
+                        padding: const EdgeInsets.only(left: 17.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    height: 70,
+                                    width: 180,
+                                    child: LittleText(
                                       text:
-                                          "Gerar planejamento automaticamente",
-                                      width: 210,
-                                      height: 20,
-                                      fontSize: 9,
-                                      onPressed: () {},
-                                      borderColor: null,
-                                      borderWidth: 0.0),
-                                ],
-                              ),
-                            ],
-                          ),
+                                          'O Método das 6 Jarras organiza a renda em seis categorias para equilibrar despesas, poupança e investimentos.',
+                                      textAlign: TextAlign.left,
+                                      fontSize: 11,
+                                    )),
+                                SizedBox(height: 10),
+                                RoundedTextButton(
+                                    text: "Gerar automaticamente",
+                                    width: 140,
+                                    height: 25,
+                                    fontSize: 9,
+                                    onPressed: () {},
+                                    borderColor: null,
+                                    borderWidth: 0.0),
+                              ],
+                            ),
+                          ],
                         ),
-                        Positioned(
-                          right: 0,
-                          child: Image.asset(
-                            'assets/images/6_jars_method.png',
-                            height: 90,
-                          ),
-                        ),
-                        ]
                       ),
+                      positionedWidget: Image.asset(
+                        'assets/images/6_jars_method.png',
+                        height: 115,
+                      ),
+                      positionedWidgetRight: 23,
+                      positionedWidgetTop: 25,
                       showSeeMoreText: false,
                       onPressed: () {}),
                   SizedBox(height: 20),
                   HomePageWidget(
+                      height: 195,
                       titleText: "Método 50-30-20",
-                      menuIcon: GestureDetector(
-                          onTap: () {}, child: Icon(Icons.more_vert, size: 22)),
-                      content: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16.0, top: 2),
-                            child: Column(
+                      content: Padding(
+                        padding: const EdgeInsets.only(left: 17.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 10),
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TitleText(
-                                    text: "Próxima parcela", fontSize: 12),
-                                SubtitleText(
-                                  text: "Data final: $finalDate",
-                                  fontSize: 10,
-                                ),
-                                SubtitleText(
-                                  text: "Status: $status",
-                                  fontSize: 10,
-                                  color: Colors.red,
-                                ),
-                                SubtitleText(
-                                  text: "Valor: $amount",
-                                  fontSize: 10,
-                                ),
                                 SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    RoundedTextButton(
-                                        text: "Parcela Paga",
-                                        width: 90,
-                                        height: 20,
-                                        fontSize: 9,
-                                        onPressed: () {},
-                                        borderColor: null,
-                                        borderWidth: 0.0),
-                                    SizedBox(width: 7),
-                                    RoundedTextButton(
-                                      text: "Prazo de pagamento excedido",
-                                      width: 170,
-                                      height: 20,
-                                      fontSize: 9,
-                                      onPressed: () {},
-                                      borderColor: null,
-                                      borderWidth: 0.0,
-                                      buttonColor: Colors.red,
-                                    )
-                                  ],
-                                ),
+                                    height: 100,
+                                    width: 160,
+                                    child: LittleText(
+                                      text:
+                                          'O método 50-30-20 divide a renda em 50% para necessidades, 30% para desejos e 20% para poupança ou investimentos.',
+                                      textAlign: TextAlign.left,
+                                      fontSize: 11,
+                                    )),
+                                SizedBox(height: 10),
+                                RoundedTextButton(
+                                    text: "Gerar automaticamente",
+                                    width: 140,
+                                    height: 25,
+                                    fontSize: 9,
+                                    onPressed: () {},
+                                    borderColor: null,
+                                    borderWidth: 0.0),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      positionedWidget: Image.asset(
+                        'assets/images/50-30-20_method.png',
+                        height: 110,
+                      ),
+                      positionedWidgetRight: 23,
+                      positionedWidgetTop: 40,
                       showSeeMoreText: false,
                       onPressed: () {}),
                   const SizedBox(height: 10),
                   const DottedButton(
                     icon: Icon(Icons.add_circle_outline), // Ícone customizado
-                    text: "Adicionar nova dívida", // Texto customizado
+                    text: "Criar planejamento personalizado", // Texto customizado
                     textSize: 14, // Tamanho do texto customizado
                     iconSize: 20, // Tamanho do ícone customizado
                   ),
