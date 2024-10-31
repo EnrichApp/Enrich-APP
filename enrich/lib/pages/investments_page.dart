@@ -252,7 +252,6 @@ class InvestmentsPage extends StatelessWidget {
                   content: Column(
                     children: [
                       SizedBox(
-                        height: 10,
                       ),
                       Row(
                         children: [

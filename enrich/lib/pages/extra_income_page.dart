@@ -1,4 +1,5 @@
 import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/skills_quiz_page.dart';
 import 'package:enrich/widgets/dotted_button.dart';
 import 'package:enrich/widgets/extra_income_widget.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
@@ -31,7 +32,7 @@ class ExtraIncomePage extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSurface,
       child: ListView(padding: EdgeInsets.zero, children: [
         const SizedBox(
-          height: 30,
+          height: 70,
         ),
         const Padding(
           padding: EdgeInsets.only(left: 20.0, top: 20.0),
@@ -45,7 +46,7 @@ class ExtraIncomePage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const InvestmentQuizPage()),
+                  builder: (context) => const SkillsQuizPage()),
             );
           },
           child: const Padding(

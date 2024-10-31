@@ -9,13 +9,18 @@ class SkillsQuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.onSurface, iconTheme: IconThemeData(color: Colors.black),),
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const TitleText(text: 'Teste de Habilidades e Competências'),
+              const TitleText(
+                text: 'Teste de Habilidades e Competências',
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 15),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
