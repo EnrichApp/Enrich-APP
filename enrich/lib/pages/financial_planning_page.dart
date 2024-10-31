@@ -66,43 +66,51 @@ class FinancialPlanningPage extends StatelessWidget {
                 children: [
                   const SizedBox(height: 20),
                   HomePageWidget(
-                      height: 175,
+                      height: 165,
                       titleText: "Método das 6 Jarras",
-                      content: Padding(
-                        padding: const EdgeInsets.only(left: 17.0),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                        width: 170,
-                                        child: LittleText(
-                                          text:
-                                              'O Método das 6 Jarras organiza a renda em seis categorias para equilibrar despesas, poupança e investimentos.',
-                                          textAlign: TextAlign.left,
-                                          fontSize: 11,
-                                        )),
-                                        Image.asset(''),
-                                  ],
-                                ),
-                                    SizedBox(height: 10),
-                                RoundedTextButton(
-                                    text:
-                                        "Gerar planejamento automaticamente",
-                                    width: 210,
-                                    height: 20,
-                                    fontSize: 9,
-                                    onPressed: () {},
-                                    borderColor: null,
-                                    borderWidth: 0.0),
-                              ],
-                            ),
-                          ],
+                      content: Stack(
+                        children: [
+                          Padding(
+                          padding: const EdgeInsets.only(left: 17.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                      height: 70,
+                                      width: 180,
+                                      child: LittleText(
+                                        text:
+                                            'O Método das 6 Jarras organiza a renda em seis categorias para equilibrar despesas, poupança e investimentos.',
+                                        textAlign: TextAlign.left,
+                                        fontSize: 11,
+                                      )),
+                                  SizedBox(height: 10),
+                                  RoundedTextButton(
+                                      text:
+                                          "Gerar planejamento automaticamente",
+                                      width: 210,
+                                      height: 20,
+                                      fontSize: 9,
+                                      onPressed: () {},
+                                      borderColor: null,
+                                      borderWidth: 0.0),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
+                        Positioned(
+                          right: 0,
+                          child: Image.asset(
+                            'assets/images/6_jars_method.png',
+                            height: 90,
+                          ),
+                        ),
+                        ]
                       ),
                       showSeeMoreText: false,
                       onPressed: () {}),

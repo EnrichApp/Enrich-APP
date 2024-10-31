@@ -12,20 +12,30 @@ class HomePageWidget extends StatelessWidget {
   final double width;
   final String seeMoreTextString;
   final Color? seeMoreTextColor;
+  final Widget? positionedWidget;
+  final double? positionedWidgetLeft;
+  final double? positionedWidgetRight;
+  final double? positionedWidgetTop;
+  final double? positionedWidgetBottom;
 
-  const HomePageWidget(
-      {super.key,
-      required this.titleText,
-      this.titleWidget,
-      this.height = 150,
-      this.width = 320,
-      required this.content,
-      required this.onPressed,
-      this.menuIcon = const SizedBox.shrink(),
-      this.showSeeMoreText = true, // Exibir "Ver mais" por padrão
-      this.seeMoreTextString = 'Ver mais',
-      this.seeMoreTextColor
-      });
+  const HomePageWidget({
+    super.key,
+    required this.titleText,
+    this.titleWidget,
+    this.height = 150,
+    this.width = 320,
+    required this.content,
+    required this.onPressed,
+    this.menuIcon = const SizedBox.shrink(),
+    this.showSeeMoreText = true, // Exibir "Ver mais" por padrão
+    this.seeMoreTextString = 'Ver mais',
+    this.seeMoreTextColor,
+    this.positionedWidget,
+    this.positionedWidgetLeft,
+    this.positionedWidgetRight,
+    this.positionedWidgetTop,
+    this.positionedWidgetBottom,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +71,14 @@ class HomePageWidget extends StatelessWidget {
               content
             ],
           ),
+          if (positionedWidget != null)
+            Positioned(
+              left: positionedWidgetLeft,
+              right: positionedWidgetRight,
+              top: positionedWidgetTop,
+              bottom: positionedWidgetBottom,
+              child: positionedWidget!,
+            ),
           if (showSeeMoreText)
             Positioned(
               bottom: 13,
@@ -72,7 +90,8 @@ class HomePageWidget extends StatelessWidget {
                 child: TitleText(
                   fontSize: 13,
                   text: seeMoreTextString,
-                  color: seeMoreTextColor ?? Theme.of(context).colorScheme.primary,
+                  color:
+                      seeMoreTextColor ?? Theme.of(context).colorScheme.primary,
                   sublined: true,
                 ),
               ),
