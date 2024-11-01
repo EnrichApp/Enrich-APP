@@ -48,15 +48,6 @@ class ExtraIncomeWidget extends StatelessWidget {
               content
             ],
           ),
-          Positioned(
-            bottom: 13,
-            right: 21,
-            child: GestureDetector(
-              onTap: () {
-                onPressed();
-              },
-            ),
-          )
         ],
       ),
     );

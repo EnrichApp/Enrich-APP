@@ -1,4 +1,6 @@
+import 'package:enrich/pages/skills_quiz_result_page.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
+import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +11,41 @@ class SkillsQuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
+      appBar: AppBar(
+        leadingWidth: 100,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 14,
+              ),
+              SizedBox(width: 2),
+              LittleText(
+                text: 'Voltar',
+                fontSize: 12,
+                underlined: true,
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const TitleText(text: 'Teste de Habilidades e Competências'),
+              const TitleText(text: 'Teste de Habilidades e Competências', textAlign: TextAlign.center,),
               const SizedBox(height: 15),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
@@ -32,7 +62,11 @@ class SkillsQuizPage extends StatelessWidget {
                   height: 55,
                   fontSize: 17,
                   onPressed: () {
-                    Navigator.of(context).pushNamed('');
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SkillsQuizResultPage()),
+                              );
                   }),
             ]),
       ),

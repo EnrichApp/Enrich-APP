@@ -1,4 +1,5 @@
-import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/extra_income_detail_page.dart';
+import 'package:enrich/pages/skills_quiz_page.dart';
 import 'package:enrich/widgets/dotted_button.dart';
 import 'package:enrich/widgets/extra_income_widget.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
@@ -45,7 +46,7 @@ class ExtraIncomePage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const InvestmentQuizPage()),
+                  builder: (context) => const SkillsQuizPage()),
             );
           },
           child: const Padding(
@@ -155,14 +156,21 @@ class ExtraIncomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ExtraIncomeDetailPage()),
+                    );
+                  }),
               const SizedBox(height: 10),
               const DottedButton(
                 icon: Icon(Icons.add_circle_outline), // Ícone customizado
-                text: "Adicionar nova fonte de renda extra", // Texto customizado
+                text:
+                    "Adicionar nova fonte de renda extra", // Texto customizado
                 textSize: 14, // Tamanho do texto customizado
                 iconSize: 20, // Tamanho do ícone customizado
-              ),             
+              ),
             ],
           ),
         ),

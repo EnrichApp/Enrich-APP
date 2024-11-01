@@ -1,12 +1,10 @@
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/debts_page.dart';
+import 'package:enrich/pages/emergence_reserve_page.dart';
 import 'package:enrich/pages/goals_page.dart';
-import 'package:enrich/pages/investment_quiz_page.dart';
 import 'package:enrich/pages/investments_page.dart';
-import 'package:enrich/pages/login_page.dart';
 import 'package:enrich/pages/reports_page.dart';
 import 'package:enrich/widgets/home_page_divida_widget.dart';
-import 'package:enrich/widgets/home_page_indicator.dart';
 import 'package:enrich/widgets/texts/amount_text.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
@@ -330,7 +328,11 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   onPressed: () {
-                    
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const EmergenceReservePage()),
+                              );
                   }),
               SizedBox(
                 height: 20,

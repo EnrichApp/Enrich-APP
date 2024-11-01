@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class HomePageWidget extends StatelessWidget {
   final String titleText;
+  final Color textColor;
+  final double textSize;
   final Widget menuIcon;
   final Widget content;
   final Function onPressed;
@@ -24,7 +26,9 @@ class HomePageWidget extends StatelessWidget {
       this.menuIcon = const SizedBox.shrink(),
       this.showSeeMoreText = true, // Exibir "Ver mais" por padrão
       this.seeMoreTextString = 'Ver mais',
-      this.seeMoreTextColor
+      this.seeMoreTextColor,
+      this.textColor = Colors.black,
+      this.textSize = 15,
       });
 
   @override
@@ -48,7 +52,8 @@ class HomePageWidget extends StatelessWidget {
                     titleWidget ??
                         TitleText(
                           text: titleText!,
-                          fontSize: 15,
+                          fontSize: textSize,
+                          color: textColor,
                         ),
                     const Spacer(),
                     Padding(

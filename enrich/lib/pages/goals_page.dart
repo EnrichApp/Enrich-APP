@@ -1,10 +1,8 @@
-import 'package:enrich/pages/investment_quiz_page.dart';
 import 'package:enrich/widgets/dotted_button.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
 import 'package:enrich/widgets/little_text_tile.dart';
 import 'package:enrich/widgets/texts/amount_text.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
-import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 

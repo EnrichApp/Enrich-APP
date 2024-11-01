@@ -1,4 +1,3 @@
-import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/questions_form_page.dart';
 import 'package:enrich/pages/verify_email_page.dart';
 import 'package:enrich/pages/info_to_user_page.dart';
