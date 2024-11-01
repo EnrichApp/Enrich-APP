@@ -32,7 +32,7 @@ class ExtraIncomePage extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSurface,
       child: ListView(padding: EdgeInsets.zero, children: [
         const SizedBox(
-          height: 30,
+          height: 70,
         ),
         const Padding(
           padding: EdgeInsets.only(left: 20.0, top: 20.0),

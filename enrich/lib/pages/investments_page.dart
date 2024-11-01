@@ -186,7 +186,7 @@ class InvestmentsPage extends StatelessWidget {
                         child: HomePageWidget(
                           seeMoreTextString: 'Ver carteira',
                           seeMoreTextColor: Theme.of(context).colorScheme.tertiary,
-                          titleText: "Planejamento Financeiro",
+                          titleText: "Carteira",
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -252,7 +252,6 @@ class InvestmentsPage extends StatelessWidget {
                   content: Column(
                     children: [
                       SizedBox(
-                        height: 10,
                       ),
                       Row(
                         children: [

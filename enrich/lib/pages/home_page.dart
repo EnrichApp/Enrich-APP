@@ -1,6 +1,7 @@
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/debts_page.dart';
 import 'package:enrich/pages/emergence_reserve_page.dart';
+import 'package:enrich/pages/financial_planning_page.dart';
 import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/pages/reports_page.dart';
@@ -135,7 +136,7 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                    builder: (context) => const ReportsPage()),
+                    builder: (context) => const FinancialPlanningPage()),
                   );
                 },
                 content: Row(
