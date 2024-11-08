@@ -6,6 +6,7 @@ class DottedButton extends StatelessWidget {
   final String text; // Texto recebido como parâmetro
   final double textSize; // Tamanho do texto
   final double iconSize; // Tamanho do ícone
+  final Function onPressed;
 
   const DottedButton({
     super.key,
@@ -13,6 +14,7 @@ class DottedButton extends StatelessWidget {
     required this.text, // Texto é obrigatório
     this.textSize = 16, // Tamanho do texto padrão
     this.iconSize = 24, // Tamanho do ícone padrão
+    required this.onPressed,
   });
 
   @override
@@ -27,7 +29,7 @@ class DottedButton extends StatelessWidget {
         radius: const Radius.circular(20), // Arredondamento das bordas
         child: InkWell(
           onTap: () {
-            // Ação do botão
+            onPressed();
           },
           child: Container(
             height: 50,
@@ -35,16 +37,20 @@ class DottedButton extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.grey[200], // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(20), // Arredondamento das bordas
+              borderRadius:
+                  BorderRadius.circular(20), // Arredondamento das bordas
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon.icon, size: iconSize, color: Colors.grey), // Ícone personalizado
+                Icon(icon.icon,
+                    size: iconSize, color: Colors.grey), // Ícone personalizado
                 const SizedBox(width: 10),
                 Text(
                   text,
-                  style: TextStyle(color: Colors.grey, fontSize: textSize), // Texto personalizado
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: textSize), // Texto personalizado
                 ),
               ],
             ),

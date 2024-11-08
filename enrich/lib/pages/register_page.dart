@@ -14,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   // Controllers para os TextFormFields
   final TextEditingController nomeController = TextEditingController();
+  final TextEditingController cpfController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController confirmacaoSenhaController =
@@ -21,6 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Variáveis para armazenar os valores dos campos
   String nome = '';
+  String cpf = '';
   String email = '';
   String senha = '';
   String confirmacaoSenha = '';
@@ -28,6 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     nomeController.dispose();
+    cpfController.dispose();
     emailController.dispose();
     senhaController.dispose();
     confirmacaoSenhaController.dispose();
@@ -51,6 +54,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 onChanged: (value) {
                   setState(() {
                     nome = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 15),
+              FormWidget(
+                hintText: 'Digite o seu CPF.',
+                controller: cpfController,
+                onChanged: (value) {
+                  setState(() {
+                    cpf = value;
                   });
                 },
               ),

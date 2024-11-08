@@ -182,7 +182,8 @@ class CreditCardsInvoicePage extends StatelessWidget {
                       showSeeMoreText: false,
                       onPressed: () {}),
                   const SizedBox(height: 10),
-                  const DottedButton(
+                  DottedButton(
+                    onPressed: () {},
                     icon: Icon(Icons.add_circle_outline), // Ícone customizado
                     text: "Adicionar nova fatura", // Texto customizado
                     textSize: 14, // Tamanho do texto customizado

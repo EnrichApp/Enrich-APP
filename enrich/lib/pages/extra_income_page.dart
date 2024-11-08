@@ -164,7 +164,8 @@ class ExtraIncomePage extends StatelessWidget {
                     );
                   }),
               const SizedBox(height: 10),
-              const DottedButton(
+              DottedButton(
+                onPressed: () {},
                 icon: Icon(Icons.add_circle_outline), // Ícone customizado
                 text:
                     "Adicionar nova fonte de renda extra", // Texto customizado
