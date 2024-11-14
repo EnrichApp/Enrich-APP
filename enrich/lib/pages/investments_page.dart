@@ -1,5 +1,7 @@
 import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/investment_simulation_page.dart';
 import 'package:enrich/pages/reports_page.dart';
+import 'package:enrich/widgets/circular_icon.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
 import 'package:enrich/widgets/little_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +93,7 @@ class InvestmentsPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: HomePageWidget(
-                  height: 100,
+                  height: 130,
                   titleWidget: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -113,29 +115,40 @@ class InvestmentsPage extends StatelessWidget {
                       SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 15,
-                          ),
-                          LittleTextTile(
-                            iconColor: Colors.green,
-                            text: "Adicionar investimento",
-                            icon: Icon(Icons.add_circle_sharp),
-                            iconSize: 24,
-                            fontSize: 9,
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          LittleTextTile(
-                            iconColor: Colors.red,
-                            text: "Adicionar venda de ação",
-                            icon: Icon(Icons.remove_circle_sharp),
-                            iconSize: 24,
-                            fontSize: 9,
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: 10,
+                            ),
+                            LittleTextTile(
+                              iconColor: Colors.green,
+                              iconSize: 22,
+                              text: "Adicionar investimento",
+                              icon: CircularIcon(
+                                iconData: Icons.add,
+                                size: 26,
+                                backgroundColor: Colors.green,
+                                iconColor: Colors.white,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            LittleTextTile(
+                              iconColor: Colors.green,
+                              iconSize: 22,
+                              text: "Adicionar venda de ação",
+                              icon: CircularIcon(
+                                iconData: Icons.remove,
+                                size: 26,
+                                backgroundColor: Colors.red,
+                                iconColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -172,7 +185,7 @@ class InvestmentsPage extends StatelessWidget {
                           SizedBox(width: 70,),
                           Icon(
                             Icons.arrow_forward_ios_outlined,
-                            size: 30
+                            size: 20
                           )
                         ],
                       ),
@@ -267,17 +280,34 @@ class InvestmentsPage extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 70,),
-                          Icon(
-                            Icons.arrow_forward_ios_outlined,
-                            size: 30
+                          GestureDetector(
+                            child: Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              size: 20
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InvestmentSimulationPage()),
+                              );
+                            },
                           )
                         ],
                       ),
                     ],
+                    
                   ),
-                  onPressed: () {}),
+     
+                  onPressed: () {
+                      
+                  }),
+                  
             ),
+            SizedBox(height: 50,),
+            
           ]),
+          
         ));
   }
 }

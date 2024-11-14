@@ -1,3 +1,4 @@
+import 'package:enrich/pages/investment_quiz.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
@@ -35,7 +36,11 @@ class InvestmentQuizPage extends StatelessWidget {
                   height: 55,
                   fontSize: 17,
                   onPressed: () {
-                    Navigator.of(context).pushNamed('');
+                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InvestmentQuiz()),
+                              );
                   }),
             ]),
       ),

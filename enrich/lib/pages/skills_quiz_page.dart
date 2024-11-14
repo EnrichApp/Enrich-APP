@@ -1,5 +1,4 @@
 import 'package:enrich/pages/skills_quiz.dart';
-import 'package:enrich/pages/skills_quiz_result_page.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
