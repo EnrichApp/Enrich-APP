@@ -10,6 +10,7 @@ class SkillsQuizResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
         leadingWidth: 100,

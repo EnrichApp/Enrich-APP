@@ -54,11 +54,20 @@ class FinancialPlanningPage extends StatelessWidget {
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: ListView(children: [
-          const Padding(
-            padding: EdgeInsets.only(left: horizontalPadding, top: 20.0),
-            child: TitleText(
-              text: 'Planejamento Financeiro',
-              fontSize: 20,
+          Padding(
+            padding: EdgeInsets.only(left: horizontalPadding, right: horizontalPadding, top: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TitleText(
+                  text: 'Planejamento Financeiro',
+                  fontSize: 20,
+                ),
+                GestureDetector(
+                  onTap: () {},
+                  child: Icon(Icons.more_vert)
+                )
+              ],
             ),
           ),
           Row(

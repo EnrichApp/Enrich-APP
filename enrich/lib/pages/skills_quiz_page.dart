@@ -12,6 +12,7 @@ class SkillsQuizPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSurface,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leadingWidth: 100,
         leading: GestureDetector(

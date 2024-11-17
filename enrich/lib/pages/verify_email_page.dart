@@ -28,6 +28,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: Column(
