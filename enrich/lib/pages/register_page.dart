@@ -77,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> registrarUsuario(String username, String nome, String cpf,
       String email, String senha, String confirmacaoSenha) async {
     try {
-      if (!validarCampos(email)) return;
+      if (!validarCampos(email, cpf)) return;
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('authToken');
