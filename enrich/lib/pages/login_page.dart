@@ -55,12 +55,27 @@ class _LoginPageState extends State<LoginPage> {
 
         Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
       } else if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Usuário ou senha inválidos.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        final data = jsonDecode(response.body);
+        final code = data['detail'];
+
+        if (code == 'USUARIO_NAO_VERIFICADO') {
+          await apiClient.post(
+            'profile/enviar_codigo_verificacao/',
+            body: jsonEncode({
+              'email': email
+            }),
+          );
+
+          Navigator.of(context)
+              .pushNamed('/verify_email_page', arguments: {'email': email});
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Usuário ou senha inválidos.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } else {
         throw Exception();
       }

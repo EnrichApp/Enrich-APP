@@ -51,33 +51,44 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  bool validarCampos(String email, String cpf) {
-    final RegExp emailRegex =
-        RegExp(r'^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$');
-    final RegExp cpfRegex = RegExp(r'^\d{11}$');
+  bool validarCampos(String email, String cpf, String username, String senha, String confirmacaoSenha) {
+    const emailRegex = r'^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$';
+    const cpfRegex = r'^\d{11}$';
+    const usernameRegex = r'^[A-Za-z0-9_]+$';
+    const senhaRegex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'; 
 
-    final matchEmail = emailRegex.hasMatch(email);
-    final matchCpf = cpfRegex.hasMatch(cpf);
+    final Map<String, String?> erros = {
+      "email": !RegExp(emailRegex).hasMatch(email) ? 'Insira um e-mail válido.' : null,
+      "cpf": !RegExp(cpfRegex).hasMatch(cpf) ? 'Insira um CPF válido (11 dígitos).' : null,
+      "username": !RegExp(usernameRegex).hasMatch(username) 
+          ? 'O nome de usuário deve conter apenas letras, números e underline, sem espaços.' 
+          : null,
+      "senha": !RegExp(senhaRegex).hasMatch(senha)
+          ? 'A senha deve ter no mínimo 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.' 
+          : null,
+      "confirmacaoSenha": senha != confirmacaoSenha ? 'As senhas devem ser iguais.' : null,
+    };
 
-    if (!matchEmail) {
+    final errosFiltrados = erros.entries.where((e) => e.value != null).toList();
+
+    if (errosFiltrados.isNotEmpty) {
       setState(() {
-        emailError = 'Insira um e-mail válido.';
+        emailError = erros["email"] ?? '';
+        cpfError = erros["cpf"] ?? '';
+        usernameError = erros["username"] ?? '';
+        senhaError = erros["senha"] ?? '';
+        confirmacaoSenhaError = erros["confirmacaoSenha"] ?? '';
       });
       return false;
     }
-    if (!matchCpf) {
-      setState(() {
-        emailError = 'Insira um CPF válido.';
-      });
-      return false;
-    }
+
     return true;
   }
 
   Future<void> registrarUsuario(String username, String nome, String cpf,
       String email, String senha, String confirmacaoSenha) async {
     try {
-      if (!validarCampos(email, cpf)) return;
+      if (!validarCampos(email, cpf, username, senha, confirmacaoSenha)) return;
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('authToken');
@@ -100,7 +111,18 @@ class _RegisterPageState extends State<RegisterPage> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pushNamed('/verify_email_page');
+
+        await apiClient.post(
+          'profile/enviar_codigo_verificacao/',
+          body: jsonEncode({
+            'email': email
+          }),
+        );
+
+        Navigator.of(context).pushNamed(
+          '/verify_email_page',
+          arguments: {'email': email}
+        );
       } else if (response.statusCode == 400) {
         final decodedBody = utf8.decode(response.bodyBytes);
         final responseData = jsonDecode(decodedBody);

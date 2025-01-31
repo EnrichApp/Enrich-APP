@@ -34,6 +34,14 @@ class ApiBaseClient {
     return await http.post(uri, headers: await getAuthHeaders(), body: body);
   }
 
+  Future<http.Response> patch(String endpoint, {
+    Map<String, String>? headers,
+    Object? body,
+  }) async {
+    final uri = buildUri(endpoint);
+    return await http.patch(uri, headers: await getAuthHeaders(), body: body);
+  }
+
   Future<http.Response> put(String endpoint, {
     Map<String, String>? headers,
     Object? body,
