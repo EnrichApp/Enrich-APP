@@ -51,22 +51,32 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  bool validarCampos(String email, String cpf, String username, String senha, String confirmacaoSenha) {
+  bool validarCampos(String email, String cpf, String username, String senha,
+      String confirmacaoSenha) {
     const emailRegex = r'^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$';
     const cpfRegex = r'^\d{11}$';
     const usernameRegex = r'^[A-Za-z0-9_]+$';
-    const senhaRegex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'; 
+    const senhaRegex =
+        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$';
 
     final Map<String, String?> erros = {
-      "email": !RegExp(emailRegex).hasMatch(email) ? 'Insira um e-mail válido.' : null,
-      "cpf": !RegExp(cpfRegex).hasMatch(cpf) ? 'Insira um CPF válido (11 dígitos).' : null,
-      "username": !RegExp(usernameRegex).hasMatch(username) 
-          ? 'O nome de usuário deve conter apenas letras, números e underline, sem espaços.' 
+      "email": !RegExp(emailRegex).hasMatch(email)
+          ? 'Insira um e-mail válido.'
+          : null,
+      "cpf": !RegExp(cpfRegex).hasMatch(cpf)
+          ? 'Insira um CPF válido (11 dígitos).'
+          : null,
+      "username": !RegExp(usernameRegex).hasMatch(username)
+          ? 'O nome de usuário deve conter apenas letras, números e underline, sem espaços.'
           : null,
       "senha": !RegExp(senhaRegex).hasMatch(senha)
-          ? 'A senha deve ter no mínimo 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.' 
-          : null,
-      "confirmacaoSenha": senha != confirmacaoSenha ? 'As senhas devem ser iguais.' : null,
+          ? '''A senha deve ter no mínimo 6 caracteres,
+incluindo pelo menos uma letra maiúscula,
+uma letra minúscula, um número
+e um caractere especial.'''
+: null,
+      "confirmacaoSenha":
+          senha != confirmacaoSenha ? 'As senhas devem ser iguais.' : null,
     };
 
     final errosFiltrados = erros.entries.where((e) => e.value != null).toList();
@@ -114,15 +124,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
         await apiClient.post(
           'profile/enviar_codigo_verificacao/',
-          body: jsonEncode({
-            'email': email
-          }),
+          body: jsonEncode({'email': email}),
         );
 
-        Navigator.of(context).pushNamed(
-          '/verify_email_page',
-          arguments: {'email': email}
-        );
+        Navigator.of(context)
+            .pushNamed('/verify_email_page', arguments: {'email': email});
       } else if (response.statusCode == 400) {
         final decodedBody = utf8.decode(response.bodyBytes);
         final responseData = jsonDecode(decodedBody);
@@ -208,6 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: true,
               controller: senhaController,
               errorText: senhaError,
+              multilineError: true,
               onChanged: (value) {
                 setState(() {
                   senha = value;
