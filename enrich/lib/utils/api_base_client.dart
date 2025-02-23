@@ -10,7 +10,7 @@ class ApiBaseClient {
 
   Future<Map<String, String>> getAuthHeaders() async {
   final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('authToken');
+  final token = prefs.getString('enrichAppAuthToken');
   if (token != null) {
     return {
       'Content-Type': 'application/json',

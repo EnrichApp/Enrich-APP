@@ -42,9 +42,9 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final token = responseData['access'];
-
+        
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('authToken', token);
+        await prefs.setString('enrichAppAuthToken', token);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -61,9 +61,7 @@ class _LoginPageState extends State<LoginPage> {
         if (code == 'USUARIO_NAO_VERIFICADO') {
           await apiClient.post(
             'profile/enviar_codigo_verificacao/',
-            body: jsonEncode({
-              'email': email
-            }),
+            body: jsonEncode({'email': email}),
           );
 
           Navigator.of(context)
@@ -154,7 +152,8 @@ class _LoginPageState extends State<LoginPage> {
                 const LittleText(text: 'Ainda não tem uma conta? '),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/register_page');
+                    Navigator.of(context)
+                        .pushReplacementNamed('/register_page');
                   },
                   child: LittleText(
                     text: 'Clique aqui.',

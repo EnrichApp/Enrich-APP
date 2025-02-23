@@ -51,67 +51,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
             ),
           ]),
       body: Stack(children: [
-        _pages[_currentIndex],
-        if (_currentIndex == 1) ...[
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.white,
-                          title: TitleText(text: 'Sair'),
-                          content: LittleText(
-                            text:
-                                "Você deseja realmente voltar para a tela de login?",
-                                textAlign: TextAlign.left,
-                            fontSize: 15,
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: TitleText(
-                                fontSize: 15,
-                                color: Theme.of(context).colorScheme.surface,
-                                text: "Cancelar"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pushReplacementNamed(
-                                    '/');
-                              },
-                              child: TitleText(
-                                fontSize: 15,
-                                color: Theme.of(context).colorScheme.primary,
-                                text: "Sim"),
-                            ),
-                          ],
-                        );
-                      });
-                },
-                child: Container(
-                  child: Row(children: [
-                    Icon(
-                      Icons.exit_to_app,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      'Sair',
-                      style: TextStyle(color: Colors.black),
-                    )
-                  ]),
-                )),
-          ),
-        ]
+        _pages[_currentIndex]
       ]),
     );
   }

@@ -34,7 +34,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Future<void> validarCodigoVerificacao(String email, String codigo) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('authToken');
+      await prefs.remove('enrichAppAuthToken');
 
       final responseValidarCodigo = await apiClient.patch(
         'profile/validar_codigo_verificacao/',

@@ -1,8 +1,10 @@
+import 'package:enrich/pages/login_page.dart';
 import 'package:enrich/pages/settings_pages/about_page.dart';
 import 'package:enrich/pages/settings_pages/account_page.dart';
 import 'package:enrich/pages/settings_pages/invite_friend_page.dart';
 import 'package:enrich/pages/settings_pages/rate_us_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -10,8 +12,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).colorScheme.onSurface,
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
         title: const Text('Configurações',
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
@@ -37,13 +38,15 @@ class SettingsPage extends StatelessWidget {
           child: ListView(
             shrinkWrap: true,
             children: [
-              _buildListTile(context, 'Conta', AccountPage()),
+              _buildListTile(context, 'Conta', AccountPage(), false),
               _buildDivider(),
-              _buildListTile(context, 'Sobre', AboutPage()),
+              _buildListTile(context, 'Sobre', AboutPage(), false),
               _buildDivider(),
-              _buildListTile(context, 'Convidar amigos', InviteFriendsPage()),
+              _buildListTile(context, 'Convidar amigos', InviteFriendsPage(), false),
               _buildDivider(),
-              _buildListTile(context, 'Avalie-nos', RateUsPage()),
+              _buildListTile(context, 'Avalie-nos', RateUsPage(), false),
+              _buildDivider(),
+              _buildListTile(context, 'Sair', LoginPage(), true)
             ],
           ),
         ),
@@ -53,7 +56,8 @@ class SettingsPage extends StatelessWidget {
 }
 
 // Função auxiliar para construir os itens da lista
-Widget _buildListTile(BuildContext context, String title, Widget page) {
+Widget _buildListTile(
+    BuildContext context, String title, Widget page, bool backToLogin) {
   return Column(
     children: [
       ListTile(
@@ -64,9 +68,17 @@ Widget _buildListTile(BuildContext context, String title, Widget page) {
             color: Colors.black,
           ),
         ),
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page));
+        onTap: () async {
+          if (backToLogin) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('enrichAppAuthToken');
+
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => page));
+          } else {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => page));
+          }
         },
       ),
       const Divider(height: 1),

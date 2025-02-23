@@ -101,7 +101,7 @@ e um caractere especial.'''
       if (!validarCampos(email, cpf, username, senha, confirmacaoSenha)) return;
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('authToken');
+      await prefs.remove('enrichAppAuthToken');
 
       final response = await apiClient.post(
         'profile/register/',
@@ -266,7 +266,7 @@ e um caractere especial.'''
                 const LittleText(text: 'Já tem uma conta? '),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacementNamed('/');
                   },
                   child: LittleText(
                     text: 'Clique aqui.',
