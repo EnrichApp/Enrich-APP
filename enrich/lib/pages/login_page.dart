@@ -66,7 +66,11 @@ class _LoginPageState extends State<LoginPage> {
 
           Navigator.of(context)
               .pushNamed('/verify_email_page', arguments: {'email': email});
-        } else {
+        } else if (code == 'CADASTRO_INCOMPLETO') {
+          Navigator.of(context)
+              .pushNamed('/info_to_user_page');
+        }
+        else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Usuário ou senha inválidos.'),
