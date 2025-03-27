@@ -115,7 +115,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          isSimPressed ? Colors.green : Colors.white,
+                          showRendaVariavelForm ? Colors.green : Colors.white,
                       side: const BorderSide(color: Colors.black, width: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0),
@@ -128,7 +128,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                       'Sim',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: isSimPressed ? Colors.white : Colors.green,
+                        color: showRendaVariavelForm ? Colors.white : Colors.green,
                       ),
                     ),
                   ),
@@ -151,7 +151,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isNaoPressed ? Colors.red : Colors.white,
+                      backgroundColor: showRendaVariavelForm ? Colors.white : Colors.red,
                       side: const BorderSide(color: Colors.black, width: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0),
@@ -164,7 +164,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                       'Não',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: isNaoPressed ? Colors.white : Colors.red,
+                        color: showRendaVariavelForm ? Colors.red : Colors.white,
                       ),
                     ),
                   ),
@@ -181,6 +181,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black
                   ),
                 ),
                 textAlign: TextAlign.center,
@@ -197,7 +198,7 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
               ),
             ],
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             RoundedTextButton(
               text: 'Finalizar Cadastro',
               width: 300,

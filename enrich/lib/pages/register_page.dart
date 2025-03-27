@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
     const cpfRegex = r'^\d{11}$';
     const usernameRegex = r'^[A-Za-z0-9_]+$';
     const senhaRegex =
-        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$';
+        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$';
 
     final Map<String, String?> erros = {
       "email": !RegExp(emailRegex).hasMatch(email)
@@ -74,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
 incluindo pelo menos uma letra maiúscula,
 uma letra minúscula, um número
 e um caractere especial.'''
-: null,
+          : null,
       "confirmacaoSenha":
           senha != confirmacaoSenha ? 'As senhas devem ser iguais.' : null,
     };
