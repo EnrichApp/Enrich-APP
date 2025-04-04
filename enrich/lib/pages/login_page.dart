@@ -42,7 +42,8 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final token = responseData['access'];
-        
+        final cadastroCompleto = responseData['cadastro_completo'];
+
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('enrichAppAuthToken', token);
 
@@ -52,8 +53,12 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.green,
           ),
         );
-
-        Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
+        print(cadastroCompleto);
+        if (cadastroCompleto == true) {
+          Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/info_to_user_page');
+        }
       } else if (response.statusCode == 401) {
         final data = jsonDecode(response.body);
         final code = data['detail'];
@@ -64,13 +69,11 @@ class _LoginPageState extends State<LoginPage> {
             body: jsonEncode({'email': email}),
           );
 
-          Navigator.of(context)
-              .pushNamed('/verify_email_page', arguments: {'email': email});
-        } else if (code == 'CADASTRO_INCOMPLETO') {
-          Navigator.of(context)
-              .pushNamed('/info_to_user_page');
-        }
-        else {
+          Navigator.of(context).pushNamed(
+            '/verify_email_page',
+            arguments: {'email': email},
+          );
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Usuário ou senha inválidos.'),

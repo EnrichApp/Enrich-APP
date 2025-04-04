@@ -1,7 +1,10 @@
 import 'dart:ui';
+import 'dart:convert';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/form_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:enrich/utils/api_base_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuestionsFormPage extends StatefulWidget {
   const QuestionsFormPage({super.key});
@@ -10,9 +13,12 @@ class QuestionsFormPage extends StatefulWidget {
   State<QuestionsFormPage> createState() => _QuestionsFormPageState();
 }
 
+final ApiBaseClient apiClient = ApiBaseClient();
+
 class _QuestionsFormPageState extends State<QuestionsFormPage> {
   final TextEditingController rendaFixaController = TextEditingController();
-  final TextEditingController nomeRendaExtraController = TextEditingController();
+  final TextEditingController nomeRendaExtraController =
+      TextEditingController();
 
   bool isSimPressed = false;
   bool isNaoPressed = false;
@@ -26,6 +32,26 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
     rendaFixaController.dispose();
     nomeRendaExtraController.dispose();
     super.dispose();
+  }
+
+  Future<void> atualizarRendaFixa(double renda) async {
+    try {
+      final response = await apiClient.patch(
+        'profile/me/',
+        body: jsonEncode({
+          'renda_liquida_fixa_mensal': renda,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        print('Renda atualizada com sucesso!');
+      } else {
+        throw Exception(
+            'Erro ao atualizar a renda. Código: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao atualizar a renda: $e');
+    }
   }
 
   @override
@@ -66,7 +92,8 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                       ),
                     ],
                   ),
-                  textAlign: TextAlign.center, // Aplica o alinhamento centralizado corretamente
+                  textAlign: TextAlign
+                      .center, // Aplica o alinhamento centralizado corretamente
                 ),
               ],
             ),
@@ -128,7 +155,8 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                       'Sim',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: showRendaVariavelForm ? Colors.white : Colors.green,
+                        color:
+                            showRendaVariavelForm ? Colors.white : Colors.green,
                       ),
                     ),
                   ),
@@ -151,7 +179,8 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: showRendaVariavelForm ? Colors.white : Colors.red,
+                      backgroundColor:
+                          showRendaVariavelForm ? Colors.white : Colors.red,
                       side: const BorderSide(color: Colors.black, width: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0),
@@ -164,7 +193,8 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                       'Não',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: showRendaVariavelForm ? Colors.red : Colors.white,
+                        color:
+                            showRendaVariavelForm ? Colors.red : Colors.white,
                       ),
                     ),
                   ),
@@ -179,10 +209,9 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                 TextSpan(
                   text: 'Qual o nome da sua renda variável?',
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black
-                  ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -204,7 +233,14 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
               width: 300,
               height: 55,
               fontSize: 17,
-              onPressed: () {
+              onPressed: () async {
+                if (rendaFixaMensal.isNotEmpty) {
+                  final renda =
+                      double.tryParse(rendaFixaMensal.replaceAll(',', '.'));
+                  if (renda != null) {
+                    await atualizarRendaFixa(renda);
+                  }
+                }
                 Navigator.of(context)
                     .pushReplacementNamed('/bottom_navigation_page');
               },
@@ -230,7 +266,8 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
               style: TextStyle(fontSize: 16, color: Colors.black),
               textAlign: TextAlign.center,
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       },

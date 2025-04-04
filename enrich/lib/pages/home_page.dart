@@ -14,9 +14,44 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../widgets/home_page_widget.dart';
 import '../widgets/little_list_tile.dart';
 import '../widgets/texts/title_text.dart';
+import 'package:enrich/utils/api_base_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String? nomeUsuario;
+  final ApiBaseClient apiClient = ApiBaseClient();
+
+  @override
+  void initState() {
+    super.initState();
+    _buscarNomeUsuario();
+  }
+
+  Future<void> _buscarNomeUsuario() async {
+    try {
+      final response = await apiClient.get(
+        'profile/primeiro_nome/',
+      );
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          nomeUsuario = responseData['primeiro_nome'];
+        });
+      } else {
+        throw Exception('Erro ao buscar o nome do usuário.');
+      }
+    } catch (e) {
+      print('Erro ao buscar nome do usuário: $nomeUsuario');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +88,8 @@ class HomePage extends StatelessWidget {
                       const SizedBox(
                         height: 50,
                       ),
-                      const TitleText(
-                        text: 'Olá, Amanda!',
+                      TitleText(
+                        text: 'Olá, ${nomeUsuario ?? 'Usuário'}!',
                         fontSize: 20,
                       ),
                       Row(
