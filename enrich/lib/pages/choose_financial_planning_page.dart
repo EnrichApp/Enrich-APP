@@ -11,10 +11,6 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definindo o lucro atual e a meta
-    final String finalDate = "29/09/2024";
-    final String status = "Em atraso";
-    final String amount = "R\$180,00";
 
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.onSurface,

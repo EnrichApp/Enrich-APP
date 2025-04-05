@@ -15,7 +15,6 @@ import '../widgets/home_page_widget.dart';
 import '../widgets/little_list_tile.dart';
 import '../widgets/texts/title_text.dart';
 import 'package:enrich/utils/api_base_client.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class HomePage extends StatefulWidget {

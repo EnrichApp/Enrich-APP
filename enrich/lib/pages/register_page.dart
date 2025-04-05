@@ -143,7 +143,7 @@ e um caractere especial.'''
       } else {
         throw Exception('Erro inesperado. Código: ${response.statusCode}');
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:

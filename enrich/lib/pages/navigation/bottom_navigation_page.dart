@@ -1,6 +1,4 @@
 import 'package:enrich/pages/home_page.dart';
-import 'package:enrich/widgets/texts/little_text.dart';
-import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
 import '../extra_income_page.dart';

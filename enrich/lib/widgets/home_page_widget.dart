@@ -61,7 +61,7 @@ class HomePageWidget extends StatelessWidget {
                   children: [
                     titleWidget ??
                         TitleText(
-                          text: titleText!,
+                          text: titleText,
                           fontSize: textSize,
                           color: textColor,
                         ),

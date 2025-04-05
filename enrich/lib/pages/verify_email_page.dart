@@ -61,7 +61,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         throw Exception(
             'Erro inesperado. Código: ${responseValidarCodigo.statusCode}');
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:

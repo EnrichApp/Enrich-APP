@@ -1,5 +1,4 @@
 import 'package:enrich/pages/goals_page.dart';
-import 'package:enrich/widgets/home_page_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
