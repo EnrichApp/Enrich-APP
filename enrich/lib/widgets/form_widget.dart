@@ -9,18 +9,20 @@ class FormWidget extends StatelessWidget {
   final Function(String) onChanged;
   final String errorText;
   final bool multilineError; // <-- Propriedade para erros grandes
+  final TextInputType keyboardType;
 
-  const FormWidget({
-    super.key,
-    required this.hintText,
-    this.height = 55,
-    this.width = 300,
-    this.obscureText = false,
-    required this.controller,
-    required this.onChanged,
-    this.errorText = '',
-    this.multilineError = false, // <-- Inicia como falso por padrão
-  });
+  const FormWidget(
+      {super.key,
+      required this.hintText,
+      this.height = 55,
+      this.width = 300,
+      this.obscureText = false,
+      required this.controller,
+      required this.onChanged,
+      this.errorText = '',
+      this.multilineError = false, // <-- Inicia como falso por padrão
+      this.keyboardType = TextInputType.text
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class FormWidget extends StatelessWidget {
         SizedBox(
           width: width,
           child: TextFormField(
+            keyboardType: keyboardType,
             onChanged: (value) => onChanged(value),
             controller: controller,
             obscureText: obscureText,
@@ -41,8 +44,8 @@ class FormWidget extends StatelessWidget {
               // Só exibe erro se errorText não estiver vazio
               errorText: errorText.isNotEmpty ? errorText : null,
 
-              // Se a propriedade 'multilineError' for true, 
-              // deixa quebrar em quantas linhas precisar. 
+              // Se a propriedade 'multilineError' for true,
+              // deixa quebrar em quantas linhas precisar.
               // Se for false, fica limitado a 1 (ou 2, 3, etc).
               errorMaxLines: multilineError ? null : 1,
 

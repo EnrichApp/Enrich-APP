@@ -17,20 +17,13 @@ final ApiBaseClient apiClient = ApiBaseClient();
 
 class _QuestionsFormPageState extends State<QuestionsFormPage> {
   final TextEditingController rendaFixaController = TextEditingController();
-  final TextEditingController nomeRendaExtraController =
-      TextEditingController();
-
-  bool isSimPressed = false;
-  bool isNaoPressed = false;
-  bool showRendaVariavelForm = false;
 
   String rendaFixaMensal = '';
-  String nomeRendaExtra = '';
+  String erroRendaFixa = '';
 
   @override
   void dispose() {
     rendaFixaController.dispose();
-    nomeRendaExtraController.dispose();
     super.dispose();
   }
 
@@ -44,13 +37,24 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        print('Renda atualizada com sucesso!');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Cadastro finalizado!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context)
+          .pushReplacementNamed('/bottom_navigation_page');
       } else {
-        throw Exception(
-            'Erro ao atualizar a renda. Código: ${response.statusCode}');
+        throw Exception();
       }
     } catch (e) {
-      print('Erro ao atualizar a renda: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Erro ao atualizar a renda.'),
+            backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -99,8 +103,10 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
             ),
             const SizedBox(height: 15),
             FormWidget(
-              hintText: 'Ex.: 2000.00',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              hintText: 'Ex.: 2000,00',
               controller: rendaFixaController,
+              errorText: erroRendaFixa,
               onChanged: (value) {
                 setState(() {
                   rendaFixaMensal = value;
@@ -108,126 +114,6 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
               },
             ),
             const SizedBox(height: 30),
-            const Text.rich(
-              TextSpan(
-                text: 'Você possui alguma fonte de\nrenda extra variável?',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 15),
-            // Botões Sim e Não
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Botão "Sim"
-                Listener(
-                  onPointerDown: (_) {
-                    setState(() {
-                      isSimPressed = true;
-                      isNaoPressed = false;
-                      showRendaVariavelForm = true;
-                    });
-                  },
-                  onPointerUp: (_) {
-                    setState(() {
-                      isSimPressed = false;
-                    });
-                  },
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          showRendaVariavelForm ? Colors.green : Colors.white,
-                      side: const BorderSide(color: Colors.black, width: 0.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 50),
-                      splashFactory: NoSplash.splashFactory,
-                    ),
-                    child: Text(
-                      'Sim',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            showRendaVariavelForm ? Colors.white : Colors.green,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Botão "Não"
-                Listener(
-                  onPointerDown: (_) {
-                    setState(() {
-                      isNaoPressed = true;
-                      isSimPressed = false;
-                      showRendaVariavelForm = false;
-                    });
-                  },
-                  onPointerUp: (_) {
-                    setState(() {
-                      isNaoPressed = false;
-                    });
-                  },
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          showRendaVariavelForm ? Colors.white : Colors.red,
-                      side: const BorderSide(color: Colors.black, width: 0.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 50),
-                      splashFactory: NoSplash.splashFactory,
-                    ),
-                    child: Text(
-                      'Não',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            showRendaVariavelForm ? Colors.red : Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-
-            // Exibe o formulário de renda variável somente se "Sim" for pressionado
-            if (showRendaVariavelForm) ...[
-              const Text.rich(
-                TextSpan(
-                  text: 'Qual o nome da sua renda variável?',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 15),
-              FormWidget(
-                hintText: 'Ex.: Vendas de Roupas',
-                controller: nomeRendaExtraController,
-                onChanged: (value) {
-                  setState(() {
-                    nomeRendaExtra = value;
-                  });
-                },
-              ),
-            ],
-
-            const SizedBox(height: 20),
             RoundedTextButton(
               text: 'Finalizar Cadastro',
               width: 300,
@@ -241,11 +127,13 @@ class _QuestionsFormPageState extends State<QuestionsFormPage> {
                     await atualizarRendaFixa(renda);
                   }
                 }
-                Navigator.of(context)
-                    .pushReplacementNamed('/bottom_navigation_page');
+                else {
+                  setState(() {
+                    erroRendaFixa = 'Insira uma renda válida.';
+                  });
+                }
               },
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -36,20 +36,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _buscarNomeUsuario() async {
-    try {
-      final response = await apiClient.get(
-        'profile/primeiro_nome/',
-      );
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        setState(() {
-          nomeUsuario = responseData['primeiro_nome'];
-        });
-      } else {
-        throw Exception('Erro ao buscar o nome do usuário.');
-      }
-    } catch (e) {
-      print('Erro ao buscar nome do usuário: $nomeUsuario');
+    final response = await apiClient.get(
+      'profile/primeiro_nome/',
+    );
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        nomeUsuario = responseData['primeiro_nome'];
+      });
+    } else {
+      throw Exception('Erro ao buscar o nome do usuário.');
     }
   }
 

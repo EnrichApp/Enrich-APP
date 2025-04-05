@@ -21,7 +21,7 @@ class InfoToUserPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 30.0),
               child: SubtitleText(
                 text:
-                    'Para te ajudarmos a melhorar a sua vida financeira, precisaremos de algumas informações sobre a sua renda atual.',
+                    'Para te ajudarmos a melhorar a sua vida financeira, precisaremos perguntar sobre a sua renda atual.',
               ),
             ),
             const SizedBox(height: 15),
