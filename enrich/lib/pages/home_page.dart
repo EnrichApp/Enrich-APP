@@ -30,12 +30,14 @@ class _HomePageState extends State<HomePage> {
   double? ganhos;
   double? gastos;
   double? total;
+  List<dynamic>? metas;
 
   @override
   void initState() {
     super.initState();
     _buscarNomeUsuario();
-    _buscarResumoFinanceiro(); // Call the new method during initialization
+    _buscarResumoFinanceiro();
+    _buscarMetas();
   }
 
   Future<void> _buscarNomeUsuario() async {
@@ -65,6 +67,20 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       throw Exception('Erro ao buscar o resumo financeiro.');
+    }
+  }
+
+  Future<void> _buscarMetas() async {
+    final response = await apiClient.get(
+      'metas/listar/',
+    );
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        metas = responseData is List ? responseData.take(3).toList() : [];
+      });
+    } else {
+      throw Exception('Erro ao buscar Metas.');
     }
   }
 
@@ -140,7 +156,9 @@ class _HomePageState extends State<HomePage> {
                             LittleText(text: 'Ganhos:  '),
                             TitleText(
                               color: Theme.of(context).colorScheme.primary,
-                              text: ganhos != null ? 'R\$${ganhos!.toStringAsFixed(2)}' : '0.0',
+                              text: ganhos != null
+                                  ? 'R\$${ganhos!.toStringAsFixed(2)}'
+                                  : '0.0',
                               fontSize: 17,
                             ),
                           ],
@@ -155,7 +173,9 @@ class _HomePageState extends State<HomePage> {
                             LittleText(text: 'Gastos:  '),
                             TitleText(
                               color: Theme.of(context).colorScheme.surface,
-                              text: gastos != null ? 'R\$${gastos!.toStringAsFixed(2)}' : '0.0',
+                              text: gastos != null
+                                  ? 'R\$${gastos!.toStringAsFixed(2)}'
+                                  : '0.0',
                               fontSize: 17,
                             ),
                           ],
@@ -171,7 +191,9 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             LittleText(text: 'Total:  '),
                             TitleText(
-                              text: total != null ? 'R\$${total!.toStringAsFixed(2)}' : '0.0',
+                              text: total != null
+                                  ? 'R\$${total!.toStringAsFixed(2)}'
+                                  : '0.0',
                               fontSize: 17,
                             ),
                           ],
@@ -186,7 +208,8 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                    builder: (context) => const ChooseFinancialPlanningPage()),
+                        builder: (context) =>
+                            const ChooseFinancialPlanningPage()),
                   );
                 },
                 content: Row(
@@ -238,31 +261,40 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 20),
               HomePageWidget(
-                  titleText: "Metas",
-                  content: Row(
-                    children: [
-                      SizedBox(
-                        width: 17,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LittleText(
-                            text: "- Comprar carro: 55%",
-                            fontSize: 12,
-                          ),
-                          LittleText(text: "- Viajar para Gramado: 20%")
-                        ],
-                      ),
-                    ],
+                titleText: "Metas",
+                content: Padding(
+                  padding: const EdgeInsets.only(left: 17.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: metas == null
+                        ? [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          ]
+                        : metas!.isEmpty
+                            ? [LittleText(text: "Nenhuma meta foi criada.")]
+                            : metas!.map((meta) {
+                                final nome = meta['nome'] ?? 'Meta sem nome';
+                                final porcentagem =
+                                    meta['porcentagem_meta'] ?? 0.0;
+                                return LittleText(
+                                  text:
+                                      "- $nome: ${porcentagem.toStringAsFixed(0)}%",
+                                  fontSize: 12,
+                                );
+                              }).toList(),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const GoalsPage()),
-                              );
-                  }),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GoalsPage()),
+                  );
+                },
+              ),
               SizedBox(height: 20),
               HomePageWidget(
                   titleText: "Dívidas",
@@ -290,10 +322,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const DebtsPage()),
-                              );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const DebtsPage()),
+                    );
                   }),
               SizedBox(
                 height: 20,
@@ -324,10 +356,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const CreditCardsInvoicePage()),
-                              );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CreditCardsInvoicePage()),
+                    );
                   }),
               SizedBox(
                 height: 20,
@@ -380,10 +412,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const EmergenceReservePage()),
-                              );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EmergenceReservePage()),
+                    );
                   }),
               SizedBox(
                 height: 20,
@@ -429,10 +461,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const InvestmentsPage()),
-                              );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const InvestmentsPage()),
+                    );
                   }),
               SizedBox(height: 90),
             ],
