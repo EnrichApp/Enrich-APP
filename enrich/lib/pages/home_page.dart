@@ -27,11 +27,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? nomeUsuario;
   final ApiBaseClient apiClient = ApiBaseClient();
+  double? ganhos;
+  double? gastos;
+  double? total;
 
   @override
   void initState() {
     super.initState();
     _buscarNomeUsuario();
+    _buscarResumoFinanceiro(); // Call the new method during initialization
   }
 
   Future<void> _buscarNomeUsuario() async {
@@ -45,6 +49,22 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       throw Exception('Erro ao buscar o nome do usuário.');
+    }
+  }
+
+  Future<void> _buscarResumoFinanceiro() async {
+    final response = await apiClient.get(
+      'profile/resumo-financeiro/',
+    );
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        ganhos = responseData['total_ganhos'];
+        gastos = responseData['total_gastos'];
+        total = responseData['lucro'];
+      });
+    } else {
+      throw Exception('Erro ao buscar o resumo financeiro.');
     }
   }
 
@@ -120,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                             LittleText(text: 'Ganhos:  '),
                             TitleText(
                               color: Theme.of(context).colorScheme.primary,
-                              text: 'R\$1500.00',
+                              text: ganhos != null ? 'R\$${ganhos!.toStringAsFixed(2)}' : '0.0',
                               fontSize: 17,
                             ),
                           ],
@@ -135,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                             LittleText(text: 'Gastos:  '),
                             TitleText(
                               color: Theme.of(context).colorScheme.surface,
-                              text: 'R\$700.00',
+                              text: gastos != null ? 'R\$${gastos!.toStringAsFixed(2)}' : '0.0',
                               fontSize: 17,
                             ),
                           ],
@@ -151,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             LittleText(text: 'Total:  '),
                             TitleText(
-                              text: 'R\$800.00',
+                              text: total != null ? 'R\$${total!.toStringAsFixed(2)}' : '0.0',
                               fontSize: 17,
                             ),
                           ],
