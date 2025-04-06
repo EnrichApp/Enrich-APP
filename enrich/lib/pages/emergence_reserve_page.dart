@@ -63,6 +63,7 @@ class EmergenceReservePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 HomePageWidget(
+                  width: MediaQuery.of(context).size.width * 0.9,
                   titleText: "R\$1500,00",
                   textColor: Colors.green,
                   textSize: 18,
@@ -153,11 +154,11 @@ class EmergenceReservePage extends StatelessWidget {
                   height: 180,
                   onPressed: () {},
                 ),
-                const SizedBox(height: 10),
-                const ContainerWidget(
+                const SizedBox(height: 20),
+                ContainerWidget(
                   height: 70,
-                  width: 320,
-                  content: Row(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  content: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
@@ -187,7 +188,7 @@ class EmergenceReservePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
                   child: Column(
