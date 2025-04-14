@@ -71,13 +71,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _buscarMetas() async {
-    final response = await apiClient.get(
-      'metas/listar/',
-    );
+    final response = await apiClient.get('metas/listar/');
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       setState(() {
-        metas = responseData is List ? responseData.take(3).toList() : [];
+        metas = responseData is List ? responseData.cast<Map<String, dynamic>>() : [];
       });
     } else {
       throw Exception('Erro ao buscar Metas.');
@@ -276,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                           ]
                         : metas!.isEmpty
                             ? [LittleText(text: "Nenhuma meta foi criada.")]
-                            : metas!.map((meta) {
+                            :metas!.take(3).map((meta) {
                                 final nome = meta['nome'] ?? 'Meta sem nome';
                                 final porcentagem =
                                     meta['porcentagem_meta'] ?? 0.0;

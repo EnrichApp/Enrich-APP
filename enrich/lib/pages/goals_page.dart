@@ -50,6 +50,60 @@ class _GoalsPageState extends State<GoalsPage> {
     }
   }
 
+  void _abrirModalAdicionarDinheiro(BuildContext context, int metaId) {
+    final valorController = TextEditingController();
+    String erro = '';
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Adicionar Dinheiro',
+      fields: [
+        FormWidget(
+          hintText: 'Valor a adicionar',
+          controller: valorController,
+          keyboardType: TextInputType.number,
+          onChanged: (_) {
+            if (erro.isNotEmpty) erro = '';
+          },
+          errorText: erro,
+        ),
+      ],
+      onSave: () async {
+        final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
+
+        if (valor <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Informe um valor válido')),
+          );
+          return;
+        }
+
+        final body = {"receitas": valor, "despesas": 0.0};
+
+        try {
+          final response = await ApiBaseClient()
+              .post('metas/$metaId/movimentacoes/', body: jsonEncode(body));
+
+          if (response.statusCode == 201 || response.statusCode == 200) {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Dinheiro adicionado com sucesso!')),
+            );
+            await _buscarMetas();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Erro ao adicionar dinheiro')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro inesperado: $e')),
+          );
+        }
+      },
+    );
+  }
+
   void _abrirModalNovaMeta(BuildContext context) {
     final nomeController = TextEditingController();
     final valorMetaController = TextEditingController();
@@ -137,7 +191,6 @@ class _GoalsPageState extends State<GoalsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
@@ -172,6 +225,7 @@ class _GoalsPageState extends State<GoalsPage> {
             const Center(child: LittleText(text: 'Nenhuma meta cadastrada.'))
           else
             ...metas!.map((meta) {
+              final metaId = meta['id'];
               final nome = meta['nome'] ?? 'Meta sem nome';
               final valorMeta = meta['valor_meta'] ?? 0.0;
               final total = meta['total'] ?? 0.0;
@@ -234,16 +288,9 @@ class _GoalsPageState extends State<GoalsPage> {
                                   icon: Icon(Icons.add_circle_sharp),
                                   iconSize: 24,
                                   fontSize: 9,
+                                  onIconTap: () => _abrirModalAdicionarDinheiro(context, metaId),
                                 ),
-                                SizedBox(width: 5),
-                                LittleTextTile(
-                                  iconColor: Colors.red,
-                                  text: "Remover dinheiro",
-                                  icon: Icon(Icons.remove_circle_sharp),
-                                  iconSize: 24,
-                                  fontSize: 9,
-                                ),
-                                Spacer(),
+                                const Spacer(),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 12),
                                   child: TitleText(
