@@ -104,6 +104,202 @@ class _GoalsPageState extends State<GoalsPage> {
     );
   }
 
+  void _abrirModalRemoverDinheiro(BuildContext context, int metaId) {
+    final valorController = TextEditingController();
+    String erro = '';
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Remover Dinheiro',
+      fields: [
+        FormWidget(
+          hintText: 'Valor a remover',
+          controller: valorController,
+          keyboardType: TextInputType.number,
+          onChanged: (_) {
+            if (erro.isNotEmpty) erro = '';
+          },
+          errorText: erro,
+        ),
+      ],
+      onSave: () async {
+        final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
+
+        if (valor <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Informe um valor válido')),
+          );
+          return;
+        }
+
+        final body = {"receitas": 0.0, "despesas": valor};
+
+        try {
+          final response = await ApiBaseClient()
+              .post('metas/$metaId/movimentacoes/', body: jsonEncode(body));
+
+          if (response.statusCode == 201 || response.statusCode == 200) {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Dinheiro removido com sucesso!')),
+            );
+            await _buscarMetas();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Erro ao remover dinheiro')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro inesperado: $e')),
+          );
+        }
+      },
+    );
+  }
+
+  void _mostrarOpcoesMeta(
+    BuildContext bottomSheetCtx,
+    int metaId,
+    String nome,
+    double valorAtual,
+  ) {
+    showModalBottomSheet(
+      context: bottomSheetCtx,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.blue),
+              title: const Text('Editar', style: TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.of(bottomSheetCtx).pop();
+                _abrirModalEditarMeta(bottomSheetCtx, metaId, nome, valorAtual);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Excluir', style: TextStyle(color: Colors.black)),
+              onTap: () async {
+                final confirm = await showDialog<bool>(
+                  context: bottomSheetCtx,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Confirmar exclusão',
+                        style: TextStyle(color: Colors.black)),
+                    content: const Text('Deseja realmente excluir esta meta?',
+                        style: TextStyle(color: Colors.black)),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancelar')),
+                      TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Excluir')),
+                    ],
+                  ),
+                );
+                if (confirm != true) return;
+                try {
+                  final resp = await ApiBaseClient().delete('metas/$metaId/');
+                  if (resp.statusCode == 204) {
+                    ScaffoldMessenger.of(bottomSheetCtx).showSnackBar(
+                      const SnackBar(
+                          content: Text('Meta excluída com sucesso!')),
+                    );
+                    await _buscarMetas();
+                  } else {
+                    ScaffoldMessenger.of(bottomSheetCtx).showSnackBar(
+                      SnackBar(
+                          content: Text('Erro ao excluir: ${resp.statusCode}')),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(bottomSheetCtx).showSnackBar(
+                    SnackBar(content: Text('Erro inesperado: $e')),
+                  );
+                }
+                Navigator.of(bottomSheetCtx).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _abrirModalEditarMeta(
+    BuildContext context,
+    int metaId,
+    String nomeAtual,
+    double valorAtual,
+  ) {
+    final nomeController = TextEditingController(text: nomeAtual);
+    final valorController = TextEditingController(text: valorAtual.toString());
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Editar Meta',
+      fields: [
+        FormWidget(
+          hintText: 'Nome da Meta',
+          controller: nomeController,
+          onChanged: (_) {},
+          errorText: '',
+        ),
+        FormWidget(
+          hintText: 'Valor da Meta',
+          controller: valorController,
+          keyboardType: TextInputType.number,
+          onChanged: (_) {},
+          errorText: '',
+        ),
+      ],
+      onSave: () async {
+        final novoNome = nomeController.text.trim();
+        final valorTexto = valorController.text.trim();
+        final body = <String, dynamic>{};
+        if (novoNome.isNotEmpty && novoNome != nomeAtual)
+          body['nome'] = novoNome;
+        final novoValor = double.tryParse(valorTexto);
+        if (valorTexto.isNotEmpty &&
+            novoValor != null &&
+            novoValor != valorAtual) {
+          body['valor_meta'] = novoValor;
+        }
+        if (body.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Nenhuma alteração detectada')),
+          );
+          return;
+        }
+        try {
+          final resp = await ApiBaseClient()
+              .put('metas/$metaId/', body: jsonEncode(body));
+          if (resp.statusCode == 200 || resp.statusCode == 204) {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Meta atualizada com sucesso!')),
+            );
+            await _buscarMetas();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erro ao atualizar: ${resp.statusCode}')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro inesperado: $e')),
+          );
+        }
+      },
+    );
+  }
+
   void _abrirModalNovaMeta(BuildContext context) {
     final nomeController = TextEditingController();
     final valorMetaController = TextEditingController();
@@ -167,7 +363,8 @@ class _GoalsPageState extends State<GoalsPage> {
         };
 
         try {
-          final response = await ApiBaseClient().post('metas/', body: jsonEncode(body));
+          final response =
+              await ApiBaseClient().post('metas/', body: jsonEncode(body));
           if (response.statusCode == 201 || response.statusCode == 200) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -218,7 +415,6 @@ class _GoalsPageState extends State<GoalsPage> {
             child: TitleText(text: 'Metas', fontSize: 20),
           ),
           const SizedBox(height: 20),
-
           if (carregandoMetas)
             const Center(child: CircularProgressIndicator())
           else if (metas == null || metas!.isEmpty)
@@ -232,11 +428,13 @@ class _GoalsPageState extends State<GoalsPage> {
               final progresso = meta['porcentagem_meta'] ?? 0.0;
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                 child: HomePageWidget(
                   titleText: nome,
                   menuIcon: GestureDetector(
-                    onTap: () {},
+                    onTap: () =>
+                        _mostrarOpcoesMeta(context, metaId, nome, valorMeta),
                     child: Icon(Icons.more_vert, size: 22),
                   ),
                   content: Column(
@@ -272,7 +470,8 @@ class _GoalsPageState extends State<GoalsPage> {
                                 child: LinearProgressIndicator(
                                   value: progresso / 100,
                                   backgroundColor: Colors.grey[300],
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
                                     Colors.green,
                                   ),
                                   minHeight: 6,
@@ -288,9 +487,20 @@ class _GoalsPageState extends State<GoalsPage> {
                                   icon: Icon(Icons.add_circle_sharp),
                                   iconSize: 24,
                                   fontSize: 9,
-                                  onIconTap: () => _abrirModalAdicionarDinheiro(context, metaId),
+                                  onIconTap: () => _abrirModalAdicionarDinheiro(
+                                      context, metaId),
                                 ),
-                                const Spacer(),
+                                const SizedBox(width: 4),
+                                LittleTextTile(
+                                  iconColor: Colors.red,
+                                  text: "Remover dinheiro",
+                                  icon: Icon(Icons.remove_circle_sharp),
+                                  iconSize: 24,
+                                  fontSize: 9,
+                                  onIconTap: () => _abrirModalRemoverDinheiro(
+                                      context, metaId),
+                                ),
+                                const SizedBox(width: 75),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 12),
                                   child: TitleText(

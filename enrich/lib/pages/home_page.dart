@@ -75,7 +75,9 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       setState(() {
-        metas = responseData is List ? responseData.cast<Map<String, dynamic>>() : [];
+        metas = responseData is List
+            ? responseData.cast<Map<String, dynamic>>()
+            : [];
       });
     } else {
       throw Exception('Erro ao buscar Metas.');
@@ -274,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                           ]
                         : metas!.isEmpty
                             ? [LittleText(text: "Nenhuma meta foi criada.")]
-                            :metas!.take(3).map((meta) {
+                            : metas!.take(3).map((meta) {
                                 final nome = meta['nome'] ?? 'Meta sem nome';
                                 final porcentagem =
                                     meta['porcentagem_meta'] ?? 0.0;
@@ -290,7 +292,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const GoalsPage()),
-                  );
+                  ).then((_) => _buscarMetas());
                 },
               ),
               SizedBox(height: 20),

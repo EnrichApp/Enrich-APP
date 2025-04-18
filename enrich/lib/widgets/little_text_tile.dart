@@ -6,15 +6,15 @@ class LittleTextTile extends StatelessWidget {
   final double iconSize;
   final String text;
   final double fontSize;
-  final Widget icon; // Mantém o nome `icon`, mas agora aceita qualquer widget
+  final Widget icon;
   final bool inverted;
-  final VoidCallback? onIconTap; // Ação ao clicar no ícone
+  final VoidCallback? onIconTap;
 
   const LittleTextTile({
     super.key,
     required this.iconColor,
     required this.text,
-    required this.icon, // Mantém o nome `icon`
+    required this.icon,
     this.inverted = false,
     this.onIconTap,
     this.iconSize = 12,
@@ -32,19 +32,17 @@ class LittleTextTile extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           GestureDetector(
-            onTap: onIconTap, // Chamando a função se for fornecida
-            child: SizedBox(
-              height: iconSize,
-              width: iconSize,
+            onTap: onIconTap,
+            child: IconTheme(
+              data: IconThemeData(color: iconColor, size: iconSize),
               child: icon,
             ),
           ),
         ] else ...[
           GestureDetector(
-            onTap: onIconTap, // Chamando a função se for fornecida
-            child: SizedBox(
-              height: iconSize,
-              width: iconSize,
+            onTap: onIconTap,
+            child: IconTheme(
+              data: IconThemeData(color: iconColor, size: iconSize),
               child: icon,
             ),
           ),
@@ -58,3 +56,4 @@ class LittleTextTile extends StatelessWidget {
     );
   }
 }
+

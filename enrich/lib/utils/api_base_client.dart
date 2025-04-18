@@ -2,24 +2,23 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiBaseClient {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api/v1/';
+  static const String _baseUrl = 'http://127.0.0.1:8000/api/v1/';
 
   Uri buildUri(String endpoint) {
     return Uri.parse(_baseUrl + endpoint);
   }
 
   Future<Map<String, String>> getAuthHeaders() async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('enrichAppAuthToken');
-  if (token != null) {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('enrichAppAuthToken');
+    if (token != null) {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+    }
+    return {'Content-Type': 'application/json'};
   }
-  return {'Content-Type': 'application/json'};
-}
-
 
   Future<http.Response> get(String endpoint, {Map<String, String>? headers}) async {
     final uri = buildUri(endpoint);
@@ -48,5 +47,13 @@ class ApiBaseClient {
   }) async {
     final uri = buildUri(endpoint);
     return await http.put(uri, headers: await getAuthHeaders(), body: body);
+  }
+
+  Future<http.Response> delete(String endpoint, {
+    Map<String, String>? headers,
+    Object? body,
+  }) async {
+    final uri = buildUri(endpoint);
+    return await http.delete(uri, headers: await getAuthHeaders(), body: body);
   }
 }
