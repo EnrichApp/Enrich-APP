@@ -43,7 +43,6 @@ class _GoalsPageState extends State<GoalsPage> {
         throw Exception('Erro ao buscar metas');
       }
     } catch (e) {
-      print('Erro ao buscar metas: $e');
       setState(() {
         carregandoMetas = false;
       });

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'package:enrich/pages/questions_form_page.dart';
 import 'package:enrich/widgets/circular_icon.dart';
 import 'package:enrich/widgets/container_widget.dart';
+import 'package:enrich/widgets/create_object_widget.dart';
+import 'package:enrich/widgets/form_widget.dart';
 import 'package:enrich/widgets/historic_emergence.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
 import 'package:enrich/widgets/little_text_tile.dart';
@@ -8,9 +12,139 @@ import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class EmergenceReservePage extends StatelessWidget {
+class EmergenceReservePage extends StatefulWidget {
   const EmergenceReservePage({super.key});
+
+  @override
+  State<EmergenceReservePage> createState() => _EmergenceReservePageState();
+}
+
+class _EmergenceReservePageState extends State<EmergenceReservePage> {
+  @override
+  void initState() {
+    super.initState();
+    _consultarReservaEmergencia();
+  }
+
+  void _abrirModalCriarReservaEmergencia(BuildContext context) {
+    final valorMetaController = TextEditingController();
+    final valorTotalController = TextEditingController();
+    String valorMetaErro = '';
+    String valorTotalErro = '';
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Nova Reserva de Emergência',
+      fields: [
+        FormWidget(
+          hintText: 'Valor da meta final',
+          keyboardType: TextInputType.number,
+          controller: valorMetaController,
+          onChanged: (_) {
+            if (valorMetaErro.isNotEmpty) valorMetaErro = '';
+          },
+          errorText: valorMetaErro,
+        ),
+        FormWidget(
+          hintText: 'Quanto você já tem guardado?',
+          keyboardType: TextInputType.number,
+          controller: valorTotalController,
+          onChanged: (_) {
+            if (valorTotalErro.isNotEmpty) valorTotalErro = '';
+          },
+          errorText: valorTotalErro,
+        ),
+      ],
+      onCancel:() {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      },
+      onSave: () async {
+        final valorMeta =
+            double.tryParse(valorMetaController.text.trim()) ?? 0.0;
+        final valorTotal =
+            double.tryParse(valorTotalController.text.trim()) ?? -1;
+
+        bool valido = true;
+
+        if (valorMeta <= 0) {
+          valorMetaErro = 'Informe um valor válido para a meta';
+          valido = false;
+        }
+
+        if (valorTotal < 0) {
+          valorTotalErro = 'Informe quanto você já tem guardado (0 ou mais)';
+          valido = false;
+        }
+
+        if (!valido) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Preencha todos os campos corretamente')),
+          );
+          return;
+        }
+
+        final body = {
+          "valor_meta": valorMeta,
+          "valor_total": valorTotal,
+          "notificacao": false
+        };
+
+        try {
+          final response =
+              await apiClient.post('reserva/', body: jsonEncode(body));
+          if (response.statusCode == 201) {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Reserva criada com sucesso!')),
+            );
+            await _consultarReservaEmergencia();
+          } else {
+            throw Exception();
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                  'Ocorreu um erro ao criar a reserva de emergência. Tente novamente mais tarde.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _consultarReservaEmergencia() async {
+    try {
+      final responseConsulta = await apiClient.get('reserva-detail/');
+
+      if (responseConsulta.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('E-mail verificado com sucesso!'),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
+      } else if (responseConsulta.statusCode == 404) {
+        _abrirModalCriarReservaEmergencia(context);
+      } else {
+        throw Exception(
+            'Erro inesperado. Código: ${responseConsulta.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Ocorreu um erro ao consultar a reserva de emergência. Tente novamente mais tarde.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +184,8 @@ class EmergenceReservePage extends StatelessWidget {
       ),
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
-        child: SingleChildScrollView( // Use SingleChildScrollView para evitar problemas de aninhamento
+        child: SingleChildScrollView(
+          // Use SingleChildScrollView para evitar problemas de aninhamento
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
@@ -97,11 +232,14 @@ class EmergenceReservePage extends StatelessWidget {
                             SizedBox(
                               width: 250,
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10), // Canto arredondado
+                                borderRadius: BorderRadius.circular(
+                                    10), // Canto arredondado
                                 child: LinearProgressIndicator(
                                   value: progress, // Progresso atual
-                                  backgroundColor: Colors.grey[300], // Cor de fundo
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                  backgroundColor:
+                                      Colors.grey[300], // Cor de fundo
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
                                     Colors.green,
                                   ), // Cor do progresso
                                   minHeight: 6, // Altura da barra
@@ -171,7 +309,8 @@ class EmergenceReservePage extends StatelessWidget {
                               fontSize: 16,
                             ),
                             SubtitleText(
-                              text: "Escolha o valor mensal a guardar e o dia para\nser notificado.",
+                              text:
+                                  "Escolha o valor mensal a guardar e o dia para\nser notificado.",
                               fontSize: 9,
                               textAlign: TextAlign.start,
                             ),
@@ -194,18 +333,28 @@ class EmergenceReservePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TitleText(text: "Histórico da Reserva", fontSize: 16,),
+                      TitleText(
+                        text: "Histórico da Reserva",
+                        fontSize: 16,
+                      ),
                       SizedBox(height: 10),
-                      SubtitleText(text: "27 de setembro - R\$54,90", fontSize: 12,),
+                      SubtitleText(
+                        text: "27 de setembro - R\$54,90",
+                        fontSize: 12,
+                      ),
                       SizedBox(height: 10),
                       // Use um ListView.builder para gerar o histórico de maneira dinâmica
                       ListView.builder(
-                        shrinkWrap: true, // Para que o ListView não tente ocupar mais espaço
-                        physics: NeverScrollableScrollPhysics(), // Impede a rolagem do ListView interno
-                        itemCount: 1, // Altere para o número real de itens no histórico
+                        shrinkWrap:
+                            true, // Para que o ListView não tente ocupar mais espaço
+                        physics:
+                            NeverScrollableScrollPhysics(), // Impede a rolagem do ListView interno
+                        itemCount:
+                            1, // Altere para o número real de itens no histórico
                         itemBuilder: (context, index) {
                           return HistoricEmergence(
-                            icon: Icon(Icons.add, color: Colors.white, size: 20),
+                            icon:
+                                Icon(Icons.add, color: Colors.white, size: 20),
                             typeText: "Guardado",
                             time: "11h45",
                             amount: "+ R\$ 14,90",
