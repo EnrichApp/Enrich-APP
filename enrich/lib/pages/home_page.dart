@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   double? gastos;
   double? total;
   List<dynamic>? metas;
+  List<dynamic>? dividas;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage> {
     _buscarNomeUsuario();
     _buscarResumoFinanceiro();
     _buscarMetas();
+    _buscarDividas();
   }
 
   Future<void> _buscarNomeUsuario() async {
@@ -83,6 +85,36 @@ class _HomePageState extends State<HomePage> {
       throw Exception('Erro ao buscar Metas.');
     }
   }
+
+  Future<void> _buscarDividas() async {
+  final response = await apiClient.get('debts/listar/');
+  if (response.statusCode == 200) {
+    final responseData = jsonDecode(response.body);
+    setState(() {
+      // converte para List<Map<...>>
+      dividas = responseData is List
+          ? responseData.cast<Map<String, dynamic>>()
+          : [];
+
+      // ➊ prioridade: Em atraso → Pendente → resto
+      const prioridade = ['Em atraso', 'Pendente'];
+
+      dividas!.sort((a, b) {
+        int idxA = prioridade.indexOf(a['status'] ?? '');
+        int idxB = prioridade.indexOf(b['status'] ?? '');
+
+        // quem não é "Em atraso" nem "Pendente" recebe peso maior
+        if (idxA == -1) idxA = prioridade.length;
+        if (idxB == -1) idxB = prioridade.length;
+
+        return idxA.compareTo(idxB);
+      });
+    });
+  } else {
+    throw Exception('Erro ao buscar Dívidas.');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +303,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2), // Loading
                             )
                           ]
                         : metas!.isEmpty
@@ -297,36 +330,56 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 20),
               HomePageWidget(
-                  titleText: "Dívidas",
-                  content: const Row(
-                    children: [
-                      SizedBox(
-                        width: 17,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 5),
-                          HomePageDividaWidget(
-                            category: "Em atraso",
-                            debtName: "- Desenvolvedor.IO: 29/09/2024",
-                          ),
-                          SizedBox(height: 7),
-                          HomePageDividaWidget(
-                            category: "Data próxima",
-                            debtName: "- Curso de Marketing: 05/10/2024",
-                          ),
-                        ],
-                      ),
-                    ],
+                titleText: "Dívidas",
+                content: Padding(
+                  padding: const EdgeInsets.only(left: 17.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: dividas == null
+                        ? [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          ]
+                        : dividas!.isEmpty
+                            ? [LittleText(text: "Nenhuma dívida encontrada.")]
+                            : dividas!.take(2).map((d) {
+                                final String status =
+                                    d['status'] ?? 'Sem status';
+                                final String nome = d['nome'] ?? 'Sem nome';
+                                final String? raw = d['data_vencimento'];
+
+                                String dataFmt = '';
+                                if (raw != null) {
+                                  final dt = DateTime.tryParse(raw);
+                                  if (dt != null) {
+                                    dataFmt =
+                                        '${dt.day.toString().padLeft(2, '0')}/'
+                                        '${dt.month.toString().padLeft(2, '0')}/'
+                                        '${dt.year}';
+                                  }
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 7.0),
+                                  child: HomePageDividaWidget(
+                                    category: status,
+                                    debtName:
+                                        '- $nome${dataFmt.isNotEmpty ? ': $dataFmt' : ''}',
+                                  ),
+                                );
+                              }).toList(),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DebtsPage()),
-                    );
-                  }),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DebtsPage()),
+                  ).then((_) => _buscarDividas());
+                },
+              ),
               SizedBox(
                 height: 20,
               ),
