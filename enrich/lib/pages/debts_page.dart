@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:enrich/utils/api_base_client.dart';
+import 'package:enrich/utils/date_format.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/create_object_widget.dart';
 import 'package:enrich/widgets/dotted_button.dart';
@@ -25,19 +26,6 @@ class _DebtsPageState extends State<DebtsPage> {
   void initState() {
     super.initState();
     _buscarDebts();
-  }
-
-  String ddMMyyyyToIso(String input) {
-    final parts = input.split('/');
-    if (parts.length != 3) return input; // formato inesperado
-    final day = int.tryParse(parts[0]);
-    final month = int.tryParse(parts[1]);
-    final year = int.tryParse(parts[2]);
-    if (day == null || month == null || year == null) return input;
-
-    final dt = DateTime(year, month, day);
-    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-'
-        '${dt.day.toString().padLeft(2, '0')}';
   }
 
   Future<void> _buscarDebts() async {
