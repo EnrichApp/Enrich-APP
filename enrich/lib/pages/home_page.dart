@@ -32,6 +32,8 @@ class _HomePageState extends State<HomePage> {
   double? total;
   List<dynamic>? metas;
   List<dynamic>? dividas;
+  double? valorTotalReserva = 0.0;
+  double? valorMetaReserva = 0.0;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     _buscarResumoFinanceiro();
     _buscarMetas();
     _buscarDividas();
+    _consultarReservaEmergencia();
   }
 
   Future<void> _buscarNomeUsuario() async {
@@ -87,34 +90,56 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _buscarDividas() async {
-  final response = await apiClient.get('debts/listar/');
-  if (response.statusCode == 200) {
-    final responseData = jsonDecode(response.body);
-    setState(() {
-      // converte para List<Map<...>>
-      dividas = responseData is List
-          ? responseData.cast<Map<String, dynamic>>()
-          : [];
+    final response = await apiClient.get('debts/listar/');
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        // converte para List<Map<...>>
+        dividas = responseData is List
+            ? responseData.cast<Map<String, dynamic>>()
+            : [];
 
-      // ➊ prioridade: Em atraso → Pendente → resto
-      const prioridade = ['Em atraso', 'Pendente'];
+        // ➊ prioridade: Em atraso → Pendente → resto
+        const prioridade = ['Em atraso', 'Pendente'];
 
-      dividas!.sort((a, b) {
-        int idxA = prioridade.indexOf(a['status'] ?? '');
-        int idxB = prioridade.indexOf(b['status'] ?? '');
+        dividas!.sort((a, b) {
+          int idxA = prioridade.indexOf(a['status'] ?? '');
+          int idxB = prioridade.indexOf(b['status'] ?? '');
 
-        // quem não é "Em atraso" nem "Pendente" recebe peso maior
-        if (idxA == -1) idxA = prioridade.length;
-        if (idxB == -1) idxB = prioridade.length;
+          // quem não é "Em atraso" nem "Pendente" recebe peso maior
+          if (idxA == -1) idxA = prioridade.length;
+          if (idxB == -1) idxB = prioridade.length;
 
-        return idxA.compareTo(idxB);
+          return idxA.compareTo(idxB);
+        });
       });
-    });
-  } else {
-    throw Exception('Erro ao buscar Dívidas.');
+    } else {
+      throw Exception('Erro ao buscar Dívidas.');
+    }
   }
-}
 
+  Future<void> _consultarReservaEmergencia() async {
+    try {
+      final responseConsulta = await apiClient.get('reserva-detail/');
+
+      if (responseConsulta.statusCode == 200) {
+        final responseData = jsonDecode(responseConsulta.body);
+
+        setState(() {
+          valorTotalReserva = responseData['valor_total'] ?? 0.0;
+          valorMetaReserva = responseData['valor_meta'] ?? 0.0;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Ocorreu um erro ao consultar a sua reserva de emergência. Tente novamente mais tarde.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +150,8 @@ class _HomePageState extends State<HomePage> {
       ChartData('Others', 52)
     ];
 
-    final double valorAtualReservaEmergencia = 1500.00;
-    final double valorMetaReservaEmergencia = 20000.00;
+    final double valorAtualReservaEmergencia = valorTotalReserva ?? 0.0;
+    final double valorMetaReservaEmergencia = valorMetaReserva ?? 1;
     final double progressoReservaEmergencia =
         valorAtualReservaEmergencia / valorMetaReservaEmergencia;
 
@@ -427,7 +452,11 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AmountText(
-                                amount: '${valorAtualReservaEmergencia}'),
+                                amount: valorAtualReservaEmergencia != null
+                                    ? valorAtualReservaEmergencia!
+                                        .toStringAsFixed(2)
+                                        .replaceAll('.', ',')
+                                    : "0,00"),
                             Row(
                               children: [
                                 const LittleText(
@@ -436,7 +465,11 @@ class _HomePageState extends State<HomePage> {
                                   textAlign: TextAlign.start,
                                 ),
                                 AmountText(
-                                  amount: '${valorMetaReservaEmergencia}',
+                                  amount: valorMetaReservaEmergencia != null
+                                      ? valorMetaReservaEmergencia!
+                                          .toStringAsFixed(2)
+                                          .replaceAll('.', ',')
+                                      : "0,00",
                                   fontSize: 8,
                                   color: Colors.black87,
                                 ),

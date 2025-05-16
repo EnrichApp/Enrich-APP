@@ -22,6 +22,10 @@ class EmergenceReservePage extends StatefulWidget {
 }
 
 class _EmergenceReservePageState extends State<EmergenceReservePage> {
+  
+  double? valorTotal;
+  double? valorMeta;
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +61,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
           errorText: valorTotalErro,
         ),
       ],
-      onCancel:() {
+      onCancel: () {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
       },
@@ -123,12 +127,12 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
       final responseConsulta = await apiClient.get('reserva-detail/');
 
       if (responseConsulta.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('E-mail verificado com sucesso!'),
-            backgroundColor: const Color(0xFF4CAF50),
-          ),
-        );
+        final responseData = jsonDecode(responseConsulta.body);
+        
+        setState(() {
+          valorTotal = responseData['valor_total'] ?? 0.0;
+          valorMeta = responseData['valor_meta'] ?? 0.0;
+        });
       } else if (responseConsulta.statusCode == 404) {
         _abrirModalCriarReservaEmergencia(context);
       } else {
@@ -149,9 +153,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
   @override
   Widget build(BuildContext context) {
     // Definindo o lucro atual e a meta
-    final double currentValue = 1900.00;
-    final double targetValue = 2000.00;
+    final double currentValue = valorTotal ?? 0.0;
+    final double targetValue = valorMeta ?? 1;
     final double progress = currentValue / targetValue;
+
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSurface,
@@ -199,7 +204,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                 const SizedBox(height: 10),
                 HomePageWidget(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  titleText: "R\$1500,00",
+                  titleText: "R\$${currentValue.toStringAsFixed(2).replaceAll('.', ',')}",
                   textColor: Colors.green,
                   textSize: 18,
                   menuIcon: GestureDetector(
@@ -213,15 +218,17 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                LittleText(
+                                const LittleText(
                                   text: "de ",
                                   fontSize: 8,
                                   textAlign: TextAlign.start,
                                 ),
                                 AmountText(
-                                  amount: "20.000,00",
+                                  amount: valorMeta != null
+                                      ? valorMeta!.toStringAsFixed(2).replaceAll('.', ',')
+                                      : "0,00",
                                   fontSize: 8,
                                   color: Colors.black87,
                                 ),
