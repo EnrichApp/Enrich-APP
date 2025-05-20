@@ -1,4 +1,3 @@
-// lib/pages/credit_cards_invoice_page.dart
 import 'package:enrich/models/cartao.dart';
 import 'package:enrich/services/cartao_service.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
@@ -22,25 +21,21 @@ class CreditCardsInvoicePage extends StatefulWidget {
 class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
   final _service = CartaoService();
   late Future<List<Cartao>> _future;
+  late Future<double> _totalFuture;
 
   @override
   void initState() {
     super.initState();
-    _refresh();
+    _future = _service.listar();
+    _totalFuture = _service.obterTotal();
   }
 
-  /// cria o Future **fora** do callback e só o atribui
   void _refresh() {
-    final f = _service.listar(); // cria o Future
     setState(() {
-      // callback SÍNCRONO (retorna void)
-      _future = f; // só atribuição
+      _future = _service.listar();
+      _totalFuture = _service.obterTotal();
     });
   }
-
-  /* ------------------------------------------------------------------ */
-  /* BUILD                                                              */
-  /* ------------------------------------------------------------------ */
 
   @override
   Widget build(BuildContext context) {
@@ -66,15 +61,30 @@ class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
                 padding: EdgeInsets.only(left: 30, top: 20),
                 child: TitleText(text: 'Faturas', fontSize: 20),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 30, top: 20),
+                child: FutureBuilder<double>(
+                  future: _totalFuture,
+                  builder: (ctx, snap) {
+                    if (snap.connectionState == ConnectionState.waiting) {
+                      return const TitleText(text: 'Total: ...', fontSize: 20);
+                    }
+
+                    final total = snap.data ?? 0.0;
+                    final valorFormatado = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
+                        .format(total);
+
+                    return TitleText(text: 'Total: $valorFormatado', fontSize: 20);
+                  },
+                ),
+              ),
               const SizedBox(height: 20),
               if (cartoes.isEmpty)
-                const Center(
-                    child: LittleText(text: 'Nenhuma fatura cadastrada.'))
+                const Center(child: LittleText(text: 'Nenhuma fatura cadastrada.'))
               else
                 ...cartoes.map(
                   (c) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: _CartaoTile(
                       cartao: c,
                       onEdit: () async {
@@ -103,12 +113,9 @@ class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
     );
   }
 
-  /* ------------------------------------------------------------------ */
-  /* APP BAR                                                            */
-  /* ------------------------------------------------------------------ */
-
   AppBar _buildAppBar(BuildContext ctx) => AppBar(
         leadingWidth: 100,
+        iconTheme: const IconThemeData(color: Colors.black),
         leading: GestureDetector(
           onTap: () => Navigator.pop(ctx),
           child: const Row(
@@ -124,29 +131,23 @@ class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
         elevation: 0,
       );
 
-  /* ------------------------------------------------------------------ */
-  /* FORM CREATE / EDIT                                                 */
-  /* ------------------------------------------------------------------ */
-
   Future<void> _openForm(BuildContext context, Cartao? original) async {
-    final nomeCtrl = TextEditingController(text: original?.nome ?? '');
+    final nomeCtrl  = TextEditingController(text: original?.nome ?? '');
     final valorCtrl =
         TextEditingController(text: original?.valor.toString() ?? '');
-    final dataCtrl = TextEditingController(
-        text: DateFormat('dd/MM/yyyy')
-            .format(original?.dataFinal ?? DateTime.now()));
-    bool isPago = original?.isPago ?? false;
+    final dataCtrl  = TextEditingController(
+        text: DateFormat('dd/MM/yyyy').format(original?.dataFinal ?? DateTime.now()));
+    bool isPago     = original?.isPago ?? false;
 
-    /// Função realmente assíncrona
     Future<void> _salvarAsync() async {
       final parsedDate = DateFormat('dd/MM/yyyy').parse(dataCtrl.text);
       final cartao = Cartao(
-        id: original?.id ?? 0,
-        nome: nomeCtrl.text.trim(),
-        valor: double.parse(valorCtrl.text),
+        id       : original?.id ?? 0,
+        nome     : nomeCtrl.text.trim(),
+        valor    : double.parse(valorCtrl.text),
         dataFinal: parsedDate,
-        isPago: isPago,
-        status: original?.status ?? '',
+        isPago   : isPago,
+        status   : original?.status ?? '',
       );
       if (original == null) {
         await _service.criar(cartao);
@@ -175,10 +176,21 @@ class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
         GestureDetector(
           onTap: () async {
             final picked = await showDatePicker(
-              context: context,
+              context   : context,
               initialDate: DateFormat('dd/MM/yyyy').parse(dataCtrl.text),
-              firstDate: DateTime(2020),
-              lastDate: DateTime(2035),
+              firstDate : DateTime(2020),
+              lastDate  : DateTime(2035),
+              builder: (ctx, child) => Theme(
+                data: Theme.of(ctx).copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary   : Colors.black,
+                    onPrimary : Colors.white,
+                    surface   : Colors.white,
+                    onSurface : Colors.black,
+                  ),
+                ),
+                child: child!,
+              ),
             );
             if (picked != null) {
               dataCtrl.text = DateFormat('dd/MM/yyyy').format(picked);
@@ -193,22 +205,31 @@ class _CreditCardsInvoicePageState extends State<CreditCardsInvoicePage> {
             ),
           ),
         ),
-        SwitchListTile(
-          title: const Text('Fatura paga'),
-          value: isPago,
-          onChanged: (v) => isPago = v,
+        StatefulBuilder(
+          builder: (ctx, setModalState) => GestureDetector(
+            onTap: () => setModalState(() => isPago = !isPago),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black54),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(isPago ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: Colors.black),
+                  const SizedBox(width: 12),
+                  const Text('Fatura paga', style: TextStyle(fontSize: 16, color: Colors.black)),
+                ],
+              ),
+            ),
+          ),
         ),
       ],
-      onSave: () {
-        _salvarAsync(); // roda assíncrono, mas NÃO retorna nada
-      },
+      onSave: () { _salvarAsync(); },
     );
   }
 }
-
-/* ---------------------------------------------------------------------- */
-/* TILE                                                                   */
-/* ---------------------------------------------------------------------- */
 
 class _CartaoTile extends StatelessWidget {
   const _CartaoTile({
@@ -222,9 +243,9 @@ class _CartaoTile extends StatelessWidget {
   final VoidCallback onEdit;
 
   Color _corStatus(String s) => switch (s) {
-        'Pago' => Colors.green,
+        'Pago'      => Colors.green,
         'Em atraso' => Colors.red,
-        _ => Colors.orange,
+        _           => Colors.orange,
       };
 
   void _menuOpcoes(BuildContext ctx) {
@@ -238,34 +259,27 @@ class _CartaoTile extends StatelessWidget {
         children: [
           ListTile(
             leading: const Icon(Icons.edit, color: Colors.blue),
-            title: const Text('Editar', style: TextStyle(color: Colors.black)),
-            onTap: () {
-              Navigator.pop(_);
-              onEdit();
-            },
+            title : const Text('Editar', style: TextStyle(color: Colors.black)),
+            onTap : () { Navigator.pop(_); onEdit(); },
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
-            title: const Text('Excluir', style: TextStyle(color: Colors.black)),
-            onTap: () async {
+            title : const Text('Excluir', style: TextStyle(color: Colors.black)),
+            onTap : () async {
               Navigator.pop(_);
               final ok = await showDialog<bool>(
                     context: ctx,
                     builder: (dCtx) => AlertDialog(
-                      title: const Text('Confirmar exclusão'),
-                      content:
-                          const Text('Deseja realmente excluir esta fatura?'),
+                    title : const Text('Confirmar exclusão', style: TextStyle(color: Colors.black)),
+                      content: const Text('Deseja realmente excluir esta fatura?', style: TextStyle(color: Colors.black)),
                       actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(dCtx, false),
-                            child: const Text('Cancelar')),
-                        TextButton(
-                            onPressed: () => Navigator.pop(dCtx, true),
-                            child: const Text('Excluir')),
+                        TextButton(onPressed: () => Navigator.pop(dCtx, false),
+                                   child: const Text('Cancelar')),
+                        TextButton(onPressed: () => Navigator.pop(dCtx, true),
+                                   child: const Text('Excluir')),
                       ],
                     ),
-                  ) ??
-                  false;
+                  ) ?? false;
               if (ok) {
                 await CartaoService().excluir(cartao.id);
                 onRefresh();
@@ -279,15 +293,15 @@ class _CartaoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final df = DateFormat('dd/MM/yyyy').format(cartao.dataFinal);
+    final df  = DateFormat('dd/MM/yyyy').format(cartao.dataFinal);
     final val = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
         .format(cartao.valor);
 
     return HomePageWidget(
       titleText: cartao.nome,
-      menuIcon: GestureDetector(
-        onTap: () => _menuOpcoes(context),
-        child: const Icon(Icons.more_vert, size: 22),
+      menuIcon : GestureDetector(
+        onTap : () => _menuOpcoes(context),
+        child : const Icon(Icons.more_vert, size: 22),
       ),
       content: Padding(
         padding: const EdgeInsets.only(left: 16, top: 2, bottom: 8),
@@ -297,7 +311,7 @@ class _CartaoTile extends StatelessWidget {
             const TitleText(text: 'Fatura atual', fontSize: 12),
             SubtitleText(text: 'Data final: $df', fontSize: 10),
             SubtitleText(
-              text: 'Status: ${cartao.status}',
+              text : 'Status: ${cartao.status}',
               fontSize: 10,
               color: _corStatus(cartao.status),
             ),
@@ -306,7 +320,7 @@ class _CartaoTile extends StatelessWidget {
             Row(
               children: [
                 RoundedTextButton(
-                  text: 'Marcar paga',
+                  text : 'Marcar paga',
                   width: 90,
                   height: 20,
                   fontSize: 9,
@@ -318,7 +332,7 @@ class _CartaoTile extends StatelessWidget {
                 const SizedBox(width: 7),
                 if (cartao.status == 'Em atraso')
                   RoundedTextButton(
-                    text: 'Prazo excedido',
+                    text : 'Prazo excedido',
                     width: 140,
                     height: 20,
                     fontSize: 9,

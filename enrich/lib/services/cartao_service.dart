@@ -8,11 +8,11 @@ class CartaoService {
   final _client = ApiBaseClient();
 
   Map<String, dynamic> _payload(Cartao c) => {
-        'nome'      : c.nome,
-        'valor'     : c.valor,
-        'data_final': ddMMyyyyToIso(
-            DateFormat('dd/MM/yyyy').format(c.dataFinal)),
-        'is_pago'   : c.isPago,
+        'nome': c.nome,
+        'valor': c.valor,
+        'data_final':
+            ddMMyyyyToIso(DateFormat('dd/MM/yyyy').format(c.dataFinal)),
+        'is_pago': c.isPago,
       };
 
   /* CRUD */
@@ -49,7 +49,18 @@ class CartaoService {
     }
   }
 
+  Future<double> obterTotal() async {
+    final r = await _client.get('cartoes/total/');
+    if (r.statusCode != 200) {
+      throw Exception('Erro ${r.statusCode}: ${r.body}');
+    }
+
+    final data = jsonDecode(r.body);
+    return (data['valor_total'] as num).toDouble();
+  }
+
   /* helpers extras */
 
-  Future<void> marcarPago(Cartao c) => atualizar(c.id, c.copyWith(isPago: true));
+  Future<void> marcarPago(Cartao c) =>
+      atualizar(c.id, c.copyWith(isPago: true));
 }

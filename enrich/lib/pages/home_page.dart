@@ -5,6 +5,7 @@ import 'package:enrich/pages/choose_financial_planning_page.dart';
 import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/pages/reports_page.dart';
+import 'package:enrich/services/cartao_service.dart';
 import 'package:enrich/widgets/home_page_divida_widget.dart';
 import 'package:enrich/widgets/texts/amount_text.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   List<dynamic>? dividas;
   double? valorTotalReserva = 0.0;
   double? valorMetaReserva = 0.0;
+  List<dynamic>? faturasCartao;
 
   @override
   void initState() {
@@ -43,6 +45,7 @@ class _HomePageState extends State<HomePage> {
     _buscarMetas();
     _buscarDividas();
     _consultarReservaEmergencia();
+    _buscarFaturasCartao();
   }
 
   Future<void> _buscarNomeUsuario() async {
@@ -90,33 +93,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _buscarDividas() async {
-    final response = await apiClient.get('debts/listar/');
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      setState(() {
-        // converte para List<Map<...>>
-        dividas = responseData is List
-            ? responseData.cast<Map<String, dynamic>>()
-            : [];
+  final response = await apiClient.get('debts/listar/');
+  if (response.statusCode == 200) {
+    final responseData = jsonDecode(response.body);
+    setState(() {
+      // converte para List<Map<...>>
+      dividas = responseData is List
+          ? responseData.cast<Map<String, dynamic>>()
+          : [];
 
-        // ➊ prioridade: Em atraso → Pendente → resto
-        const prioridade = ['Em atraso', 'Pendente'];
+      // ➊ prioridade: Em atraso → Pendente → resto
+      const prioridade = ['Em atraso', 'Pendente'];
 
-        dividas!.sort((a, b) {
-          int idxA = prioridade.indexOf(a['status'] ?? '');
-          int idxB = prioridade.indexOf(b['status'] ?? '');
+      dividas!.sort((a, b) {
+        int idxA = prioridade.indexOf(a['status'] ?? '');
+        int idxB = prioridade.indexOf(b['status'] ?? '');
 
-          // quem não é "Em atraso" nem "Pendente" recebe peso maior
-          if (idxA == -1) idxA = prioridade.length;
-          if (idxB == -1) idxB = prioridade.length;
+        // quem não é "Em atraso" nem "Pendente" recebe peso maior
+        if (idxA == -1) idxA = prioridade.length;
+        if (idxB == -1) idxB = prioridade.length;
 
-          return idxA.compareTo(idxB);
-        });
+        return idxA.compareTo(idxB);
       });
-    } else {
-      throw Exception('Erro ao buscar Dívidas.');
-    }
+    });
+  } else {
+    throw Exception('Erro ao buscar Dívidas.');
   }
+}
 
   Future<void> _consultarReservaEmergencia() async {
     try {
@@ -138,6 +141,32 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+  Future<void> _buscarFaturasCartao() async {
+    final service = CartaoService();
+    try {
+      final lista = await service.listar();
+
+      // Prioridade: Em atraso > Data próxima
+      const prioridade = ['Em atraso', 'Data próxima'];
+
+      lista.sort((a, b) {
+        int idxA = prioridade.indexOf(a.status);
+        int idxB = prioridade.indexOf(b.status);
+
+        if (idxA == -1) idxA = prioridade.length;
+        if (idxB == -1) idxB = prioridade.length;
+
+        return idxA.compareTo(idxB);
+      });
+
+      setState(() {
+        faturasCartao = lista.take(2).toList();
+      });
+    } catch (e) {
+      // Trate erros de forma apropriada
+      print('Erro ao buscar faturas: $e');
     }
   }
 
@@ -409,36 +438,45 @@ class _HomePageState extends State<HomePage> {
                 height: 20,
               ),
               HomePageWidget(
-                  titleText: "Faturas de Cartão",
-                  content: const Row(
-                    children: [
-                      SizedBox(
-                        width: 17,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 5),
-                          HomePageDividaWidget(
-                            category: "Em atraso",
-                            debtName: "- Cartão de Crédito Nubank: 29/09/2024",
-                          ),
-                          SizedBox(height: 7),
-                          HomePageDividaWidget(
-                            category: "Data próxima",
-                            debtName: "- Cartão de Crédito PicPay: 05/10/2024",
-                          ),
-                        ],
-                      ),
-                    ],
+                titleText: "Faturas de Cartão",
+                content: Padding(
+                  padding: const EdgeInsets.only(left: 17.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: faturasCartao == null
+                        ? [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          ]
+                        : faturasCartao!.isEmpty
+                            ? [LittleText(text: "Nenhuma fatura encontrada.")]
+                            : faturasCartao!.map((c) {
+                                final dataFmt =
+                                    '${c.dataFinal.day.toString().padLeft(2, '0')}/'
+                                    '${c.dataFinal.month.toString().padLeft(2, '0')}/'
+                                    '${c.dataFinal.year}';
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 7.0),
+                                  child: HomePageDividaWidget(
+                                    category: c.status,
+                                    debtName: "- ${c.nome}: $dataFmt",
+                                  ),
+                                );
+                              }).toList(),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CreditCardsInvoicePage()),
-                    );
-                  }),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreditCardsInvoicePage()),
+                  ).then((_) => _buscarFaturasCartao());
+                },
+              ),
               SizedBox(
                 height: 20,
               ),
