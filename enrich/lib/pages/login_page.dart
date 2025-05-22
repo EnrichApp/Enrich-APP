@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.green,
           ),
         );
-        print(cadastroCompleto);
+        
         if (cadastroCompleto == true) {
           Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
         } else {

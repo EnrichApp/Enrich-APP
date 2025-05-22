@@ -96,7 +96,7 @@ class _GoalsPageState extends State<GoalsPage> {
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro inesperado: $e')),
+            SnackBar(content: Text('Ocorreu um erro. Tente novamente mais tarde.')),
           );
         }
       },

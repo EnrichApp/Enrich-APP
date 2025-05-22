@@ -181,8 +181,10 @@ class _HomePageState extends State<HomePage> {
 
     final double valorAtualReservaEmergencia = valorTotalReserva ?? 0.0;
     final double valorMetaReservaEmergencia = valorMetaReserva ?? 1;
-    final double progressoReservaEmergencia =
-        valorAtualReservaEmergencia / valorMetaReservaEmergencia;
+    final double progressoReservaEmergencia = 
+    (valorMetaReserva != null && valorMetaReserva! > 0)
+        ? valorAtualReservaEmergencia / valorMetaReserva!
+        : 0.0;
 
     return Scaffold(
         body: Container(
@@ -537,9 +539,8 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const EmergenceReservePage()),
-                    );
+                      MaterialPageRoute(builder: (context) => const EmergenceReservePage()),
+                    ).then((_) => _consultarReservaEmergencia());
                   }),
               SizedBox(
                 height: 20,

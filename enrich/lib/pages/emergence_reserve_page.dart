@@ -22,7 +22,6 @@ class EmergenceReservePage extends StatefulWidget {
 }
 
 class _EmergenceReservePageState extends State<EmergenceReservePage> {
-  
   double? valorTotal;
   double? valorMeta;
 
@@ -30,6 +29,209 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
   void initState() {
     super.initState();
     _consultarReservaEmergencia();
+  }
+
+  void _menuOpcoes(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit, color: Colors.blue),
+            title: const Text('Editar', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.pop(_);
+              _abrirModalEditarReservaEmergencia(ctx);
+            },
+          ),
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
+  }
+
+    void _abrirModalNotificacaoParaGuardar(BuildContext context) {
+    bool notificacaoAtiva = false;
+    int? diaSelecionado;
+    String? erro;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Notificação para guardar', style: TextStyle(color: Colors.black)),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: Colors.grey,
+                    title: const Text('Ativar notificação mensal', style: TextStyle(color: Colors.black),),
+                    value: notificacaoAtiva,
+                    onChanged: (val) {
+                      setState(() {
+                        notificacaoAtiva = val;
+                        erro = null;
+                      });
+                    },
+                  ),
+                  if (notificacaoAtiva)
+                    DropdownButtonFormField<int>(
+                      value: diaSelecionado,
+                      decoration: InputDecoration(
+                        labelText: 'Dia do mês (1-29)',
+                        errorText: erro,
+                        filled: true,
+                        fillColor: Colors.white
+                      ),
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      items: List.generate(29, (index) {
+                        final dia = index + 1;
+                        return DropdownMenuItem(
+                          value: dia,
+                          child: Text(dia.toString()),
+                        );
+                      }),
+                      onChanged: (val) {
+                        setState(() {
+                          diaSelecionado = val;
+                          erro = null;
+                        });
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (notificacaoAtiva && diaSelecionado == null) {
+                  setState(() {
+                    erro = 'Escolha um dia do mês';
+                  });
+                  return;
+                }
+
+                final body = {
+                  "notificacao": notificacaoAtiva,
+                  if (notificacaoAtiva)
+                    "dia_mes_notificacao": DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      diaSelecionado!,
+                    ).toIso8601String(),
+                };
+
+                try {
+                  final response = await apiClient.patch(
+                    'reserva-detail/',
+                    body: jsonEncode(body),
+                  );
+
+                  if (response.statusCode == 200) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Configuração salva com sucesso!')),
+                    );
+                    await _consultarReservaEmergencia();
+                  } else {
+                    throw Exception();
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Erro ao salvar configuração.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _abrirModalEditarReservaEmergencia(BuildContext context) {
+    final valorMetaController = TextEditingController();
+    String valorMetaErro = '';
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Editar Reserva de Emergência',
+      fields: [
+        FormWidget(
+          hintText: 'Valor da meta final',
+          keyboardType: TextInputType.number,
+          controller: valorMetaController,
+          onChanged: (_) {
+            if (valorMetaErro.isNotEmpty) valorMetaErro = '';
+          },
+          errorText: valorMetaErro,
+        )
+      ],
+      onCancel: () {
+        Navigator.of(context).pop();
+      },
+      onSave: () async {
+        final valorMeta =
+            double.tryParse(valorMetaController.text.trim()) ?? 0.0;
+
+        bool valido = true;
+
+        if (valorMeta <= 0) {
+          valorMetaErro = 'Informe um valor válido para a meta';
+          valido = false;
+        }
+
+        if (!valido) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Preencha o campo corretamente')),
+          );
+          return;
+        }
+
+        final body = {"valor_meta": valorMeta};
+
+        try {
+          final response =
+              await apiClient.patch('reserva-detail/', body: jsonEncode(body));
+
+          if (response.statusCode == 200) {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Reserva editada com sucesso!')),
+            );
+            await _consultarReservaEmergencia();
+          } else {
+            throw Exception();
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                  'Ocorreu um erro ao editar a reserva de emergência. Tente novamente mais tarde.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
   }
 
   void _abrirModalCriarReservaEmergencia(BuildContext context) {
@@ -128,7 +330,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
 
       if (responseConsulta.statusCode == 200) {
         final responseData = jsonDecode(responseConsulta.body);
-        
+
         setState(() {
           valorTotal = responseData['valor_total'] ?? 0.0;
           valorMeta = responseData['valor_meta'] ?? 0.0;
@@ -156,7 +358,6 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
     final double currentValue = valorTotal ?? 0.0;
     final double targetValue = valorMeta ?? 1;
     final double progress = currentValue / targetValue;
-
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSurface,
@@ -204,11 +405,12 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                 const SizedBox(height: 10),
                 HomePageWidget(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  titleText: "R\$${currentValue.toStringAsFixed(2).replaceAll('.', ',')}",
+                  titleText:
+                      "R\$${currentValue.toStringAsFixed(2).replaceAll('.', ',')}",
                   textColor: Colors.green,
                   textSize: 18,
                   menuIcon: GestureDetector(
-                    onTap: () {},
+                    onTap: () => _menuOpcoes(context),
                     child: Icon(Icons.more_vert, size: 22),
                   ),
                   content: Column(
@@ -227,7 +429,9 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                                 ),
                                 AmountText(
                                   amount: valorMeta != null
-                                      ? valorMeta!.toStringAsFixed(2).replaceAll('.', ',')
+                                      ? valorMeta!
+                                          .toStringAsFixed(2)
+                                          .replaceAll('.', ',')
                                       : "0,00",
                                   fontSize: 8,
                                   color: Colors.black87,
@@ -300,38 +504,41 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   onPressed: () {},
                 ),
                 const SizedBox(height: 20),
-                ContainerWidget(
-                  height: 70,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  content: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 15.0, top: 9),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TitleText(
-                              text: "Notificação para guardar",
-                              fontSize: 16,
-                            ),
-                            SubtitleText(
-                              text:
-                                  "Escolha o valor mensal a guardar e o dia para\nser notificado.",
-                              fontSize: 9,
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
+                GestureDetector(
+                  onTap: () => _abrirModalNotificacaoParaGuardar(context),
+                  child: ContainerWidget(
+                    height: 70,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    content: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 9),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TitleText(
+                                text: "Notificação para guardar",
+                                fontSize: 16,
+                              ),
+                              SubtitleText(
+                                text:
+                                    "Escolha o dia do mês para ser lembrado de\nguardar dinheiro na reserva.",
+                                fontSize: 9,
+                                textAlign: TextAlign.start,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 15.0),
-                        child: Icon(
-                          Icons.keyboard_arrow_right,
-                          size: 24,
+                        Padding(
+                          padding: EdgeInsets.only(right: 15.0),
+                          child: Icon(
+                            Icons.keyboard_arrow_right,
+                            size: 24,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
