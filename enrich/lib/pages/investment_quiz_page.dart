@@ -39,7 +39,7 @@ class InvestmentQuizPage extends StatelessWidget {
                     Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => InvestmentQuiz()),
+                                    builder: (context) => const QuizScreen()),
                               );
                   }),
             ]),

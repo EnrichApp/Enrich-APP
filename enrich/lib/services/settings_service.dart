@@ -23,3 +23,24 @@ class ChangePasswordService {
     }
   }
 }
+
+class ExcluirContaService {
+  final _client = ApiBaseClient();
+
+  Future<String?> deleteAccount() async {
+    final response = await _client.delete(
+      'deletar_conta/',
+    );
+
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      try {
+        final decoded = jsonDecode(response.body);
+        return decoded['detail'] ?? 'Erro ao deletar conta.';
+      } catch (_) {
+        return 'Erro inesperado ao tentar deletar conta.';
+      }
+    }
+  }
+}

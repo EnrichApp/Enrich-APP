@@ -1,7 +1,9 @@
 import 'package:enrich/pages/settings_pages/change_password_page.dart';
+import 'package:enrich/services/settings_service.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -36,7 +38,8 @@ class AccountPage extends StatelessWidget {
   }
 }
 
-Widget _buildListTile(BuildContext context, String title, Widget? page, {bool isDelete = false}) {
+Widget _buildListTile(BuildContext context, String title, Widget? page,
+    {bool isDelete = false}) {
   return Column(
     children: [
       ListTile(
@@ -67,8 +70,12 @@ void _showConfirmationDialog(BuildContext context) {
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Colors.white,
-        title: const TitleText(text: "Confirmar exclusão", fontSize: 18,),
-        content: const SubtitleText(text: "Tem certeza que deseja excluir sua conta?"),
+        title: const TitleText(
+          text: "Confirmar exclusão",
+          fontSize: 18,
+        ),
+        content: const SubtitleText(
+            text: "Tem certeza que deseja excluir sua conta?"),
         actions: <Widget>[
           TextButton(
             child: const Text("Cancelar"),
@@ -78,13 +85,31 @@ void _showConfirmationDialog(BuildContext context) {
           ),
           TextButton(
             child: const Text("Excluir"),
-            onPressed: () {
-              Navigator.of(context).pop();
-              //TODO lógica para excluir a conta
-              Navigator.of(context).pushNamed("/");
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Conta excluída com sucesso!')),
-              );
+            onPressed: () async {
+              Navigator.of(context).pop(); // Fecha o diálogo
+
+              final service = ExcluirContaService();
+              final errorMessage = await service.deleteAccount();
+
+              if (context.mounted) {
+                if (errorMessage == null) {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs
+                      .clear(); // Remove token e outras informações locais
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Conta excluída com sucesso!')),
+                  );
+
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(errorMessage)),
+                  );
+                }
+              }
             },
           ),
         ],
