@@ -1,3 +1,5 @@
+import 'package:enrich/models/setiings.dart';
+import 'package:enrich/services/settings_service.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>(); // Chave do formulário
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -22,21 +25,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     super.dispose();
   }
 
-  // Função para alterar a senha (apenas a estrutura, sem lógica)
-  void _changePassword() {
+  void _changePassword() async {
     if (_formKey.currentState!.validate()) {
-      // TODO colocar a lógica para alterar a senha no back-end
-      // Exemplo:
-      // - Chamar um serviço de API para alterar a senha
-      // - Exibir feedback de sucesso ou erro baseado na resposta da API
+      final service = ChangePasswordService();
+      final model = ChangePasswordModel(
+        senhaAntiga: _oldPasswordController.text,
+        senhaNova: _newPasswordController.text,
+      );
 
-      // Exemplo de chamada fictícia à API:
-      // await ApiService.changePassword(
-      //   oldPassword: _oldPasswordController.text,
-      //   newPassword: _newPasswordController.text,
-      // );
-
-      // Lógica adicional após a resposta da API (sucesso ou falha)
+      final errorMessage = await service.changePassword(model);
+      if (errorMessage == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Senha alterada com sucesso!')),
+        );
+        Navigator.pop(context);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('falha ao alterar senha')),
+        );
+      }
     }
   }
 
@@ -46,7 +55,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
         iconTheme: const IconThemeData(
-          color: Colors.black, // Altere para a cor desejada
+          color: Colors.black,
         ),
         title: const TitleText(
           text: "Alterar senha",

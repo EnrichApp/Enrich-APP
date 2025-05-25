@@ -12,7 +12,7 @@ class InviteFriendsPage extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
         iconTheme: const IconThemeData(
-          color: Colors.black, // Altere para a cor desejada
+          color: Colors.black,
         ),
         title: const TitleText(
           text: "Convidar Amigos",
