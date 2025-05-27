@@ -85,7 +85,7 @@ class InvestmentQuizResultPage extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item,
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                     ],
@@ -96,6 +96,7 @@ class InvestmentQuizResultPage extends StatelessWidget {
               Center(
                 child: RoundedTextButton(
                   fontSize: 16,
+                  buttonColor: Theme.of(context).colorScheme.tertiary, 
                   text: 'Voltar ao início',
                   onPressed: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);

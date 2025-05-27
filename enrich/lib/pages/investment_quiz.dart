@@ -20,11 +20,13 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   final List<QuestionData> _questions = [
     QuestionData(
-      questionText: "Você prefere investimentos com baixo risco e retorno previsível?",
+      questionText:
+          "Você prefere investimentos com baixo risco e retorno previsível?",
       options: ["Sim", "Não"],
     ),
     QuestionData(
-      questionText: "Você se sente confortável com oscilações no valor dos investimentos?",
+      questionText:
+          "Você se sente confortável com oscilações no valor dos investimentos?",
       options: ["Sim", "Não"],
     ),
     QuestionData(
@@ -36,15 +38,18 @@ class _QuizScreenState extends State<QuizScreen> {
       options: ["Sim", "Não"],
     ),
     QuestionData(
-      questionText: "Você se preocupa mais com segurança do que com rentabilidade?",
+      questionText:
+          "Você se preocupa mais com segurança do que com rentabilidade?",
       options: ["Sim", "Não"],
     ),
     QuestionData(
-      questionText: "Você está disposto a investir por longos períodos sem resgatar o dinheiro?",
+      questionText:
+          "Você está disposto a investir por longos períodos sem resgatar o dinheiro?",
       options: ["Sim", "Não"],
     ),
     QuestionData(
-      questionText: "Você aceitaria perder parte do investimento para buscar maior rentabilidade?",
+      questionText:
+          "Você aceitaria perder parte do investimento para buscar maior rentabilidade?",
       options: ["Sim", "Não"],
     ),
     QuestionData(
@@ -52,7 +57,8 @@ class _QuizScreenState extends State<QuizScreen> {
       options: ["Sim", "Não"],
     ),
     QuestionData(
-      questionText: "Você já investe regularmente e acompanha o mercado financeiro?",
+      questionText:
+          "Você já investe regularmente e acompanha o mercado financeiro?",
       options: ["Sim", "Não"],
     ),
   ];
@@ -111,28 +117,50 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     final question = _questions[_currentStep];
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Pergunta ${_currentStep + 1} de ${_questions.length}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Text(question.questionText, style: const TextStyle(fontSize: 20)),
-          const SizedBox(height: 24),
-          ...question.options.map(
-            (option) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: ElevatedButton(
-                onPressed: () => _responder(option),
-                child: Text(option),
+    return Scaffold(
+      body: Container(
+        color: Theme.of(context).colorScheme.onSurface,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Pergunta ${_currentStep + 1} de ${_questions.length}',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                question.questionText,
+                style: const TextStyle(
+                    fontSize: 20,
+                    color: Color(0xFF2D8BBA),
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: question.options
+                  .map(
+                    (option) => ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(120, 50),
+                      ),
+                      onPressed: () => _responder(option),
+                      child: Text(option, style: const TextStyle(fontSize: 16, color: Color(0xFF2D8BBA),)),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
