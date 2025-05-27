@@ -24,6 +24,8 @@ class EmergenceReservePage extends StatefulWidget {
 class _EmergenceReservePageState extends State<EmergenceReservePage> {
   double? valorTotal;
   double? valorMeta;
+  bool? notificacao;
+  DateTime? diaMesNotificacao;
 
   @override
   void initState() {
@@ -54,9 +56,9 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
     );
   }
 
-    void _abrirModalNotificacaoParaGuardar(BuildContext context) {
-    bool notificacaoAtiva = false;
-    int? diaSelecionado;
+  void _abrirModalNotificacaoParaGuardar(BuildContext context) {
+    bool notificacaoAtiva = notificacao ?? false;
+    int? diaSelecionado = diaMesNotificacao?.day;
     String? erro;
 
     showDialog(
@@ -64,7 +66,8 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: const Text('Notificação para guardar', style: TextStyle(color: Colors.black)),
+          title: const Text('Notificação para guardar',
+              style: TextStyle(color: Colors.black)),
           content: StatefulBuilder(
             builder: (context, setState) {
               return Column(
@@ -73,7 +76,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   SwitchListTile(
                     inactiveThumbColor: Colors.white,
                     inactiveTrackColor: Colors.grey,
-                    title: const Text('Ativar notificação mensal', style: TextStyle(color: Colors.black),),
+                    title: const Text(
+                      'Ativar notificação mensal',
+                      style: TextStyle(color: Colors.black),
+                    ),
                     value: notificacaoAtiva,
                     onChanged: (val) {
                       setState(() {
@@ -86,11 +92,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                     DropdownButtonFormField<int>(
                       value: diaSelecionado,
                       decoration: InputDecoration(
-                        labelText: 'Dia do mês (1-29)',
-                        errorText: erro,
-                        filled: true,
-                        fillColor: Colors.white
-                      ),
+                          labelText: 'Dia do mês (1-29)',
+                          errorText: erro,
+                          filled: true,
+                          fillColor: Colors.white),
                       dropdownColor: Colors.white,
                       style: const TextStyle(color: Colors.black),
                       items: List.generate(29, (index) {
@@ -144,7 +149,8 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   if (response.statusCode == 200) {
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Configuração salva com sucesso!')),
+                      const SnackBar(
+                          content: Text('Configuração salva com sucesso!')),
                     );
                     await _consultarReservaEmergencia();
                   } else {
@@ -334,6 +340,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
         setState(() {
           valorTotal = responseData['valor_total'] ?? 0.0;
           valorMeta = responseData['valor_meta'] ?? 0.0;
+          notificacao = responseData['notificacao'] ?? false;
+          diaMesNotificacao = responseData['dia_mes_notificacao'] != null
+            ? DateTime.parse(responseData['dia_mes_notificacao'])
+            : null;
         });
       } else if (responseConsulta.statusCode == 404) {
         _abrirModalCriarReservaEmergencia(context);
