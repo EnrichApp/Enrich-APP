@@ -27,10 +27,18 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
   bool? notificacao;
   DateTime? diaMesNotificacao;
 
+  int paginaHistorico = 1;
+  final int elementosPorPagina = 5;
+  bool carregandoMais = false;
+  bool chegouNoFim = false;
+
+  List<Map<String, dynamic>> historico = [];
+
   @override
   void initState() {
     super.initState();
     _consultarReservaEmergencia();
+    _consultarHistoricoReservaEmergencia();
   }
 
   void _menuOpcoes(BuildContext ctx) {
@@ -330,6 +338,120 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
     );
   }
 
+  Future<void> _abrirModalTransacaoReserva(
+      BuildContext context, String tipoAcao) async {
+    final valorController = TextEditingController();
+    final double? valorAnterior = valorTotal;
+
+    String titulo;
+    String labelBotao;
+    Color corSnack;
+
+    if (tipoAcao == 'REMOCAO') {
+      titulo = 'Valor a remover';
+      labelBotao = 'Remover';
+      corSnack = Colors.red;
+    } else if (tipoAcao == 'RENDIMENTO') {
+      titulo = 'Valor do rendimento';
+      labelBotao = 'Informar';
+      corSnack = Colors.green;
+    } else {
+      titulo = 'Valor a adicionar';
+      labelBotao = 'Adicionar';
+      corSnack = Colors.green;
+    }
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext ctx2) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(titulo, style: const TextStyle(color: Colors.black)),
+          content: TextField(
+            controller: valorController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.black),
+            decoration: const InputDecoration(
+              hintText: 'Digite o valor em reais',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx2),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final valorDigitado = double.tryParse(
+                  valorController.text.replaceAll(',', '.'),
+                );
+
+                if (valorDigitado == null || valorDigitado <= 0 || valorAnterior == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Digite um valor válido.')),
+                  );
+                  return;
+                }
+
+                final novoValor = tipoAcao == 'REMOCAO'
+                    ? valorAnterior - valorDigitado
+                    : valorAnterior + valorDigitado;
+
+                if (tipoAcao == 'REMOCAO' && novoValor < 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Você não pode remover mais do que tem.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                final body = {
+                  "valor_total": novoValor,
+                  "acao": tipoAcao,
+                  "data_acao": DateTime.now().toIso8601String(),
+                };
+
+                try {
+                  final response = await apiClient.patch(
+                    'reserva-detail/',
+                    body: jsonEncode(body),
+                  );
+
+                  if (response.statusCode == 200) {
+                    Navigator.pop(ctx2);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Valor modificado com sucesso!'), backgroundColor: corSnack),
+                    );
+                    await _consultarReservaEmergencia();
+                    await _resetarHistoricoReserva();
+                  } else {
+                    throw Exception();
+                  }
+                } catch (e) {
+                  Navigator.pop(ctx2);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Erro ao salvar valor. Tente novamente mais tarde'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Text(labelBotao),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _consultarReservaEmergencia() async {
     try {
       final responseConsulta = await apiClient.get('reserva-detail/');
@@ -342,8 +464,8 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
           valorMeta = responseData['valor_meta'] ?? 0.0;
           notificacao = responseData['notificacao'] ?? false;
           diaMesNotificacao = responseData['dia_mes_notificacao'] != null
-            ? DateTime.parse(responseData['dia_mes_notificacao'])
-            : null;
+              ? DateTime.parse(responseData['dia_mes_notificacao'])
+              : null;
         });
       } else if (responseConsulta.statusCode == 404) {
         _abrirModalCriarReservaEmergencia(context);
@@ -359,6 +481,57 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  Future<void> _resetarHistoricoReserva() async {
+    setState(() {
+      historico.clear();
+      paginaHistorico = 1;
+      chegouNoFim = false;
+    });
+    await _consultarHistoricoReservaEmergencia();
+  }
+
+  Future<void> _consultarHistoricoReservaEmergencia(
+      {bool carregarMaisPagina = false}) async {
+    if (carregandoMais || chegouNoFim) return;
+
+    setState(() {
+      carregandoMais = true;
+    });
+
+    try {
+      final responseConsulta = await apiClient.get(
+        'reserva-historico/?pagina=$paginaHistorico&elementosPorPagina=$elementosPorPagina',
+      );
+
+      if (responseConsulta.statusCode == 200) {
+        final data = jsonDecode(responseConsulta.body);
+        final List novosRegistros = data['results'];
+
+        if (novosRegistros.isEmpty || data['next'] == null) {
+          chegouNoFim = true;
+        }
+
+        setState(() {
+          historico.addAll(novosRegistros.cast<Map<String, dynamic>>());
+          paginaHistorico++;
+        });
+      } else {
+        throw Exception('Erro inesperado');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Erro ao consultar histórico.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        carregandoMais = false;
+      });
     }
   }
 
@@ -469,39 +642,51 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                             ),
                             SizedBox(height: 15),
                             // Opções para adicionar, informar rendimento e remover dinheiro
-                            LittleTextTile(
-                              iconColor: Colors.green,
-                              iconSize: 22,
-                              text: "Adicionar dinheiro",
-                              icon: CircularIcon(
-                                iconData: Icons.add,
-                                size: 26,
-                                backgroundColor: Colors.green,
-                                iconColor: Colors.white,
+                            GestureDetector(
+                              onTap: () => _abrirModalTransacaoReserva(
+                                  context, 'ADICAO'),
+                              child: LittleTextTile(
+                                iconColor: Colors.green,
+                                iconSize: 22,
+                                text: "Adicionar dinheiro",
+                                icon: CircularIcon(
+                                  iconData: Icons.add,
+                                  size: 26,
+                                  backgroundColor: Colors.green,
+                                  iconColor: Colors.white,
+                                ),
                               ),
                             ),
                             SizedBox(height: 5),
-                            LittleTextTile(
-                              iconColor: Colors.green,
-                              iconSize: 22,
-                              text: "Informar rendimento",
-                              icon: CircularIcon(
-                                iconData: Icons.show_chart,
-                                size: 26,
-                                backgroundColor: Colors.green,
-                                iconColor: Colors.white,
+                            GestureDetector(
+                              onTap: () => _abrirModalTransacaoReserva(
+                                  context, 'RENDIMENTO'),
+                              child: LittleTextTile(
+                                iconColor: Colors.green,
+                                iconSize: 22,
+                                text: "Informar rendimento",
+                                icon: CircularIcon(
+                                  iconData: Icons.show_chart,
+                                  size: 26,
+                                  backgroundColor: Colors.green,
+                                  iconColor: Colors.white,
+                                ),
                               ),
                             ),
                             SizedBox(height: 5),
-                            LittleTextTile(
-                              iconColor: Colors.red,
-                              iconSize: 22,
-                              text: "Remover dinheiro",
-                              icon: CircularIcon(
-                                iconData: Icons.remove,
-                                size: 26,
-                                backgroundColor: Colors.red,
-                                iconColor: Colors.white,
+                            GestureDetector(
+                              onTap: () => _abrirModalTransacaoReserva(
+                                  context, 'REMOCAO'),
+                              child: LittleTextTile(
+                                iconColor: Colors.red,
+                                iconSize: 22,
+                                text: "Remover dinheiro",
+                                icon: CircularIcon(
+                                  iconData: Icons.remove,
+                                  size: 26,
+                                  backgroundColor: Colors.red,
+                                  iconColor: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -561,32 +746,50 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                         text: "Histórico da Reserva",
                         fontSize: 16,
                       ),
-                      SizedBox(height: 10),
-                      SubtitleText(
-                        text: "27 de setembro - R\$54,90",
-                        fontSize: 12,
-                      ),
-                      SizedBox(height: 10),
-                      // Use um ListView.builder para gerar o histórico de maneira dinâmica
-                      ListView.builder(
-                        shrinkWrap:
-                            true, // Para que o ListView não tente ocupar mais espaço
-                        physics:
-                            NeverScrollableScrollPhysics(), // Impede a rolagem do ListView interno
-                        itemCount:
-                            1, // Altere para o número real de itens no histórico
+                      SizedBox(height: 20),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: historico.length,
                         itemBuilder: (context, index) {
+                          final item = historico[index];
+                          final valor = item['valor'];
+                          final acao = item['acao'];
+                          final data = DateTime.parse(item['data_acao']);
+                          final ehAdicao = acao == 'ADICAO' || acao == 'RENDIMENTO';
+
                           return HistoricEmergence(
-                            icon:
-                                Icon(Icons.add, color: Colors.white, size: 20),
-                            typeText: "Guardado",
-                            time: "11h45",
-                            amount: "+ R\$ 14,90",
-                            amountColor: Colors.green,
+                            icon: Icon(
+                              ehAdicao ? Icons.add : Icons.remove,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            typeText: acao == 'RENDIMENTO' ? 'Rendimento' : (ehAdicao ? 'Guardado' : 'Retirado'),
+                            time: "${data.hour.toString().padLeft(2, '0')}h${data.minute.toString().padLeft(2, '0')}",
+                            amount: "${ehAdicao ? '+' : '-'} R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}",
+                            amountColor: ehAdicao ? Colors.green : Colors.red,
                             fontSize: 14,
                           );
                         },
+                        separatorBuilder: (context, index) => const SizedBox(height: 20),
                       ),
+                      if (!chegouNoFim)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 20),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.grey[200],
+                              ),
+                              onPressed: carregandoMais ? null : () => _consultarHistoricoReservaEmergencia(carregarMaisPagina: true),
+                              child: carregandoMais
+                                  ? const CircularProgressIndicator()
+                                  : const Text("Carregar mais"),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
