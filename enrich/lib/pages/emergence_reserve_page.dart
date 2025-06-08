@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:enrich/pages/questions_form_page.dart';
+import 'package:enrich/utils/date_format.dart';
 import 'package:enrich/widgets/circular_icon.dart';
 import 'package:enrich/widgets/container_widget.dart';
 import 'package:enrich/widgets/create_object_widget.dart';
@@ -13,6 +14,7 @@ import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class EmergenceReservePage extends StatefulWidget {
   const EmergenceReservePage({super.key});
@@ -755,8 +757,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                           final item = historico[index];
                           final valor = item['valor'];
                           final acao = item['acao'];
-                          final data = DateTime.parse(item['data_acao']);
+                          final dataHora = FormatadorData.formatarUtcParaLocal(item['data_acao']);
+
                           final ehAdicao = acao == 'ADICAO' || acao == 'RENDIMENTO';
+
 
                           return HistoricEmergence(
                             icon: Icon(
@@ -765,7 +769,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                               size: 20,
                             ),
                             typeText: acao == 'RENDIMENTO' ? 'Rendimento' : (ehAdicao ? 'Guardado' : 'Retirado'),
-                            time: "${data.hour.toString().padLeft(2, '0')}h${data.minute.toString().padLeft(2, '0')}",
+                            time: dataHora,
                             amount: "${ehAdicao ? '+' : '-'} R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}",
                             amountColor: ehAdicao ? Colors.green : Colors.red,
                             fontSize: 14,

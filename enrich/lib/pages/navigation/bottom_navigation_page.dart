@@ -12,10 +12,10 @@ class BottomNavigationPage extends StatefulWidget {
 }
 
 class _BottomNavigationPageState extends State<BottomNavigationPage> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    ExtraIncomePage(),
+    //ExtraIncomePage(),
     HomePage(),
     SettingsPage()
   ];
@@ -35,10 +35,11 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
             });
           },
           items: const [
+            /*
             BottomNavigationBarItem(
               icon: Icon(Icons.monetization_on_outlined),
               label: "",
-            ),
+            ),*/
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: "",

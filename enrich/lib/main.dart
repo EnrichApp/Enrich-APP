@@ -9,10 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:enrich/pages/navigation/bottom_navigation_page.dart';
 import 'package:enrich/utils/api_base_client.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
-
+  
+  await initializeDateFormatting('pt_BR', null);
   String initialRoute = await determinarRotaInicial();
 
   runApp(Enrich(initialRoute: initialRoute));
