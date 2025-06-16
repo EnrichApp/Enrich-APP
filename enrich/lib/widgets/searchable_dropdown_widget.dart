@@ -43,6 +43,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: TextField(
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: 'Buscar…',
                       prefixIcon: Icon(Icons.search),
@@ -59,7 +60,10 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                             e.toLowerCase().contains(filtro.toLowerCase()))
                         .map(
                           (e) => ListTile(
-                            title: Text(e),
+                            title: Text(
+                              e,
+                              style: const TextStyle(
+                                  color: Colors.black),                            ),
                             onTap: () => Navigator.pop(ctx, e),
                           ),
                         )

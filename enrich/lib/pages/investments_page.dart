@@ -95,17 +95,39 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               DropdownButtonFormField<String>(
                 value: tipoSelecionado,
                 decoration: const InputDecoration(labelText: 'Tipo'),
+                dropdownColor: Theme.of(context).colorScheme.tertiary,
+                focusColor: Theme.of(context).colorScheme.tertiary,
                 items: const [
-                  DropdownMenuItem(value: 'FIIs', child: Text('FIIs')),
                   DropdownMenuItem(
-                      value: 'Ações Exterior', child: Text('Ações Exterior')),
+                      value: 'FIIs',
+                      child: Text(
+                        'FIIs',
+                        style: TextStyle(color: Colors.black),
+                      )),
                   DropdownMenuItem(
-                      value: 'Renda Fixa', child: Text('Renda Fixa')),
+                      value: 'Ações Exterior',
+                      child: Text(
+                        'Ações Exterior',
+                        style: TextStyle(color: Colors.black),
+                      )),
                   DropdownMenuItem(
-                      value: 'Commodities', child: Text('Commodities')),
+                      value: 'Renda Fixa',
+                      child: Text(
+                        'Renda Fixa',
+                        style: TextStyle(color: Colors.black),
+                      )),
+                  DropdownMenuItem(
+                      value: 'Commodities',
+                      child: Text(
+                        'Commodities',
+                        style: TextStyle(color: Colors.black),
+                      )),
                   DropdownMenuItem(
                       value: 'Fundos Multimercado',
-                      child: Text('Fundos Multimercado')),
+                      child: Text(
+                        'Fundos Multimercado',
+                        style: TextStyle(color: Colors.black),
+                      )),
                 ],
                 onChanged: (val) async {
                   setStateModal(() {
@@ -144,6 +166,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
               // ---------- VALOR ----------
               TextField(
+                style: const TextStyle(color: Colors.black),
                 controller: valorCtrl,
                 decoration: const InputDecoration(labelText: 'Valor (R\$)'),
                 keyboardType: TextInputType.number,
@@ -170,9 +193,81 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 );
                 if (mounted) Navigator.of(ctx).pop(true); // sucesso
               } catch (e) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  SnackBar(content: Text('Erro: $e')),
+                print('Erro ao registrar investimento: $e');
+              }
+            },
+            onCancel: () => Navigator.of(ctx).pop(false),
+          ),
+        );
+      },
+    ).then((salvou) {
+      if (salvou == true) _carregarDados();
+    });
+  }
+
+  Future<void> _abrirModalRegistrarVenda() async {
+    final valorCtrl = TextEditingController();
+    final List<InvestmentPosicao> posicoes = await _svc.fetchPosicoes();
+    final List<InvestmentPosicao> ativos =
+        posicoes.where((p) => p.saldo > 0).toList();
+
+    InvestmentPosicao? selecionado;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setStateModal) => CreateObjectWidget(
+            title: 'Registrar venda',
+            fields: [
+              DropdownButtonFormField<InvestmentPosicao>(
+                value: selecionado,
+                decoration: const InputDecoration(labelText: 'Ativo'),
+                items: ativos.map((p) {
+                  return DropdownMenuItem(
+                    value: p,
+                    child: Text('${p.tipo} - ${p.codigo}',
+                        style: const TextStyle(color: Colors.black)),
+                  );
+                }).toList(),
+                onChanged: (val) => setStateModal(() => selecionado = val),
+              ),
+              TextField(
+                controller: valorCtrl,
+                decoration:
+                    const InputDecoration(labelText: 'Valor da venda (R\$)'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+            onSave: () async {
+              final venda =
+                  double.tryParse(valorCtrl.text.replaceAll(',', '.'));
+              if (selecionado == null || venda == null) {
+                return; // Não faz nada se não estiver completo
+              }
+
+              try {
+                await _svc.registrarVenda(
+                  tipo: selecionado!.tipo,
+                  codigo: selecionado!.codigo,
+                  valor: venda,
                 );
+
+                if (!mounted) return;
+
+                // Mostra snackbar de sucesso
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Venda registrada com sucesso.'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+
+                Navigator.of(ctx).pop(true);
+              } catch (e) {
+                print('Erro ao registrar venda: $e');
               }
             },
             onCancel: () => Navigator.of(ctx).pop(false),
@@ -293,9 +388,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                                 backgroundColor: Colors.red,
                                 iconColor: Colors.white,
                               ),
-                              onIconTap: () => ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text('Em breve 🙂'))),
+                              onIconTap: _abrirModalRegistrarVenda,
                             ),
                           ],
                         ),

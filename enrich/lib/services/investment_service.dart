@@ -1,5 +1,3 @@
-// lib/services/investment_service.dart
-//
 // Serviço único para conversar com o backend de investimentos.
 // ­– Usa apenas endpoints já existentes no Django –
 //
