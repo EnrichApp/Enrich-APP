@@ -63,7 +63,7 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
           future: _future,
           builder: (_, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator(backgroundColor: Colors.green, color: Colors.white,));
             }
             if (snap.hasError) {
               return Center(child: Text('Erro: ${snap.error}'));
@@ -83,8 +83,7 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               itemCount: data.length,
               separatorBuilder: (_, __) => Divider(
-                height: 1,
-                color: theme.colorScheme.surface,
+                color: const Color.fromARGB(255, 148, 174, 187),
               ),
               itemBuilder: (_, i) {
                 final p = data[i];
@@ -98,9 +97,7 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
                         : theme.colorScheme.surface,
                     child: Icon(
                       saldoPositivo ? Icons.trending_up : Icons.trending_down,
-                      color: saldoPositivo
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.surface,
+                      color: Colors.white,
                       size: 20,
                     ),
                   ),

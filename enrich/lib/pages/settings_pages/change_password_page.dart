@@ -1,4 +1,4 @@
-import 'package:enrich/models/setiings.dart';
+import 'package:enrich/models/settings.dart';
 import 'package:enrich/services/settings_service.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';

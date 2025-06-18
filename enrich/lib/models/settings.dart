@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class ChangePasswordModel {
   final String senhaAntiga;
   final String senhaNova;
@@ -10,5 +12,17 @@ class ChangePasswordModel {
   Map<String, dynamic> toJson() => {
         'senha_antiga': senhaAntiga,
         'senha_nova': senhaNova,
+      };
+}
+
+class UpdateIncomeModel {
+  final double rendaLiquidaFixa;
+
+  UpdateIncomeModel({
+    required this.rendaLiquidaFixa
+  });
+
+  Map<String, dynamic> toJson() => {
+        'renda_liquida_fixa_mensal': rendaLiquidaFixa,
       };
 }
