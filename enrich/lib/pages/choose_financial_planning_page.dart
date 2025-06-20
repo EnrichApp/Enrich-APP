@@ -1,4 +1,7 @@
 import 'package:enrich/pages/financial_planning_page.dart';
+import 'package:enrich/pages/home_page.dart';
+import 'package:enrich/services/financial_planning_service.dart';
+import 'package:enrich/utils/api_base_client.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/dotted_button.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
@@ -11,6 +14,8 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final apiClient = ApiBaseClient();
+    final planningService = FinancialPlanningService(apiClient);
 
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.onSurface,
@@ -89,7 +94,8 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                        builder: (context) => const FinancialPlanningPage()),
+                                            builder: (context) =>
+                                                const HomePage()),
                                       );
                                     },
                                     borderColor: null,
@@ -135,12 +141,35 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                     width: 140,
                                     height: 25,
                                     fontSize: 9,
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                        builder: (context) => const FinancialPlanningPage()),
+                                    onPressed: () async {
+                                      // 2. Exibe Loader
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (_) => const Center(
+                                            child: CircularProgressIndicator()),
                                       );
+                                      try {
+                                        // 3. Chama o service
+                                        final planning = await planningService
+                                            .createTemplate503020();
+                                        // 4. Fecha loader e navega
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                FinancialPlanningPage(
+                                                    planning: planning),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(content: Text('Erro: $e')),
+                                        );
+                                      }
                                     },
                                     borderColor: null,
                                     borderWidth: 0.0),
@@ -161,10 +190,10 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                   DottedButton(
                     onPressed: () {
                       Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                        builder: (context) => const FinancialPlanningPage()),
-                                      );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                      );
                     },
                     icon: Icon(Icons.add_circle_outline),
                     text: "Criar planejamento personalizado",
