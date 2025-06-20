@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class ChangePasswordModel {
   final String senhaAntiga;
   final String senhaNova;

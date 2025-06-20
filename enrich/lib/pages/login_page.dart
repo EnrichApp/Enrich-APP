@@ -2,7 +2,6 @@ import 'package:enrich/utils/api_base_client.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 import 'package:enrich/widgets/form_widget.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
-import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
