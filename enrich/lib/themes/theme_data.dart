@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 ThemeData themeData = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.fromSwatch().copyWith(
-    primary: const Color(0xFF16804C), //verde escuro
+    primary: const Color(0xFF0C5A38), //verde escuro Enrich
     secondary: const Color(0xFF5FAF46), //verde claro
     tertiary: const Color(0xFF2D8BBA), //azul
     surface: const Color(0xFFEB3034), //vermelho

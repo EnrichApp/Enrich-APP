@@ -44,6 +44,15 @@ dependencies:
   shared_preferences: ^2.3.5
   intl: ^0.19.0
   dropdown_search: ^6.0.2
+  flutter_native_splash: ^2.4.6
+
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/logo_enrich.png
+  android: true
+  ios: true
+  web: false
 
 dev_dependencies:
   flutter_test:

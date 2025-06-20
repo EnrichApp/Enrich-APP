@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         if (cadastroCompleto == true) {
           Navigator.of(context).pushReplacementNamed('/bottom_navigation_page');
         } else {
@@ -107,11 +107,9 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Image.asset(
               './assets/images/logo_enrich.png',
-              height: 160,
+              height: 90,
             ),
-            const SizedBox(height: 25),
-            const TitleText(text: 'Faça seu login'),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             FormWidget(
               hintText: 'Digite o seu e-mail.',
               controller: emailController,
@@ -121,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 15),
             FormWidget(
               hintText: 'Digite a sua senha.',
               obscureText: true,
@@ -132,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 15),
             RoundedTextButton(
               text: 'Acessar',
               width: 300,
