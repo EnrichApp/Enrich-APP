@@ -86,6 +86,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
+      style: const TextStyle(color: Colors.black),
       readOnly: true,
       decoration: InputDecoration(
         labelText: widget.label,

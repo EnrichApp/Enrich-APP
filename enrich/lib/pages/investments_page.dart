@@ -160,6 +160,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                       )
               else
                 TextField(
+                  style: const TextStyle(color: Colors.black),
                   controller: codigoCtrl,
                   decoration: const InputDecoration(labelText: 'Código'),
                 ),
@@ -223,20 +224,24 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
             fields: [
               DropdownButtonFormField<InvestmentPosicao>(
                 value: selecionado,
-                decoration: const InputDecoration(labelText: 'Ativo'),
+                decoration: const InputDecoration(labelText: 'Ativo',
+                filled: true,
+                fillColor: Colors.white,),
+                dropdownColor: Colors.white,
                 items: ativos.map((p) {
                   return DropdownMenuItem(
                     value: p,
                     child: Text('${p.tipo} - ${p.codigo}',
-                        style: const TextStyle(color: Colors.black)),
+                        style: const TextStyle(color: Colors.black, backgroundColor: Colors.white)),
                   );
                 }).toList(),
                 onChanged: (val) => setStateModal(() => selecionado = val),
               ),
               TextField(
                 controller: valorCtrl,
+                style: const TextStyle(color: Colors.black),
                 decoration:
-                    const InputDecoration(labelText: 'Valor da venda (R\$)'),
+                    const InputDecoration(labelText: 'Valor da venda (R\$)', labelStyle: TextStyle(color: Colors.black),),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -360,7 +365,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                         ],
                       ),
                       titleText: '',
-                      menuIcon: const Icon(Icons.more_vert, size: 22),
+                      //menuIcon: const Icon(Icons.more_vert, size: 22),
                       content: Padding(
                         padding: const EdgeInsets.only(left: 15, top: 10),
                         child: Column(

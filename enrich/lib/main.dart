@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:enrich/pages/navigation/bottom_navigation_page.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -31,6 +32,15 @@ class Enrich extends StatelessWidget {
       theme: themeData,
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+        Locale('en', ''), // fallback se necessário
+      ],
       routes: {
         '/': (context) => const LoginPage(),
         '/register_page': (context) => const RegisterPage(),

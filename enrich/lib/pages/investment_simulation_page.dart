@@ -1,5 +1,8 @@
+import 'package:enrich/widgets/inputs/month_year_input_formatter.dart';
+import 'package:enrich/widgets/inputs/percentage_input_formatter.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
+import 'package:enrich/widgets/inputs/money_input_formatter.dart';
 import 'package:flutter/material.dart';
 
 class InvestmentSimulationPage extends StatefulWidget {
@@ -18,6 +21,24 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
   double? _selectedEarnings;
   String? _selectedMonth;
 
+  @override
+  void initState() {
+    super.initState();
+
+    _initialInvestmentController.addListener(() => setState(() {}));
+    _monthlyInvestmentController.addListener(() => setState(() {}));
+    _expectedReturnRateController.addListener(() => setState(() {}));
+    _targetDateController.addListener(() => setState(() {}));
+  }
+
+
+  bool _formularioValido() {
+    return _initialInvestmentController.text.trim().isNotEmpty &&
+        _monthlyInvestmentController.text.trim().isNotEmpty &&
+        _expectedReturnRateController.text.trim().isNotEmpty &&
+        _targetDateController.text.trim().isNotEmpty;
+  }
+
   void _simulateInvestment() {
     double initialInvestment =
         double.tryParse(_initialInvestmentController.text) ?? 0;
@@ -29,7 +50,7 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
     _chartData = List.generate(12, (index) {
       double totalInvestment = initialInvestment + (monthlyInvestment * index);
       double projectedReturn = totalInvestment * expectedReturnRate;
-      return _ChartData('Mês ${index + 1}', projectedReturn);
+      return _ChartData('mês ${index + 1}', projectedReturn);
     });
 
     setState(() {
@@ -99,25 +120,33 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
                 text: 'Simulações',
                 fontSize: 20,
               ),
-              _buildTextField(_initialInvestmentController,
-                  'Qual será o seu aporte inicial?', 'Ex.: 200.00'),
-              _buildTextField(
-                  _monthlyInvestmentController,
-                  'Quanto dinheiro você pretende investir mensalmente?',
-                  'Ex.: 200.00'),
-              _buildTextField(
-                  _expectedReturnRateController,
-                  'Qual taxa de rendimento mensal você espera com seus investimentos?',
-                  'Ex.: 1'),
-              _buildTextField(
-                  _targetDateController,
-                  'Para qual mês e ano você deseja simular resultados?',
-                  'Ex.: 12/2025'),
-              SizedBox(height: 20),
+              buildMoneyField(
+                controller: _initialInvestmentController,
+                label: 'Qual será o seu aporte inicial?',
+              ),
+              buildMoneyField(
+                controller: _monthlyInvestmentController,
+                label: 'Quanto dinheiro você pretende investir mensalmente?',
+              ),
+              buildPercentField(
+                controller: _expectedReturnRateController,
+                label: 'Qual taxa de rendimento mensal você espera com seus investimentos?',
+              ),
+              buildMonthYearPickerField(
+                controller: _targetDateController,
+                label: 'Para qual mês e ano você deseja simular resultados?',
+                context: context,
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _simulateInvestment,
+                onPressed: _formularioValido() ? _simulateInvestment : () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Preencha todos os campos.')),
+                  );
+                  return;
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.tertiary, // Cor de fundo azul
+                  backgroundColor: _formularioValido() ? Theme.of(context).colorScheme.tertiary : Colors.grey, // Cor de fundo azul
                   padding: EdgeInsets.symmetric(
                       vertical: 16), // Espaçamento vertical do botão
                   shape: RoundedRectangleBorder(
@@ -141,7 +170,7 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        'No mês de $_selectedMonth',
+                        'No $_selectedMonth',
                         style: TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                     ),
@@ -149,57 +178,63 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
                       'R\$ ${_selectedEarnings?.toStringAsFixed(2)}',
                       style: TextStyle(fontSize: 28, color: Colors.green, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 30),
                     Container(
-                      height: 150,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        thickness: 4,
-                        radius: Radius.circular(10),
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _chartData.length,
-                          itemBuilder: (context, index) {
-                            final data = _chartData[index];
-                            final isSelected = data.month == _selectedMonth;
-                            
-                            return GestureDetector(
-                              onTap: () => _onBarTapped(data),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 5),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 100, // Altura máxima da barra
-                                      child: Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Container(
-                                          width: 40,
-                                          height: data.returnValue, // Altura proporcional ao valor
-                                          decoration: BoxDecoration(
-                                            color: isSelected ? Theme.of(context).colorScheme.tertiary : Colors.blue.shade200,
-                                            borderRadius: BorderRadius.circular(5),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      data.month,
-                                      style: TextStyle(
-                                        color: isSelected ? Theme.of(context).colorScheme.tertiary : Colors.grey,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+  height: 170,
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: Scrollbar(
+    thumbVisibility: true,
+    thickness: 4,
+    radius: Radius.circular(10),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: _chartData.map((data) {
+          final isSelected = data.month == _selectedMonth;
+
+          return GestureDetector(
+            onTap: () => _onBarTapped(data),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: 40,
+                        height: data.returnValue,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.tertiary
+                              : Colors.blue.shade200,
+                          borderRadius: BorderRadius.circular(5),
                         ),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    data.month,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Colors.grey,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    ),
+  ),
+),
+
                     SizedBox(height: 50),
                   ],
                 ),
