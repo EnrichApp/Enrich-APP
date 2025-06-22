@@ -82,7 +82,14 @@ class InvestmentService {
       }),
     );
     if (res.statusCode != 201) {
-      throw Exception('Falha ao registrar venda');
+      final msgErroGenerica = "Ocorreu um erro ao registrar venda. Tente novamente mais tarde.";
+
+      if (res.statusCode != 400) {
+        throw Exception(msgErroGenerica);
+      }
+      final body = jsonDecode(res.body);
+      final msg = body['venda']?[0] ?? msgErroGenerica;
+      throw Exception(msg);
     }
   }
 

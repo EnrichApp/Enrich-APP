@@ -22,11 +22,12 @@ class DottedButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: DottedBorder(
-        color: Colors.grey, // Cor das bordas pontilhadas
-        strokeWidth: 1, // Espessura da borda
-        borderType: BorderType.RRect, // Tipo de borda (arredondada)
-        dashPattern: const [5, 3], // Definição do padrão das serrilhas
-        radius: const Radius.circular(20), // Arredondamento das bordas
+        options: RoundedRectDottedBorderOptions(
+          color: Colors.grey, // Cor das bordas pontilhadas
+          strokeWidth: 1, // Espessura da borda
+          dashPattern: const [5, 3], // Definição do padrão das serrilhas
+          radius: const Radius.circular(20), // Arredondamento das bordas
+        ),
         child: InkWell(
           onTap: () {
             onPressed();

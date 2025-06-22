@@ -170,7 +170,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 style: const TextStyle(color: Colors.black),
                 controller: valorCtrl,
                 decoration: const InputDecoration(labelText: 'Valor (R\$)'),
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
               ),
             ],
             onSave: () async {
@@ -224,15 +224,19 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
             fields: [
               DropdownButtonFormField<InvestmentPosicao>(
                 value: selecionado,
-                decoration: const InputDecoration(labelText: 'Ativo',
-                filled: true,
-                fillColor: Colors.white,),
+                decoration: const InputDecoration(
+                  labelText: 'Ativo',
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 dropdownColor: Colors.white,
                 items: ativos.map((p) {
                   return DropdownMenuItem(
                     value: p,
                     child: Text('${p.tipo} - ${p.codigo}',
-                        style: const TextStyle(color: Colors.black, backgroundColor: Colors.white)),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.white)),
                   );
                 }).toList(),
                 onChanged: (val) => setStateModal(() => selecionado = val),
@@ -240,9 +244,11 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
               TextField(
                 controller: valorCtrl,
                 style: const TextStyle(color: Colors.black),
-                decoration:
-                    const InputDecoration(labelText: 'Valor da venda (R\$)', labelStyle: TextStyle(color: Colors.black),),
-                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Valor da venda (R\$)',
+                  labelStyle: TextStyle(color: Colors.black),
+                ),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
               ),
             ],
             onSave: () async {
@@ -272,7 +278,10 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
                 Navigator.of(ctx).pop(true);
               } catch (e) {
-                print('Erro ao registrar venda: $e');
+                final errorMessage = e.toString().replaceFirst('Exception: ', '');
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text(errorMessage)),
+                );
               }
             },
             onCancel: () => Navigator.of(ctx).pop(false),
