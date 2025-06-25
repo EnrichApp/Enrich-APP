@@ -3,28 +3,73 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../models/financial_planning.dart';
 import '../widgets/texts/little_text.dart';
 import '../widgets/texts/title_text.dart';
+import '../services/financial_planning_service.dart';
+import '../utils/api_base_client.dart';
 
-class FinancialPlanningPage extends StatelessWidget {
-  final FinancialPlanning planning;
-  const FinancialPlanningPage({super.key, required this.planning});
+class FinancialPlanningPage extends StatefulWidget {
+  const FinancialPlanningPage({super.key});
+
+  @override
+  State<FinancialPlanningPage> createState() => _FinancialPlanningPageState();
+}
+
+class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
+  FinancialPlanning? planning;
+  bool loading = true;
+  String? errorMsg;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarPlanejamento();
+  }
+
+  Future<void> _carregarPlanejamento() async {
+    try {
+      // Busque o planejamento (ajuste para seu service/model)
+      final p =
+          await FinancialPlanningService(ApiBaseClient()).getExistingPlanning();
+      setState(() {
+        planning = p;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        loading = false;
+        errorMsg = 'Erro ao buscar planejamento financeiro';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
+      );
+    }
+
+    if (errorMsg != null || planning == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Planejamento Financeiro"),
+          leading: BackButton(),
+        ),
+        body: Center(child: Text(errorMsg ?? 'Erro')),
+      );
+    }
+
     const double horizontalPadding = 30.0;
-    // Cores originais para as caixinhas
     final colors = [Colors.purple, Colors.blue, Colors.grey];
 
-    // Dados para o gráfico com cores
-    final List<ChartData> chartData = planning.caixinhas.map((c) {
-      final idx = planning.caixinhas.indexOf(c);
+    final List<ChartData> chartData = planning!.caixinhas.map((c) {
+      final idx = planning!.caixinhas.indexOf(c);
       final color = colors[idx < colors.length ? idx : 0];
       return ChartData(c.nome, c.porcentagem, color);
     }).toList();
 
-    // Totais baseados em valorMeta das caixinhas
-    final double totalPlanejado =
-        planning.caixinhas.fold(0.0, (sum, c) => sum + c.valorMeta);
-    const double totalNaoPlanejado = 0.0;
+    final double totalPlanejado = planning!.totalPlanejado;
+    final double totalNaoPlanejado = planning!.totalNaoPlanejado;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSurface,
@@ -48,7 +93,7 @@ class FinancialPlanningPage extends StatelessWidget {
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
           children: [
             const SizedBox(height: 20),
             const TitleText(text: 'Planejamento Financeiro', fontSize: 20),
@@ -87,8 +132,8 @@ class FinancialPlanningPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Lista de caixinhas com cores originais
-            ...planning.caixinhas.map((c) {
-              final idx = planning.caixinhas.indexOf(c);
+            ...planning!.caixinhas.map((c) {
+              final idx = planning!.caixinhas.indexOf(c);
               final color = colors[idx < colors.length ? idx : 0];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),

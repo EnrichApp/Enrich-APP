@@ -151,16 +151,13 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                       );
                                       try {
                                         // 3. Chama o service
-                                        final planning = await planningService
-                                            .createTemplate503020();
                                         // 4. Fecha loader e navega
                                         Navigator.of(context).pop();
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) =>
-                                                FinancialPlanningPage(
-                                                    planning: planning),
+                                                const FinancialPlanningPage(),
                                           ),
                                         );
                                       } catch (e) {
