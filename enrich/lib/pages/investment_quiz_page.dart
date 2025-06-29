@@ -1,5 +1,6 @@
 import 'package:enrich/pages/investment_quiz.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
+import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,24 @@ class InvestmentQuizPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.onSurface, iconTheme: IconThemeData(color: Colors.black),),
+      appBar: AppBar(
+        leadingWidth: 100,
+        iconTheme: const IconThemeData(color: Colors.black),
+        leading: GestureDetector(
+          onTap: () => Navigator.of(context)
+              .popUntil((route) => route.settings.name == '/investments_page'),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.arrow_back_ios_new, size: 14),
+              SizedBox(width: 2),
+              LittleText(text: 'Voltar', fontSize: 12, underlined: true),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Container(
         color: Theme.of(context).colorScheme.onSurface,
         child: Column(
@@ -24,7 +42,7 @@ class InvestmentQuizPage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: SubtitleText(
                     text:
-                        'Olá, Amanda! Para te fornecer sugestões personalizadas de investimentos, precisamos saber qual é o seu perfil de investidor(a). Para isso, preparamos um teste de 2 minutos.'),
+                        'Para te fornecer sugestões personalizadas de investimentos, precisamos saber qual é o seu perfil de investidor(a). Para isso, preparamos um teste de 2 minutos.'),
               ),
               const SizedBox(height: 15),
               const SubtitleText(text: ' Está pronto(a) para começar?'),

@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:enrich/pages/investment_quiz_page.dart';
+import 'package:enrich/pages/investments_page.dart';
+import 'package:enrich/utils/api_base_client.dart';
+import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:flutter/material.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
@@ -5,12 +11,13 @@ import 'package:enrich/widgets/buttons/rounded_text_button.dart';
 class InvestmentQuizResultPage extends StatelessWidget {
   final String perfil;
   final List<String> sugestoes;
+  final bool jaSalvo;
 
-  const InvestmentQuizResultPage({
-    super.key,
-    required this.perfil,
-    required this.sugestoes,
-  });
+  InvestmentQuizResultPage(
+      {super.key,
+      required this.perfil,
+      required this.sugestoes,
+      this.jaSalvo = false});
 
   Color _getPerfilColor(String perfil) {
     switch (perfil.toLowerCase()) {
@@ -38,12 +45,69 @@ class InvestmentQuizResultPage extends StatelessWidget {
     }
   }
 
+  final ApiBaseClient apiClient = ApiBaseClient();
+
+  Future<void> _salvarPerfil(BuildContext context) async {
+    try {
+      final response = await apiClient.post(
+        'investimento/perfil_investidor/',
+        body: jsonEncode({'perfil': perfil}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Perfil de investidor salvo com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context)
+            .popUntil((route) => route.settings.name == '/investments_page');
+      } else {
+        final erro = jsonDecode(response.body);
+        final msg =
+            erro['perfil']?.first ?? 'Erro ao salvar o perfil de investidor.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao salvar o perfil de investidor.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final perfilColor = _getPerfilColor(perfil);
     final perfilIcon = _getPerfilIcon(perfil);
 
     return Scaffold(
+      appBar: AppBar(
+        leadingWidth: 100,
+        iconTheme: const IconThemeData(color: Colors.black),
+        leading: GestureDetector(
+          onTap: () => Navigator.of(context)
+              .popUntil((route) => route.settings.name == '/investments_page'),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.arrow_back_ios_new, size: 14),
+              SizedBox(width: 2),
+              LittleText(text: 'Voltar', fontSize: 12, underlined: true),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       backgroundColor: Theme.of(context).colorScheme.onSurface,
       body: SafeArea(
         child: Padding(
@@ -85,7 +149,8 @@ class InvestmentQuizResultPage extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item,
-                          style: const TextStyle(fontSize: 16, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
                         ),
                       ),
                     ],
@@ -93,18 +158,43 @@ class InvestmentQuizResultPage extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Center(
-                child: RoundedTextButton(
-                  fontSize: 16,
-                  buttonColor: Theme.of(context).colorScheme.tertiary, 
-                  text: 'Voltar ao início',
-                  onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  width: 260,
-                  height: 50,
-                ),
-              ),
+              jaSalvo
+                  ? Center(
+                      child: RoundedTextButton(
+                        text: 'Refazer teste',
+                        fontSize: 16,
+                        buttonColor: Theme.of(context).colorScheme.tertiary,
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => InvestmentQuizPage()),
+                        ),
+                        width: 360,
+                        height: 50,
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RoundedTextButton(
+                          text: 'Refazer teste',
+                          fontSize: 16,
+                          buttonColor: Theme.of(context).colorScheme.tertiary,
+                          onPressed: () => Navigator.of(context).pop(),
+                          width: 200,
+                          height: 50,
+                        ),
+                        const SizedBox(width: 10),
+                        RoundedTextButton(
+                          text: 'Salvar',
+                          fontSize: 16,
+                          buttonColor: Colors.green.shade700,
+                          onPressed: () => _salvarPerfil(context),
+                          width: 150,
+                          height: 50,
+                        ),
+                      ],
+                    ),
             ],
           ),
         ),

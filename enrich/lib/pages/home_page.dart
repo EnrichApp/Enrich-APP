@@ -765,11 +765,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InvestmentsPage()),
-                        );
+                        Navigator.of(context).pushNamed('/investments_page');
                       }),
                   SizedBox(height: 90),
                 ],

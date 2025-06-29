@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:enrich/pages/investment_quiz_result_page.dart';
 import 'package:enrich/pages/investment_wallet.dart';
+import 'package:enrich/utils/api_base_client.dart';
 import 'package:enrich/widgets/searchable_dropdown_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -34,6 +37,50 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
   void initState() {
     super.initState();
     _carregarDados();
+  }
+
+  final ApiBaseClient apiClient = ApiBaseClient();
+
+  Future<void> _consultarPerfilInvestidorEDirecionarParaPagina(
+      BuildContext context) async {
+    try {
+      final response = await apiClient.get(
+        'investimento/perfil_investidor/',
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        final perfil = body['perfil_investidor'];
+        final sugestoes = List<String>.from(body['sugestoes']);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => InvestmentQuizResultPage(
+                    perfil: perfil,
+                    sugestoes: sugestoes,
+                    jaSalvo: true
+                  )),
+        );
+      } else if (response.statusCode == 404) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => InvestmentQuizPage()),
+        );
+      } else {
+        throw Exception();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Erro ao consultar o seu perfil de investidor. Tente novamente mais tarde.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _carregarDados() async {
@@ -278,7 +325,8 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
 
                 Navigator.of(ctx).pop(true);
               } catch (e) {
-                final errorMessage = e.toString().replaceFirst('Exception: ', '');
+                final errorMessage =
+                    e.toString().replaceFirst('Exception: ', '');
                 ScaffoldMessenger.of(ctx).showSnackBar(
                   SnackBar(content: Text(errorMessage)),
                 );
@@ -333,11 +381,9 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                       children: [
                         const TitleText(text: 'Investimentos', fontSize: 20),
                         InkWell(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const InvestmentQuizPage()),
-                          ),
+                          onTap: () async {
+                          await _consultarPerfilInvestidorEDirecionarParaPagina(context);
+                          },
                           child: Text(
                             'Ver sugestões personalizadas de investimentos.',
                             style: TextStyle(
