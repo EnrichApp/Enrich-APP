@@ -151,6 +151,8 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                       );
                                       try {
                                         // 3. Chama o service
+                                        planningService
+                                            .createTemplate503020();
                                         // 4. Fecha loader e navega
                                         Navigator.of(context).pop();
                                         Navigator.push(
