@@ -179,6 +179,57 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                 ),
               );
             }).toList(),
+            // ... depois do .map das caixinhas
+            const SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: () async {
+                // TODO: Chamar endpoint para finalizar investimento/planejamento
+                // Exemplo de ação:
+                final confirm = await showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text("Finalizar Planejamento", style: TextStyle(color: Colors.black),),
+                    content: const Text(
+                        "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
+                        style: TextStyle(
+                          color: Colors.black,)
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text("Cancelar"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text("Finalizar"),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  // Aqui você faz a requisição para finalizar.
+                  // await FinancialPlanningService(ApiBaseClient()).finalizarPlanning(planning!.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Planejamento finalizado com sucesso!')),
+                  );
+                  // Você pode dar um pop ou recarregar a tela, como preferir
+                  Navigator.of(context).pop();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                textStyle:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              child: const Text("Finalizar Planejamento"),
+            ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
