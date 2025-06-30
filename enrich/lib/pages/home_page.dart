@@ -5,7 +5,6 @@ import 'package:enrich/pages/emergence_reserve_page.dart';
 import 'package:enrich/pages/choose_financial_planning_page.dart';
 import 'package:enrich/pages/financial_planning_page.dart';
 import 'package:enrich/pages/goals_page.dart';
-import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/pages/reports_page.dart';
 import 'package:enrich/services/cartao_service.dart';
 import 'package:enrich/services/financial_planning_service.dart';
@@ -23,6 +22,7 @@ import '../widgets/little_list_tile.dart';
 import '../widgets/texts/title_text.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,6 +54,11 @@ class _HomePageState extends State<HomePage> {
     _buscarDividas();
     _consultarReservaEmergencia();
     _buscarFaturasCartao();
+  }
+
+  String get mesAnoAtual {
+    final data = DateFormat('MMMM \'de\' y', 'pt_BR').format(DateTime.now());
+    return data[0].toUpperCase() + data.substring(1);
   }
 
   void _abrirModalAdicionarGanho() {
@@ -381,7 +386,7 @@ class _HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SubtitleText(
-                                text: 'Setembro de 2024 - ',
+                                text: '$mesAnoAtual - ',
                                 fontSize: 13,
                               ),
                               GestureDetector(

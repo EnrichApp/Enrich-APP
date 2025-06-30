@@ -49,7 +49,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ),
         );
 
-        Navigator.of(context).pushReplacementNamed('/info_to_user_page');
+        Navigator.of(context).pushReplacementNamed('/');
       } else if (responseValidarCodigo.statusCode == 400) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
