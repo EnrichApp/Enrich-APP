@@ -137,41 +137,43 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                     )),
                                 SizedBox(height: 10),
                                 RoundedTextButton(
-                                    text: "Gerar automaticamente",
-                                    width: 140,
-                                    height: 25,
-                                    fontSize: 9,
-                                    onPressed: () async {
-                                      // 2. Exibe Loader
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => const Center(
-                                            child: CircularProgressIndicator()),
+                                  text: "Gerar automaticamente",
+                                  width: 140,
+                                  height: 25,
+                                  fontSize: 9,
+                                  onPressed: () async {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => const Center(
+                                          child: CircularProgressIndicator()),
+                                    );
+                                    try {
+                                      await planningService
+                                          .createTemplate503020();
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const FinancialPlanningPage(),
+                                        ),
                                       );
-                                      try {
-                                        // 3. Chama o service
-                                        planningService
-                                            .createTemplate503020();
-                                        // 4. Fecha loader e navega
-                                        Navigator.of(context).pop();
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                const FinancialPlanningPage(),
-                                          ),
-                                        );
-                                      } catch (e) {
-                                        Navigator.of(context).pop();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(content: Text('Erro: $e')),
-                                        );
-                                      }
-                                    },
-                                    borderColor: null,
-                                    borderWidth: 0.0),
+                                    } catch (e) {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content: Text(
+                                              'Erro ao criar planejamento'),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  borderColor: null,
+                                  borderWidth: 0.0,
+                                ),
                               ],
                             ),
                           ],

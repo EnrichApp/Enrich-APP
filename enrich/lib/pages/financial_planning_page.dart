@@ -1,3 +1,4 @@
+import 'package:enrich/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../models/financial_planning.dart';
@@ -76,7 +77,11 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
       appBar: AppBar(
         leadingWidth: 100,
         leading: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          },
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -189,12 +194,15 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                 final confirm = await showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Text("Finalizar Planejamento", style: TextStyle(color: Colors.black),),
+                    title: const Text(
+                      "Finalizar Planejamento",
+                      style: TextStyle(color: Colors.black),
+                    ),
                     content: const Text(
                         "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
                         style: TextStyle(
-                          color: Colors.black,)
-                    ),
+                          color: Colors.black,
+                        )),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
