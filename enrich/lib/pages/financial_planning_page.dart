@@ -141,49 +141,85 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
               final idx = planning!.caixinhas.indexOf(c);
               final color = colors[idx < colors.length ? idx : 0];
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 14),
                 child: Container(
-                  color: Colors.white,
-                  height: 70,
-                  child: ListTile(
-                    leading: ClipOval(
-                      child: Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: [
-                          Container(
-                            color: color,
-                            width: 45,
-                            height: 45,
-                          ),
-                          Image.asset(
-                            'assets/images/planning_page_jar.png',
-                            height: 23,
-                            width: 23,
-                          ),
-                        ],
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.08),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
                       ),
-                    ),
-                    title: TitleText(text: c.nome, fontSize: 13),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    ],
+                  ),
+                  height: 80,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TitleText(
-                          text: '${c.porcentagem.toStringAsFixed(0)}%',
-                          fontSize: 17,
-                          color: color,
+                        // Primeira linha: Ícone, nome e porcentagem
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Container(
+                                color: color,
+                                width: 25,
+                                height: 25,
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/planning_page_jar.png',
+                                    height: 15,
+                                    width: 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TitleText(
+                                text: c.nome,
+                                fontSize: 13,
+                              ),
+                            ),
+                            TitleText(
+                              text: '${c.porcentagem.toStringAsFixed(0)}%',
+                              fontSize: 14,
+                              color: color,
+                            ),
+                          ],
                         ),
-                        TitleText(
-                          text: 'R\$ ${c.valorMeta.toStringAsFixed(2)}',
-                          fontSize: 15,
+                        const SizedBox(height: 6),
+                        // Segunda linha: Planejado e Realizado
+                        Row(
+                          children: [
+                            LittleText(
+                              text:
+                                  'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
+                              fontSize: 11,
+                              color: Colors.black87,
+                            ),
+                            const SizedBox(width: 10),
+                            LittleText(
+                              text:
+                                  'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
+                              fontSize: 11,
+                              color: Colors.black54,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    onTap: () {},
                   ),
                 ),
               );
             }).toList(),
+
             // ... depois do .map das caixinhas
             const SizedBox(height: 30),
 
