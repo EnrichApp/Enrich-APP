@@ -97,4 +97,21 @@ class FinancialPlanningService {
       throw Exception('Resposta inesperada ao listar caixinhas.');
     }
   }
+
+  Future<void> finalizarPlanning() async {
+  final resp = await _client.post('planejamento/finalizar/');
+  if (resp.statusCode != 200) {
+    // Tenta ler mensagem de erro amigável do backend
+    String errorMsg;
+    try {
+      final body = jsonDecode(resp.body);
+      errorMsg = body['error'] ?? 'Erro ao finalizar planejamento.';
+    } catch (_) {
+      errorMsg = 'Erro ao finalizar planejamento.';
+    }
+    // Agora lança só o texto puro
+    throw errorMsg;
+  }
+  // Se quiser, pode retornar algo aqui para mostrar a mensagem de sucesso do backend
+}
 }

@@ -251,8 +251,6 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
 
             ElevatedButton(
               onPressed: () async {
-                // TODO: Chamar endpoint para finalizar investimento/planejamento
-                // Exemplo de ação:
                 final confirm = await showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
@@ -261,10 +259,11 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                       style: TextStyle(color: Colors.black),
                     ),
                     content: const Text(
-                        "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
-                        style: TextStyle(
-                          color: Colors.black,
-                        )),
+                      "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
@@ -278,14 +277,23 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                   ),
                 );
                 if (confirm == true) {
-                  // Aqui você faz a requisição para finalizar.
-                  // await FinancialPlanningService(ApiBaseClient()).finalizarPlanning(planning!.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Planejamento finalizado com sucesso!')),
-                  );
-                  // Você pode dar um pop ou recarregar a tela, como preferir
-                  Navigator.of(context).pop();
+                  try {
+                    await FinancialPlanningService(ApiBaseClient())
+                        .finalizarPlanning();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'Planejamento finalizado e arquivado com sucesso!'),
+                      ),
+                    );
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const HomePage()),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString()), backgroundColor: Colors.red,),
+                    );
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -299,6 +307,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
               ),
               child: const Text("Finalizar Planejamento"),
             ),
+
             const SizedBox(height: 40),
           ],
         ),
