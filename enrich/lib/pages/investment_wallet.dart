@@ -6,11 +6,15 @@
 //   • TitleText / LittleText
 //
 
+import 'dart:convert';
+
+import 'package:enrich/utils/api_base_client.dart';
 import 'package:flutter/material.dart';
 import '../models/investment_models.dart';
 import '../services/investment_service.dart';
 import '../widgets/texts/title_text.dart';
 import '../widgets/texts/little_text.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class InvestmentWalletPage extends StatefulWidget {
   const InvestmentWalletPage({super.key});
@@ -30,7 +34,45 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
   }
 
   Future<void> _recarregar() async {
-    setState(() => _future = _svc.fetchPosicoes());
+    final novaFuture = _svc.fetchPosicoes();
+    setState(() {
+      _future = novaFuture;
+    });
+  }
+  
+  final ApiBaseClient apiClient = ApiBaseClient();
+
+  Future<void> _onExcluirInvestimento(
+      InvestmentPosicao posicao, BuildContext context) async {
+    try {
+      final response = await apiClient.post(
+        'investimento/excluir/',
+        body: jsonEncode({'tipo': posicao.tipo, 'codigo': posicao.codigo}),
+      );
+
+      if (response.statusCode == 200) {
+        await _recarregar();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ativo excluído da sua carteira com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        throw Exception();
+      }
+    } catch (e) {
+      print(e);
+      final msg =
+          'Ocorreu um erro ao excluir o ativo da sua carteira. Tente novamente mais tarde.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -63,7 +105,11 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
           future: _future,
           builder: (_, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(backgroundColor: Colors.green, color: Colors.white,));
+              return const Center(
+                  child: CircularProgressIndicator(
+                backgroundColor: Colors.green,
+                color: Colors.white,
+              ));
             }
             if (snap.hasError) {
               return Center(child: Text('Erro: ${snap.error}'));
@@ -73,7 +119,6 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
               return const Center(child: Text('Nenhum investimento ainda.'));
             }
 
-            // Ordena por tipo e código para uma leitura mais fácil
             data.sort((a, b) {
               final byTipo = a.tipo.compareTo(b.tipo);
               return byTipo != 0 ? byTipo : a.codigo.compareTo(b.codigo);
@@ -87,44 +132,85 @@ class _InvestmentWalletPage extends State<InvestmentWalletPage> {
               ),
               itemBuilder: (_, i) {
                 final p = data[i];
-                final saldoPositivo = p.saldo >= 0;
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: saldoPositivo
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.surface,
-                    child: Icon(
-                      saldoPositivo ? Icons.trending_up : Icons.trending_down,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  title: Text(
-                    '${p.codigo} – ${p.tipo}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  ),
-                  subtitle: Text(
-                    'Entradas: R\$${p.totalEntrada.toStringAsFixed(2)}   '
-                    'Vendas: R\$${p.totalVenda.toStringAsFixed(2)}',
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                final saldoPositivo = p.valor_investido >= 0;
+                return Slidable(
+                  key: ValueKey('${p.tipo}-${p.codigo}'),
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                    extentRatio: 0.25,
                     children: [
-                      const Text('Saldo',
-                          style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      Text(
-                        'R\$${p.saldo.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: saldoPositivo
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.surface,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      SlidableAction(
+                        onPressed: (_) async {
+                          final confirmar = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text(
+                                'Confirmar exclusão',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              content: Text(
+                                'Deseja realmente excluir ${p.codigo} da sua carteira?',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('Excluir',
+                                      style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirmar == true) {
+                            _onExcluirInvestimento(p, context);
+                          }
+                        },
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Excluir',
                       ),
                     ],
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.only(left: 0, right: 20),
+                    leading: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: saldoPositivo
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.surface,
+                      child: Icon(
+                        saldoPositivo ? Icons.trending_up : Icons.trending_down,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    title: Text(
+                      '${p.codigo} – ${p.tipo}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text('Saldo',
+                            style: TextStyle(fontSize: 11, color: Colors.grey)),
+                        Text(
+                          'R\$${p.valor_investido.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: saldoPositivo
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.surface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

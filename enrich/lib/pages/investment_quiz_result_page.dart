@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:enrich/pages/investment_quiz_page.dart';
-import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:flutter/material.dart';

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:enrich/pages/investment_quiz_result_page.dart';
 import 'package:enrich/pages/investment_wallet.dart';
 import 'package:enrich/utils/api_base_client.dart';
+import 'package:enrich/widgets/container_widget.dart';
 import 'package:enrich/widgets/searchable_dropdown_widget.dart';
+import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -257,7 +259,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
     final valorCtrl = TextEditingController();
     final List<InvestmentPosicao> posicoes = await _svc.fetchPosicoes();
     final List<InvestmentPosicao> ativos =
-        posicoes.where((p) => p.saldo > 0).toList();
+        posicoes.where((p) => p.valor_investido > 0).toList();
 
     InvestmentPosicao? selecionado;
 
@@ -460,27 +462,44 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                   const SizedBox(height: 20),
                   // ---- Caixa de notificação (placeholder) ----
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: HomePageWidget(
-                      height: 105,
-                      showSeeMoreText: false,
-                      titleText: 'Notificar para investir',
-                      content: Row(
-                        children: const [
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: LittleText(
-                              text:
-                                  'Escolha o valor mensal a investir e o dia a ser notificado.',
-                              textAlign: TextAlign.left,
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: GestureDetector(
+                    onTap: () => print('tap'),
+                    child: ContainerWidget(
+                      height: 70,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      content: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 15.0, top: 9),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TitleText(
+                                  text: "Notificação para investir",
+                                  fontSize: 16,
+                                ),
+                                SubtitleText(
+                                  text:
+                                      "Escolha o dia do mês para ser lembrado de\ninvestir dinheiro.",
+                                  fontSize: 9,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios_outlined, size: 20),
-                          SizedBox(width: 16),
+                          Padding(
+                            padding: EdgeInsets.only(right: 15.0),
+                            child: Icon(
+                              Icons.keyboard_arrow_right,
+                              size: 24,
+                            ),
+                          ),
                         ],
                       ),
-                      onPressed: () {},
                     ),
+                                    ),
                   ),
                   const SizedBox(height: 20),
                   // ---- Carteira / gráfico ----
@@ -540,35 +559,35 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                   // ---- Simulação de resultados ----
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: HomePageWidget(
-                      height: 110,
-                      showSeeMoreText: false,
-                      titleText: 'Simulações de Resultados',
-                      content: Row(
-                        children: [
-                          const SizedBox(width: 16),
-                          const Expanded(
-                            child: LittleText(
-                              text:
-                                  'Simule os resultados que você terá com seus investimentos ao longo do tempo.',
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (_) => InvestmentSimulationPage()),
                             ),
-                            child: const Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                        ],
+                      child: HomePageWidget(
+                        height: 110,
+                        showSeeMoreText: false,
+                        titleText: 'Simulações de Resultados',
+                        content: Row(
+                          children: [
+                            const SizedBox(width: 16),
+                            const Expanded(
+                              child: LittleText(
+                                text:
+                                    'Simule os resultados que você terá com seus investimentos ao longo do tempo.',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),  
+                              const Icon(
+                                Icons.arrow_forward_ios_outlined,
+                                size: 20,
+                              ),
+                            const SizedBox(width: 16),
+                          ],
+                        ),
+                        onPressed: () {},
                       ),
-                      onPressed: () {},
                     ),
                   ),
                   const SizedBox(height: 50),

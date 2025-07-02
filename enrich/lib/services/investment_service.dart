@@ -82,7 +82,8 @@ class InvestmentService {
       }),
     );
     if (res.statusCode != 201) {
-      final msgErroGenerica = "Ocorreu um erro ao registrar venda. Tente novamente mais tarde.";
+      final msgErroGenerica =
+          "Ocorreu um erro ao registrar venda. Tente novamente mais tarde.";
 
       if (res.statusCode != 400) {
         throw Exception(msgErroGenerica);
@@ -100,7 +101,7 @@ class InvestmentService {
     if (res.statusCode != 200) {
       throw Exception('Erro ao obter histórico (status ${res.statusCode})');
     }
-
+    
     final List histRaw = jsonDecode(res.body);
     final historico =
         histRaw.map((e) => InvestmentLancamento.fromJson(e)).toList();
@@ -116,18 +117,13 @@ class InvestmentService {
         mapa[key] = InvestmentPosicao(
           tipo: l.tipo,
           codigo: l.codigo,
-          totalEntrada: l.entrada,
-          totalVenda: l.venda,
-          saldo: l.entrada - l.venda,
+          valor_investido: l.valor_investido,
         );
       } else {
         mapa[key] = InvestmentPosicao(
           tipo: existente.tipo,
           codigo: existente.codigo,
-          totalEntrada: existente.totalEntrada + l.entrada,
-          totalVenda: existente.totalVenda + l.venda,
-          saldo: (existente.totalEntrada + l.entrada) -
-              (existente.totalVenda + l.venda),
+          valor_investido: existente.valor_investido,
         );
       }
     }

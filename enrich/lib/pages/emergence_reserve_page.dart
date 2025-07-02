@@ -518,6 +518,8 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
           historico.addAll(novosRegistros.cast<Map<String, dynamic>>());
           paginaHistorico++;
         });
+      } else if(responseConsulta.statusCode == 404) {
+        
       } else {
         throw Exception('Erro inesperado');
       }
