@@ -5,6 +5,7 @@ import 'package:enrich/pages/verify_email_page.dart';
 import 'package:enrich/pages/info_to_user_page.dart';
 import 'package:enrich/pages/login_page.dart';
 import 'package:enrich/pages/register_page.dart';
+import 'package:enrich/providers/resumo_financeiro_provider.dart';
 import 'package:enrich/themes/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ import 'package:enrich/pages/navigation/bottom_navigation_page.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -19,7 +21,14 @@ void main() async {
   await initializeDateFormatting('pt_BR', null);
   String initialRoute = await determinarRotaInicial();
 
-  runApp(Enrich(initialRoute: initialRoute));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ResumoFinanceiroProvider()),
+      ],
+      child: Enrich(initialRoute: initialRoute),
+    ),
+  );
 }
 
 class Enrich extends StatelessWidget {

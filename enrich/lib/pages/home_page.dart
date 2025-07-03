@@ -6,6 +6,7 @@ import 'package:enrich/pages/choose_financial_planning_page.dart';
 import 'package:enrich/pages/financial_planning_page.dart';
 import 'package:enrich/pages/goals_page.dart';
 import 'package:enrich/pages/reports_page.dart';
+import 'package:enrich/providers/resumo_financeiro_provider.dart';
 import 'package:enrich/services/cartao_service.dart';
 import 'package:enrich/services/financial_planning_service.dart';
 import 'package:enrich/widgets/create_object_widget.dart';
@@ -23,6 +24,7 @@ import '../widgets/texts/title_text.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,9 +37,6 @@ class _HomePageState extends State<HomePage> {
   String? nomeUsuario;
   final ApiBaseClient apiClient = ApiBaseClient();
   late final FinancialPlanningService planningService;
-  double? ganhos;
-  double? gastos;
-  double? total;
   List<dynamic>? metas;
   List<dynamic>? dividas;
   double? valorTotalReserva = 0.0;
@@ -48,12 +47,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     planningService = FinancialPlanningService(apiClient);
+    _initResumoFinanceiro();
     _buscarNomeUsuario();
-    _buscarResumoFinanceiro();
     _buscarMetas();
     _buscarDividas();
     _consultarReservaEmergencia();
     _buscarFaturasCartao();
+  }
+
+  void _initResumoFinanceiro() {
+    final provider =
+        Provider.of<ResumoFinanceiroProvider>(context, listen: false);
+    provider.buscarResumo(apiClient);
   }
 
   String get mesAnoAtual {
@@ -93,8 +98,9 @@ class _HomePageState extends State<HomePage> {
         }
         try {
           await planningService.adicionarGanho(nome: nome, quantia: valor);
+          Provider.of<ResumoFinanceiroProvider>(context, listen: false)
+              .buscarResumo(apiClient);
           Navigator.of(context).pop();
-          await _buscarResumoFinanceiro();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Ganho adicionado!')),
           );
@@ -107,89 +113,104 @@ class _HomePageState extends State<HomePage> {
     final nomeController = TextEditingController();
     final valorController = TextEditingController();
     int? caixinhaSelecionada;
-    List<Caixinha> caixinhas = [];
 
-    showCreateObjectModal(
-      context: context,
-      title: 'Adicionar Gasto',
-      fields: [
-        FormWidget(
-          hintText: 'Nome do Gasto',
-          controller: nomeController,
-          onChanged: (_) {},
-        ),
-        FormWidget(
-          hintText: 'Valor',
-          controller: valorController,
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          onChanged: (_) {},
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 12.0, left: 4),
-          child: FutureBuilder<List<Caixinha>>(
-            future: planningService.listarCaixinhas(),
-            builder: (ctx, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2));
-              }
-              caixinhas = snapshot.data!;
-              return DropdownButtonFormField<int>(
-                decoration: const InputDecoration(
-                  labelText: 'Caixinha',
-                  border: OutlineInputBorder(),
+    // Carrega as caixinhas ANTES de abrir o modal
+    planningService.listarCaixinhas().then((caixinhas) {
+      showCreateObjectModal(
+        context: context,
+        title: 'Adicionar Gasto',
+        fields: caixinhas.isEmpty
+            ? [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Crie um Planejamento Financeiro antes de registrar um gasto.',
+                    style: TextStyle(color: Colors.red, fontSize: 15),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                isExpanded: true,
-                value: caixinhaSelecionada,
-                items: caixinhas
-                    .map(
-                      (c) => DropdownMenuItem(
-                        value: c.id,
-                        child: Text(c.nome),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (val) {
-                  caixinhaSelecionada = val;
-                },
-              );
-            },
-          ),
-        ),
-      ],
-      onSave: () async {
-        final nome = nomeController.text.trim();
-        final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
+              ]
+            : [
+                FormWidget(
+                  hintText: 'Nome do Gasto',
+                  controller: nomeController,
+                  onChanged: (_) {},
+                ),
+                FormWidget(
+                  hintText: 'Valor',
+                  controller: valorController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (_) {},
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, left: 4),
+                  child: DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Caixinha',
+                      border: OutlineInputBorder(),
+                    ),
+                    isExpanded: true,
+                    value: caixinhaSelecionada,
+                    items: caixinhas
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c.id,
+                            child: Text(c.nome),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (val) {
+                      caixinhaSelecionada = val;
+                    },
+                  ),
+                ),
+              ],
+        onSave: () async {
+          // Impede salvar caso não haja caixinhas
+          if (caixinhas.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text(
+                      'Crie um Planejamento Financeiro para registrar um gasto.')),
+            );
+            return;
+          }
 
-        if (nome.isEmpty || valor <= 0 || caixinhaSelecionada == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Preencha todos os campos corretamente')),
-          );
-          return;
-        }
-        try {
-          await planningService.adicionarGasto(
-            nome: nome,
-            quantia: valor,
-            caixinhaId: caixinhaSelecionada!,
-          );
-          Navigator.of(context).pop();
-          await _buscarResumoFinanceiro();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gasto adicionado!')),
-          );
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro: $e')),
-          );
-        }
-      },
-    );
+          final nome = nomeController.text.trim();
+          final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
+
+          if (nome.isEmpty || valor <= 0 || caixinhaSelecionada == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Preencha todos os campos corretamente')),
+            );
+            return;
+          }
+          try {
+            await planningService.adicionarGasto(
+              nome: nome,
+              quantia: valor,
+              caixinhaId: caixinhaSelecionada!,
+            );
+            Provider.of<ResumoFinanceiroProvider>(context, listen: false)
+                .buscarResumo(apiClient);
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Gasto adicionado!')),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erro: $e')),
+            );
+          }
+        },
+      );
+    });
   }
 
   void handlePlanningNavigation() async {
     final response = await apiClient.get('planejamento/listar/');
+    print('Response status: ${response.body}');
     if (response.statusCode == 200) {
       Navigator.push(
         context,
@@ -225,22 +246,6 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       throw Exception('Erro ao buscar o nome do usuário.');
-    }
-  }
-
-  Future<void> _buscarResumoFinanceiro() async {
-    final response = await apiClient.get(
-      'profile/resumo-financeiro/',
-    );
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      setState(() {
-        ganhos = responseData['total_ganhos'];
-        gastos = responseData['total_gastos'];
-        total = responseData['lucro'];
-      });
-    } else {
-      throw Exception('Erro ao buscar o resumo financeiro.');
     }
   }
 
@@ -339,6 +344,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final resumoProvider = Provider.of<ResumoFinanceiroProvider>(context);
+
     final List<ChartData> chartData = [
       ChartData('David', 25),
       ChartData('Steve', 38),
@@ -417,9 +424,8 @@ class _HomePageState extends State<HomePage> {
                                 LittleText(text: 'Ganhos:  '),
                                 TitleText(
                                   color: Theme.of(context).colorScheme.primary,
-                                  text: ganhos != null
-                                      ? 'R\$${ganhos!.toStringAsFixed(2)}'
-                                      : '0.0',
+                                  text:
+                                      "R\$${resumoProvider.ganhos.toStringAsFixed(2)}",
                                   fontSize: 17,
                                 ),
                               ],
@@ -434,9 +440,8 @@ class _HomePageState extends State<HomePage> {
                                 LittleText(text: 'Gastos:  '),
                                 TitleText(
                                   color: Theme.of(context).colorScheme.surface,
-                                  text: gastos != null
-                                      ? 'R\$${gastos!.toStringAsFixed(2)}'
-                                      : '0.0',
+                                  text:
+                                      'R\$${resumoProvider.gastos.toStringAsFixed(2)}',
                                   fontSize: 17,
                                 ),
                               ],
@@ -452,9 +457,8 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 LittleText(text: 'Total:  '),
                                 TitleText(
-                                  text: total != null
-                                      ? 'R\$${total!.toStringAsFixed(2)}'
-                                      : '0.0',
+                                  text:
+                                      'R\$${resumoProvider.total.toStringAsFixed(2)}',
                                   fontSize: 17,
                                 ),
                               ],

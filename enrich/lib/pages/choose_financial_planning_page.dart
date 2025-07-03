@@ -160,15 +160,8 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                         ),
                                       );
                                     } catch (e) {
-                                      Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content: Text(
-                                              'Erro ao criar planejamento'),
-                                        ),
-                                      );
+                                      final mensagem = e.toString();
+                                      print(mensagem);
                                     }
                                   },
                                   borderColor: null,
