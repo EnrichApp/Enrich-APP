@@ -1,4 +1,5 @@
 import 'package:enrich/pages/home_page.dart';
+import 'package:enrich/widgets/create_object_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../models/financial_planning.dart';
@@ -6,15 +7,16 @@ import '../widgets/texts/little_text.dart';
 import '../widgets/texts/title_text.dart';
 import '../services/financial_planning_service.dart';
 import '../utils/api_base_client.dart';
+import '../widgets/form_widget.dart';
 
-class FinancialPlanningPage extends StatefulWidget {
-  const FinancialPlanningPage({super.key});
+class CustomFinancialPlanningPage extends StatefulWidget {
+  const CustomFinancialPlanningPage({super.key});
 
   @override
-  State<FinancialPlanningPage> createState() => _FinancialPlanningPageState();
+  State<CustomFinancialPlanningPage> createState() => _CustomFinancialPlanningPageState();
 }
 
-class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
+class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPage> {
   FinancialPlanning? planning;
   bool loading = true;
   String? errorMsg;
@@ -27,9 +29,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
 
   Future<void> _carregarPlanejamento() async {
     try {
-      // Busque o planejamento (ajuste para seu service/model)
-      final p =
-          await FinancialPlanningService(ApiBaseClient()).getExistingPlanning();
+      final p = await FinancialPlanningService(ApiBaseClient()).getExistingPlanning();
       setState(() {
         planning = p;
         loading = false;
@@ -40,6 +40,51 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
         errorMsg = 'Erro ao buscar planejamento financeiro';
       });
     }
+  }
+
+  void _abrirModalCriarCaixinha() {
+    final nomeController = TextEditingController();
+    final porcController = TextEditingController();
+
+    showCreateObjectModal(
+      context: context,
+      title: 'Nova Caixinha',
+      fields: [
+        FormWidget(
+          hintText: 'Nome da caixinha',
+          controller: nomeController,
+          onChanged: (_) {},
+        ),
+        FormWidget(
+          hintText: 'Porcentagem (%)',
+          controller: porcController,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          onChanged: (_) {},
+        ),
+      ],
+      onSave: () async {
+        final nome = nomeController.text.trim();
+        final porcentagem = double.tryParse(porcController.text.trim()) ?? 0.0;
+
+        if (nome.isEmpty || porcentagem <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Preencha os campos corretamente')),
+          );
+          return;
+        }
+        try {
+          await FinancialPlanningService(ApiBaseClient())
+              .criarCaixinha(nome: nome, porcentagem: porcentagem);
+          await _carregarPlanejamento();
+          Navigator.of(context).pop(); // fecha o modal
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Caixinha criada!')),
+          );
+        } catch (e) {
+          print('Erro ao criar caixinha: $e');
+        }
+      },
+    );
   }
 
   @override
@@ -53,7 +98,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
     if (errorMsg != null || planning == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Planejamento Financeiro"),
+          title: const Text("Planejamento Personalizado"),
           leading: BackButton(),
         ),
         body: Center(child: Text(errorMsg ?? 'Erro')),
@@ -61,7 +106,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
     }
 
     const double horizontalPadding = 30.0;
-    final colors = [Colors.purple, Colors.blue, Colors.grey];
+    final colors = [Colors.purple, Colors.blue, Colors.grey, Colors.orange, Colors.green, Colors.red];
 
     final List<ChartData> chartData = planning!.caixinhas.map((c) {
       final idx = planning!.caixinhas.indexOf(c);
@@ -101,7 +146,21 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
           padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
           children: [
             const SizedBox(height: 20),
-            const TitleText(text: 'Planejamento Financeiro', fontSize: 20),
+            const TitleText(text: 'Planejamento Personalizado', fontSize: 20),
+            const SizedBox(height: 10),
+
+            // Botão para criar caixinha
+            ElevatedButton.icon(
+              onPressed: _abrirModalCriarCaixinha,
+              icon: const Icon(Icons.add_box_outlined),
+              label: const Text('Criar caixinha'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 40),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
             const SizedBox(height: 20),
 
             // Gráfico de pizza
@@ -126,8 +185,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
               color: Theme.of(context).colorScheme.secondary,
             ),
             LittleText(
-              text:
-                  'R\$ ${totalNaoPlanejado.toStringAsFixed(2)} não planejados',
+              text: 'R\$ ${totalNaoPlanejado.toStringAsFixed(2)} não planejados',
               fontSize: 13,
               textAlign: TextAlign.start,
             ),
@@ -136,7 +194,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
             const TitleText(text: 'Caixinhas', fontSize: 17),
             const SizedBox(height: 10),
 
-            // Lista de caixinhas com cores originais
+            // Lista de caixinhas
             ...planning!.caixinhas.map((c) {
               final idx = planning!.caixinhas.indexOf(c);
               final color = colors[idx < colors.length ? idx : 0];
@@ -157,8 +215,7 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                   ),
                   height: 80,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -195,19 +252,16 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        // Segunda linha: Planejado e Realizado
                         Row(
                           children: [
                             LittleText(
-                              text:
-                                  'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
+                              text: 'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
                               fontSize: 11,
                               color: Colors.black87,
                             ),
                             const SizedBox(width: 10),
                             LittleText(
-                              text:
-                                  'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
+                              text: 'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
                               fontSize: 11,
                               color: Colors.black54,
                             ),
@@ -219,95 +273,6 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                 ),
               );
             }).toList(),
-
-            // ... depois do .map das caixinhas
-            const SizedBox(height: 30),
-
-            OutlinedButton.icon(
-              onPressed: () async {
-                // TODO: ação de importar gastos em dívidas
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        'Funcionalidade de importar gastos em dívidas em breve!'),
-                  ),
-                );
-              },
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.secondary),
-                foregroundColor: Theme.of(context).colorScheme.secondary,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
-                textStyle:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              icon: const Icon(Icons.import_export),
-              label: const Text('Importar gastos em dívidas'),
-            ),
-
-            const SizedBox(height: 6),
-
-            ElevatedButton(
-              onPressed: () async {
-                final confirm = await showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text(
-                      "Finalizar Planejamento",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    content: const Text(
-                      "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text("Cancelar"),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text("Finalizar"),
-                      ),
-                    ],
-                  ),
-                );
-                if (confirm == true) {
-                  try {
-                    await FinancialPlanningService(ApiBaseClient())
-                        .finalizarPlanning();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.green,
-                        content: Text(
-                            'Planejamento finalizado e arquivado com sucesso!'),
-                      ),
-                    );
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomePage()),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString()), backgroundColor: Colors.red,),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
-                textStyle:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              child: const Text("Finalizar Planejamento"),
-            ),
 
             const SizedBox(height: 40),
           ],

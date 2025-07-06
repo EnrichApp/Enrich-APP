@@ -9,6 +9,21 @@ class FinancialPlanningService {
 
   FinancialPlanningService(this._client);
 
+  Future<FinancialPlanning> createPersonalizedPlanning({
+    required String nome,
+    required String descricao,
+  }) async {
+    final resp = await _client.post(
+      'planejamento/personalizado/',
+      body: jsonEncode({'nome': nome, 'descricao': descricao}),
+    );
+    if (resp.statusCode != 201) {
+      throw Exception(
+          'Erro criando planejamento: ${resp.statusCode} ${resp.body}');
+    }
+    return await getExistingPlanning();
+  }
+
   /// Cria o template 50-30-20 e retorna o planejamento completo
   Future<FinancialPlanning> createTemplate503020() async {
     final resp = await _client.post(
@@ -17,6 +32,22 @@ class FinancialPlanningService {
         'nome': '50-30-20',
         'descricao':
             'O método 50-30-20 divide a renda em 50% para necessidades, 30% para desejos e 20% para poupança ou investimentos.',
+      }),
+    );
+    if (resp.statusCode != 201) {
+      throw Exception('Erro criando template: ${resp.statusCode} ${resp.body}');
+    }
+    // Após criar, buscar planejamento completo usando novo endpoint
+    return await getExistingPlanning();
+  }
+
+  Future<FinancialPlanning> createTemplate6Jar() async {
+    final resp = await _client.post(
+      'planejamento/template/',
+      body: jsonEncode({
+        'nome': 'Método das 6 Jarras',
+        'descricao':
+            'O Método das 6 Jarras organiza a renda em seis categorias para equilibrar despesas, poupança e investimentos.',
       }),
     );
     if (resp.statusCode != 201) {
@@ -99,19 +130,34 @@ class FinancialPlanningService {
   }
 
   Future<void> finalizarPlanning() async {
-  final resp = await _client.post('planejamento/finalizar/');
-  if (resp.statusCode != 200) {
-    // Tenta ler mensagem de erro amigável do backend
-    String errorMsg;
-    try {
-      final body = jsonDecode(resp.body);
-      errorMsg = body['error'] ?? 'Erro ao finalizar planejamento.';
-    } catch (_) {
-      errorMsg = 'Erro ao finalizar planejamento.';
+    final resp = await _client.post('planejamento/finalizar/');
+    if (resp.statusCode != 200) {
+      // Tenta ler mensagem de erro amigável do backend
+      String errorMsg;
+      try {
+        final body = jsonDecode(resp.body);
+        errorMsg = body['error'] ?? 'Erro ao finalizar planejamento.';
+      } catch (_) {
+        errorMsg = 'Erro ao finalizar planejamento.';
+      }
+      // Agora lança só o texto puro
+      throw errorMsg;
     }
-    // Agora lança só o texto puro
-    throw errorMsg;
+    // Se quiser, pode retornar algo aqui para mostrar a mensagem de sucesso do backend
   }
-  // Se quiser, pode retornar algo aqui para mostrar a mensagem de sucesso do backend
-}
+
+  Future<Caixinha> criarCaixinha({
+    required String nome,
+    required double porcentagem,
+  }) async {
+    final resp = await _client.post(
+      'planejamento/caixinha/',
+      body: jsonEncode({'nome': nome, 'porcentagem': porcentagem}),
+    );
+    if (resp.statusCode != 201) {
+      throw Exception('Erro criando caixinha: ${resp.statusCode} ${resp.body}');
+    }
+    final json = jsonDecode(resp.body) as Map<String, dynamic>;
+    return Caixinha.fromJson(json);
+  }
 }

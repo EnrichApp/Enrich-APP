@@ -1,5 +1,6 @@
 import 'package:enrich/models/caixinha.dart';
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
+import 'package:enrich/pages/custom_financial_planning_page.dart';
 import 'package:enrich/pages/debts_page.dart';
 import 'package:enrich/pages/emergence_reserve_page.dart';
 import 'package:enrich/pages/choose_financial_planning_page.dart';
@@ -210,19 +211,32 @@ class _HomePageState extends State<HomePage> {
 
   void handlePlanningNavigation() async {
     final response = await apiClient.get('planejamento/listar/');
-    print('Response status: ${response.body}');
     if (response.statusCode == 200) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FinancialPlanningPage(), // TODO
-        ),
-      );
+      final responseData = jsonDecode(response.body);
+      final planejamento = responseData['planejamento'];
+      final nome = (planejamento?['nome'] ?? '').toString().trim();
+
+      // Compare nome para saber se é template ou personalizado
+      if (nome == 'Método das 6 Jarras' || nome == '50-30-20') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FinancialPlanningPage(),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomFinancialPlanningPage(),
+          ),
+        );
+      }
     } else if (response.statusCode == 404) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChooseFinancialPlanningPage(), // TODO
+          builder: (context) => ChooseFinancialPlanningPage(),
         ),
       );
     } else {

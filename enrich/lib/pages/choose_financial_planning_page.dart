@@ -1,9 +1,12 @@
+import 'package:enrich/pages/custom_financial_planning_page.dart';
 import 'package:enrich/pages/financial_planning_page.dart';
 import 'package:enrich/pages/home_page.dart';
 import 'package:enrich/services/financial_planning_service.dart';
 import 'package:enrich/utils/api_base_client.dart';
 import 'package:enrich/widgets/buttons/rounded_text_button.dart';
+import 'package:enrich/widgets/create_object_widget.dart';
 import 'package:enrich/widgets/dotted_button.dart';
+import 'package:enrich/widgets/form_widget.dart';
 import 'package:enrich/widgets/home_page_widget.dart';
 import 'package:enrich/widgets/texts/little_text.dart';
 import 'package:enrich/widgets/texts/title_text.dart';
@@ -90,13 +93,28 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                                     width: 140,
                                     height: 25,
                                     fontSize: 9,
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const HomePage()),
+                                    onPressed: () async {
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (_) => const Center(
+                                            child: CircularProgressIndicator()),
                                       );
+                                      try {
+                                        await planningService
+                                            .createTemplate6Jar();
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const FinancialPlanningPage(),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        final mensagem = e.toString();
+                                        print(mensagem);
+                                      }
                                     },
                                     borderColor: null,
                                     borderWidth: 0.0),
@@ -183,10 +201,61 @@ class ChooseFinancialPlanningPage extends StatelessWidget {
                   const SizedBox(height: 10),
                   DottedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                      final nomeController = TextEditingController();
+                      final descricaoController = TextEditingController();
+
+                      showCreateObjectModal(
+                        context: context,
+                        title: 'Novo Planejamento Personalizado',
+                        fields: [
+                          FormWidget(
+                            hintText: 'Nome do planejamento',
+                            controller: nomeController,
+                            onChanged: (_) {},
+                          ),
+                          FormWidget(
+                            hintText: 'Descrição',
+                            controller: descricaoController,
+                            onChanged: (_) {},
+                          ),
+                        ],
+                        onSave: () async {
+                          final nome = nomeController.text.trim();
+                          final descricao = descricaoController.text.trim();
+
+                          if (nome.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Nome é obrigatório')),
+                            );
+                            return;
+                          }
+
+                          try {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const Center(
+                                  child: CircularProgressIndicator()),
+                            );
+                            await planningService.createPersonalizedPlanning(
+                              nome: nome,
+                              descricao: descricao,
+                            );
+                            Navigator.of(context).pop(); // fecha o loading
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                      const CustomFinancialPlanningPage()),
+                            );
+                          } catch (e) {
+                            Navigator.of(context).pop(); // fecha o loading
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Erro: ${e.toString()}')),
+                            );
+                          }
+                        },
                       );
                     },
                     icon: Icon(Icons.add_circle_outline),
