@@ -4,6 +4,7 @@ class Caixinha {
   final double porcentagem;
   final double valorMeta;
   final double valorTotal;
+  final bool? isImported;
 
   Caixinha({
     required this.id,
@@ -11,6 +12,7 @@ class Caixinha {
     required this.porcentagem,
     required this.valorMeta,
     required this.valorTotal,
+    this.isImported,
   });
 
   factory Caixinha.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Caixinha {
       porcentagem: (json['porcentagem'] as num).toDouble(),
       valorMeta: (json['valor_meta'] as num).toDouble(),
       valorTotal: (json['valor_total'] as num).toDouble(),
+      isImported: json['is_imported'],
     );
   }
 }

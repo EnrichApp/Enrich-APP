@@ -1,4 +1,3 @@
-import 'package:enrich/models/caixinha.dart';
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/custom_financial_planning_page.dart';
 import 'package:enrich/pages/debts_page.dart';

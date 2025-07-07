@@ -13,10 +13,12 @@ class CustomFinancialPlanningPage extends StatefulWidget {
   const CustomFinancialPlanningPage({super.key});
 
   @override
-  State<CustomFinancialPlanningPage> createState() => _CustomFinancialPlanningPageState();
+  State<CustomFinancialPlanningPage> createState() =>
+      _CustomFinancialPlanningPageState();
 }
 
-class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPage> {
+class _CustomFinancialPlanningPageState
+    extends State<CustomFinancialPlanningPage> {
   FinancialPlanning? planning;
   bool loading = true;
   String? errorMsg;
@@ -29,7 +31,8 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
 
   Future<void> _carregarPlanejamento() async {
     try {
-      final p = await FinancialPlanningService(ApiBaseClient()).getExistingPlanning();
+      final p =
+          await FinancialPlanningService(ApiBaseClient()).getExistingPlanning();
       setState(() {
         planning = p;
         loading = false;
@@ -106,7 +109,14 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
     }
 
     const double horizontalPadding = 30.0;
-    final colors = [Colors.purple, Colors.blue, Colors.grey, Colors.orange, Colors.green, Colors.red];
+    final colors = [
+      Colors.purple,
+      Colors.blue,
+      Colors.grey,
+      Colors.orange,
+      Colors.green,
+      Colors.red
+    ];
 
     final List<ChartData> chartData = planning!.caixinhas.map((c) {
       final idx = planning!.caixinhas.indexOf(c);
@@ -158,7 +168,8 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 40),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
               ),
             ),
             const SizedBox(height: 20),
@@ -185,7 +196,8 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
               color: Theme.of(context).colorScheme.secondary,
             ),
             LittleText(
-              text: 'R\$ ${totalNaoPlanejado.toStringAsFixed(2)} não planejados',
+              text:
+                  'R\$ ${totalNaoPlanejado.toStringAsFixed(2)} não planejados',
               fontSize: 13,
               textAlign: TextAlign.start,
             ),
@@ -215,7 +227,8 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
                   ),
                   height: 80,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -255,13 +268,15 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
                         Row(
                           children: [
                             LittleText(
-                              text: 'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
+                              text:
+                                  'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
                               fontSize: 11,
                               color: Colors.black87,
                             ),
                             const SizedBox(width: 10),
                             LittleText(
-                              text: 'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
+                              text:
+                                  'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
                               fontSize: 11,
                               color: Colors.black54,
                             ),
@@ -273,6 +288,51 @@ class _CustomFinancialPlanningPageState extends State<CustomFinancialPlanningPag
                 ),
               );
             }).toList(),
+            
+            // Removido do escopo
+            // OutlinedButton.icon(
+            //   onPressed: () async {
+            //     setState(() {
+            //       loading = true;
+            //       errorMsg = null;
+            //     });
+            //     try {
+            //       await FinancialPlanningService(ApiBaseClient())
+            //           .importarDividasParaGastos();
+            //       await _carregarPlanejamento();
+            //       ScaffoldMessenger.of(context).showSnackBar(
+            //         const SnackBar(
+            //           backgroundColor: Colors.green,
+            //           content:
+            //               Text('Gastos em dívidas importados com sucesso!'),
+            //         ),
+            //       );
+            //     } catch (e) {
+            //       ScaffoldMessenger.of(context).showSnackBar(
+            //         SnackBar(
+            //           backgroundColor: Colors.red,
+            //           content: Text(e.toString()),
+            //         ),
+            //       );
+            //     } finally {
+            //       setState(() {
+            //         loading = false;
+            //       });
+            //     }
+            //   },
+            //   style: OutlinedButton.styleFrom(
+            //     side:
+            //         BorderSide(color: Theme.of(context).colorScheme.secondary),
+            //     foregroundColor: Theme.of(context).colorScheme.secondary,
+            //     minimumSize: const Size(double.infinity, 48),
+            //     shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(14)),
+            //     textStyle:
+            //         const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            //   ),
+            //   icon: const Icon(Icons.import_export),
+            //   label: const Text('Importar gastos em dívidas'),
+            // ),
 
             const SizedBox(height: 40),
           ],

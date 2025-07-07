@@ -160,4 +160,40 @@ class FinancialPlanningService {
     final json = jsonDecode(resp.body) as Map<String, dynamic>;
     return Caixinha.fromJson(json);
   }
+
+  Future<void> importarDividasParaGastos() async {
+    final resp = await _client.post('planejamento/importar_dividas/');
+
+    // Sucesso absoluto, nada a fazer
+    if (resp.statusCode == 201) return;
+
+    // Caso 200: resposta com mensagem amigável (ex: nenhuma dívida a importar)
+    if (resp.statusCode == 200) {
+      final body = jsonDecode(resp.body);
+      if (body is Map && body.containsKey('detail')) {
+        throw body['detail']; // Mostra só o texto ao usuário
+      }
+      // Se não veio 'detail', mas veio algo diferente, mostra isso mesmo
+      throw body.toString();
+    }
+
+    // Caso 400: validação de negócio
+    if (resp.statusCode == 400) {
+      final body = jsonDecode(resp.body);
+      if (body is Map && body.containsKey('detail')) {
+        throw body['detail'];
+      }
+      // Mostra o primeiro erro textual
+      if (body is Map && body.isNotEmpty) {
+        final msg = body.values.first;
+        if (msg is String) throw msg;
+        if (msg is List && msg.isNotEmpty && msg.first is String)
+          throw msg.first;
+      }
+      throw "Ocorreu um erro ao importar dívidas. Tente novamente mais tarde.";
+    }
+
+    // Outros status (erros internos)
+    throw "Ocorreu um erro ao importar dívidas. Tente novamente mais tarde.";
+  }
 }

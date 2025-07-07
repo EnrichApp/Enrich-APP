@@ -223,31 +223,6 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
             // ... depois do .map das caixinhas
             const SizedBox(height: 30),
 
-            OutlinedButton.icon(
-              onPressed: () async {
-                // TODO: ação de importar gastos em dívidas
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        'Funcionalidade de importar gastos em dívidas em breve!'),
-                  ),
-                );
-              },
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.secondary),
-                foregroundColor: Theme.of(context).colorScheme.secondary,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
-                textStyle:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              icon: const Icon(Icons.import_export),
-              label: const Text('Importar gastos em dívidas'),
-            ),
-
-            const SizedBox(height: 6),
 
             ElevatedButton(
               onPressed: () async {
