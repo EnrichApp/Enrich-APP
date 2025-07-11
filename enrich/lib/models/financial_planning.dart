@@ -8,6 +8,7 @@ class FinancialPlanning {
   final double totalPlanejado;
   final double totalNaoPlanejado;
   final List<Caixinha> caixinhas;
+  final bool podeFinalizar;
 
   FinancialPlanning({
     required this.id,
@@ -17,11 +18,13 @@ class FinancialPlanning {
     required this.totalPlanejado,
     required this.totalNaoPlanejado,
     required this.caixinhas,
+    required this.podeFinalizar,
   });
 
   factory FinancialPlanning.fromJson(
     Map<String, dynamic> json,
     List<Caixinha> caixinhas,
+    {bool podeFinalizar = false}
   ) {
     return FinancialPlanning(
       id: json['id'],
@@ -31,6 +34,7 @@ class FinancialPlanning {
       totalPlanejado: (json['total_planejado'] as num).toDouble(),
       totalNaoPlanejado: (json['total_nao_planejado'] as num).toDouble(),
       caixinhas: caixinhas,
+      podeFinalizar: podeFinalizar,
     );
   }
 }

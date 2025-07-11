@@ -223,55 +223,59 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
             // ... depois do .map das caixinhas
             const SizedBox(height: 30),
 
-
             ElevatedButton(
-              onPressed: () async {
-                final confirm = await showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text(
-                      "Finalizar Planejamento",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    content: const Text(
-                      "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text("Cancelar"),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text("Finalizar"),
-                      ),
-                    ],
-                  ),
-                );
-                if (confirm == true) {
-                  try {
-                    await FinancialPlanningService(ApiBaseClient())
-                        .finalizarPlanning();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.green,
-                        content: Text(
-                            'Planejamento finalizado e arquivado com sucesso!'),
-                      ),
-                    );
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomePage()),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString()), backgroundColor: Colors.red,),
-                    );
-                  }
-                }
-              },
+              onPressed: (planning?.podeFinalizar ?? false)
+                  ? () async {
+                      final confirm = await showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text(
+                            "Finalizar Planejamento",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          content: const Text(
+                            "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text("Cancelar"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text("Finalizar"),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        try {
+                          await FinancialPlanningService(ApiBaseClient())
+                              .finalizarPlanning();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.green,
+                              content: Text(
+                                  'Planejamento finalizado e arquivado com sucesso!'),
+                            ),
+                          );
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    }
+                  : null, // Botão desabilitado se não pode finalizar
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.white,
@@ -280,6 +284,9 @@ class _FinancialPlanningPageState extends State<FinancialPlanningPage> {
                     borderRadius: BorderRadius.circular(14)),
                 textStyle:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // Troca cor do botão desabilitado
+                disabledBackgroundColor: Colors.grey.shade300,
+                disabledForegroundColor: Colors.grey,
               ),
               child: const Text("Finalizar Planejamento"),
             ),

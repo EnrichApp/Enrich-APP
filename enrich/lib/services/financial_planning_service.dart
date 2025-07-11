@@ -70,7 +70,9 @@ class FinancialPlanningService {
     final caixinhas = caixinhasJson
         .map((e) => Caixinha.fromJson(e as Map<String, dynamic>))
         .toList();
-    return FinancialPlanning.fromJson(planejamentoJson, caixinhas);
+    final bool podeFinalizar = body['pode_finalizar'] == true;
+    return FinancialPlanning.fromJson(planejamentoJson, caixinhas,
+        podeFinalizar: podeFinalizar);
   }
 
   Future<Ganho> adicionarGanho({

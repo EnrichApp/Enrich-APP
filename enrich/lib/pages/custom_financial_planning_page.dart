@@ -288,7 +288,7 @@ class _CustomFinancialPlanningPageState
                 ),
               );
             }).toList(),
-            
+
             // Removido do escopo
             // OutlinedButton.icon(
             //   onPressed: () async {
@@ -333,6 +333,82 @@ class _CustomFinancialPlanningPageState
             //   icon: const Icon(Icons.import_export),
             //   label: const Text('Importar gastos em dívidas'),
             // ),
+
+            ElevatedButton(
+              onPressed: () async {
+                if (!(planning?.podeFinalizar ?? false)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          "Só é possível finalizar o planejamento no início do próximo mês."),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
+
+                final confirm = await showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text(
+                      "Finalizar Planejamento",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    content: const Text(
+                      "Tem certeza que deseja finalizar este planejamento? Essa ação não pode ser desfeita.",
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text("Cancelar"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text("Finalizar"),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  try {
+                    await FinancialPlanningService(ApiBaseClient())
+                        .finalizarPlanning();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text(
+                            'Planejamento finalizado e arquivado com sucesso!'),
+                      ),
+                    );
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const HomePage()),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(e.toString()),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: (planning?.podeFinalizar ?? false)
+                    ? Theme.of(context).colorScheme.secondary
+                    : Colors.grey.shade300,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                textStyle:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              child: const Text("Finalizar Planejamento"),
+            ),
 
             const SizedBox(height: 40),
           ],
