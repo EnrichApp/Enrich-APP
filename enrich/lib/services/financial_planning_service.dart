@@ -198,4 +198,27 @@ class FinancialPlanningService {
     // Outros status (erros internos)
     throw "Ocorreu um erro ao importar dívidas. Tente novamente mais tarde.";
   }
+
+  Future<List<Gasto>> listarGastosDaCaixinha(int caixinhaId) async {
+    final resp = await _client.get('planejamento/caixinha/$caixinhaId/gastos/');
+    if (resp.statusCode != 200) {
+      throw Exception(
+          'Erro ao listar gastos da caixinha: ${resp.statusCode} ${resp.body}');
+    }
+    final body = jsonDecode(resp.body);
+    if (body is List) {
+      return body
+          .map((json) => Gasto.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } else {
+      throw Exception('Resposta inesperada ao listar gastos da caixinha.');
+    }
+  }
+
+  Future<List<Ganho>> listarGanhos() async {
+    final resp = await _client.get('planejamento/ganho/');
+    if (resp.statusCode != 200) throw Exception("Erro ao listar ganhos");
+    final body = jsonDecode(resp.body) as List<dynamic>;
+    return body.map((e) => Ganho.fromJson(e)).toList();
+  }
 }

@@ -43,7 +43,7 @@ class Gasto {
   final int id;
   final String nome;
   final double quantia;
-  final int caixinhaId; // ou pode ser objeto Caixinha, se preferir
+  final int caixinhaId;
 
   Gasto({
     required this.id,

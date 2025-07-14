@@ -1,3 +1,4 @@
+import 'package:enrich/pages/gasto_list_page.dart';
 import 'package:enrich/pages/home_page.dart';
 import 'package:enrich/widgets/create_object_widget.dart';
 import 'package:flutter/material.dart';
@@ -225,62 +226,98 @@ class _CustomFinancialPlanningPageState
                       ),
                     ],
                   ),
-                  height: 80,
+                  height: 100,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Stack(
                       children: [
-                        // Primeira linha: Ícone, nome e porcentagem
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        // Conteúdo da caixinha
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipOval(
-                              child: Container(
-                                color: color,
-                                width: 25,
-                                height: 25,
-                                child: Center(
-                                  child: Image.asset(
-                                    'assets/images/planning_page_jar.png',
-                                    height: 15,
-                                    width: 15,
+                            // Primeira linha: Ícone, nome e porcentagem
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ClipOval(
+                                  child: Container(
+                                    color: color,
+                                    width: 25,
+                                    height: 25,
+                                    child: Center(
+                                      child: Image.asset(
+                                        'assets/images/planning_page_jar.png',
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TitleText(
+                                    text: c.nome,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                TitleText(
+                                  text: '${c.porcentagem.toStringAsFixed(0)}%',
+                                  fontSize: 14,
+                                  color: color,
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: TitleText(
-                                text: c.nome,
-                                fontSize: 13,
-                              ),
-                            ),
-                            TitleText(
-                              text: '${c.porcentagem.toStringAsFixed(0)}%',
-                              fontSize: 14,
-                              color: color,
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                LittleText(
+                                  text:
+                                      'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
+                                  fontSize: 11,
+                                  color: Colors.black87,
+                                ),
+                                const SizedBox(width: 10),
+                                LittleText(
+                                  text:
+                                      'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
+                                  fontSize: 11,
+                                  color: Colors.black54,
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            LittleText(
-                              text:
-                                  'Planejado: R\$ ${c.valorMeta.toStringAsFixed(2)}',
-                              fontSize: 11,
-                              color: Colors.black87,
+                        // Botão "Ver gastos" no canto inferior direito
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => GastoListPage(
+                                    caixinhaId: c.id,
+                                    caixinhaNome: c.nome,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            const SizedBox(width: 10),
-                            LittleText(
-                              text:
-                                  'Realizado: R\$ ${c.valorTotal.toStringAsFixed(2)}',
-                              fontSize: 11,
-                              color: Colors.black54,
+                            child: const Text(
+                              'Ver gastos',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     ),

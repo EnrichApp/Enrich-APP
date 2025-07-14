@@ -1,3 +1,4 @@
+import 'package:enrich/models/financial_planning.dart';
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/custom_financial_planning_page.dart';
 import 'package:enrich/pages/debts_page.dart';
@@ -66,45 +67,130 @@ class _HomePageState extends State<HomePage> {
     return data[0].toUpperCase() + data.substring(1);
   }
 
-  void _abrirModalAdicionarGanho() {
+  void _abrirModalAdicionarGanho() async {
     final nomeController = TextEditingController();
     final valorController = TextEditingController();
 
-    showCreateObjectModal(
-      context: context,
-      title: 'Adicionar Ganho',
-      fields: [
-        FormWidget(
-          hintText: 'Nome do Ganho',
-          controller: nomeController,
-          onChanged: (_) {},
-        ),
-        FormWidget(
-          hintText: 'Valor',
-          controller: valorController,
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          onChanged: (_) {},
-        ),
-      ],
-      onSave: () async {
-        final nome = nomeController.text.trim();
-        final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
+    // Busca os ganhos já cadastrados
+    List<Ganho> ganhos = [];
+    try {
+      ganhos = await planningService
+          .listarGanhos(); // Implemente este método no service
+    } catch (e) {}
 
-        if (nome.isEmpty || valor <= 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Preencha os campos corretamente')),
-          );
-          return;
-        }
-        try {
-          await planningService.adicionarGanho(nome: nome, quantia: valor);
-          Provider.of<ResumoFinanceiroProvider>(context, listen: false)
-              .buscarResumo(apiClient);
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ganho adicionado!')),
-          );
-        } catch (e) {}
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Color(0xFFF4F4F4),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onSurface,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: TitleText(text: 'Ganhos do mês', fontSize: 18),
+                  ),
+                  const SizedBox(height: 16),
+                  ganhos.isEmpty
+                      ? const Center(child: Text("Nenhum ganho registrado.", style: TextStyle(color: Colors.black),))
+                      : Expanded(
+                          child: ListView.separated(
+                            controller: scrollController,
+                            itemCount: ganhos.length,
+                            separatorBuilder: (_, __) =>
+                                const Divider(height: 1, color: Colors.black,),
+                            itemBuilder: (context, idx) {
+                              final g = ganhos[idx];
+                              return ListTile(
+                                dense: true,
+                                leading: const Icon(Icons.attach_money,
+                                    color: Colors.green),
+                                title: Text(g.nome,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold, color: Colors.black)),
+                                trailing: Text(
+                                    "R\$ ${g.quantia.toStringAsFixed(2)}",
+                                    style:
+                                        const TextStyle(color: Colors.green)),
+                              );
+                            },
+                          ),
+                        ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  TitleText(text: 'Adicionar novo ganho', fontSize: 16),
+                  const SizedBox(height: 6),
+                  FormWidget(
+                    hintText: 'Nome do Ganho',
+                    controller: nomeController,
+                    onChanged: (_) {},
+                  ),
+                  const SizedBox(height: 8),
+                  FormWidget(
+                    hintText: 'Valor',
+                    controller: valorController,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (_) {},
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: const Text('Adicionar Ganho'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                      ),
+                      onPressed: () async {
+                        final nome = nomeController.text.trim();
+                        final valor =
+                            double.tryParse(valorController.text.trim()) ?? 0.0;
+                        if (nome.isEmpty || valor <= 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Preencha os campos corretamente')),
+                          );
+                          return;
+                        }
+                        try {
+                          await planningService.adicionarGanho(
+                              nome: nome, quantia: valor);
+                          if (mounted) Navigator.of(context).pop();
+                          Provider.of<ResumoFinanceiroProvider>(context,
+                                  listen: false)
+                              .buscarResumo(apiClient);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Ganho adicionado!')),
+                          );
+                        } catch (e) {}
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
     );
   }
