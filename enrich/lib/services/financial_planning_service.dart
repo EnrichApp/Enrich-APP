@@ -145,7 +145,7 @@ class FinancialPlanningService {
       // Agora lança só o texto puro
       throw errorMsg;
     }
-    // Se quiser, pode retornar algo aqui para mostrar a mensagem de sucesso do backend
+    // Se chegou aqui, foi sucesso
   }
 
   Future<Caixinha> criarCaixinha({
@@ -215,10 +215,31 @@ class FinancialPlanningService {
     }
   }
 
-  Future<List<Ganho>> listarGanhos() async {
-    final resp = await _client.get('planejamento/ganho/');
-    if (resp.statusCode != 200) throw Exception("Erro ao listar ganhos");
-    final body = jsonDecode(resp.body) as List<dynamic>;
-    return body.map((e) => Ganho.fromJson(e)).toList();
+  Future<Map<String, dynamic>> listarGanhosPaginado({
+    required int pagina,
+    int elementosPorPagina = 10,
+  }) async {
+    final resp = await _client.get(
+      'planejamento/ganho/?pagina=$pagina&elementosPorPagina=$elementosPorPagina',
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Erro ao listar ganhos: ${resp.statusCode} ${resp.body}');
+    }
+    final body = jsonDecode(resp.body);
+    return body as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> listarGastosPaginado({
+    required int pagina,
+    int elementosPorPagina = 10,
+  }) async {
+    final resp = await _client.get(
+      'planejamento/gasto/?pagina=$pagina&elementosPorPagina=$elementosPorPagina',
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Erro ao listar gastos: ${resp.statusCode} ${resp.body}');
+    }
+    final body = jsonDecode(resp.body);
+    return body as Map<String, dynamic>;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:enrich/models/caixinha.dart';
 import 'package:enrich/models/financial_planning.dart';
 import 'package:enrich/pages/credit_cards_invoice_page.dart';
 import 'package:enrich/pages/custom_financial_planning_page.dart';
@@ -71,17 +72,34 @@ class _HomePageState extends State<HomePage> {
     final nomeController = TextEditingController();
     final valorController = TextEditingController();
 
-    // Busca os ganhos já cadastrados
+    // Estado para paginação
     List<Ganho> ganhos = [];
-    try {
-      ganhos = await planningService
-          .listarGanhos(); // Implemente este método no service
-    } catch (e) {}
+    int paginaAtual = 1;
+    bool carregandoMais = false;
+    bool carregouTudo = false;
+
+    Future<void> carregarGanhos({bool mais = false}) async {
+      if (carregandoMais || carregouTudo) return;
+      carregandoMais = true;
+      try {
+        final resp =
+            await planningService.listarGanhosPaginado(pagina: paginaAtual);
+        final novos =
+            (resp['results'] as List).map((e) => Ganho.fromJson(e)).toList();
+        ganhos.addAll(novos);
+        final next = resp['next'];
+        carregouTudo = next == null;
+        paginaAtual++;
+      } catch (e) {}
+      carregandoMais = false;
+    }
+
+    await carregarGanhos(); // Carrega a primeira página
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Color(0xFFF4F4F4),
+      backgroundColor: const Color(0xFFF4F4F4),
       builder: (ctx) {
         return DraggableScrollableSheet(
           initialChildSize: 0.8,
@@ -89,105 +107,144 @@ class _HomePageState extends State<HomePage> {
           maxChildSize: 0.95,
           expand: false,
           builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSurface,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: TitleText(text: 'Ganhos do mês', fontSize: 18),
+            return StatefulBuilder(
+              builder: (context, setStateModal) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(28)),
                   ),
-                  const SizedBox(height: 16),
-                  ganhos.isEmpty
-                      ? const Center(child: Text("Nenhum ganho registrado.", style: TextStyle(color: Colors.black),))
-                      : Expanded(
-                          child: ListView.separated(
-                            controller: scrollController,
-                            itemCount: ganhos.length,
-                            separatorBuilder: (_, __) =>
-                                const Divider(height: 1, color: Colors.black,),
-                            itemBuilder: (context, idx) {
-                              final g = ganhos[idx];
-                              return ListTile(
-                                dense: true,
-                                leading: const Icon(Icons.attach_money,
-                                    color: Colors.green),
-                                title: Text(g.nome,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.black)),
-                                trailing: Text(
-                                    "R\$ ${g.quantia.toStringAsFixed(2)}",
-                                    style:
-                                        const TextStyle(color: Colors.green)),
-                              );
-                            },
-                          ),
-                        ),
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  TitleText(text: 'Adicionar novo ganho', fontSize: 16),
-                  const SizedBox(height: 6),
-                  FormWidget(
-                    hintText: 'Nome do Ganho',
-                    controller: nomeController,
-                    onChanged: (_) {},
-                  ),
-                  const SizedBox(height: 8),
-                  FormWidget(
-                    hintText: 'Valor',
-                    controller: valorController,
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (_) {},
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text('Adicionar Ganho'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: TitleText(text: 'Ganhos do mês', fontSize: 18),
                       ),
-                      onPressed: () async {
-                        final nome = nomeController.text.trim();
-                        final valor =
-                            double.tryParse(valorController.text.trim()) ?? 0.0;
-                        if (nome.isEmpty || valor <= 0) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Preencha os campos corretamente')),
-                          );
-                          return;
-                        }
-                        try {
-                          await planningService.adicionarGanho(
-                              nome: nome, quantia: valor);
-                          if (mounted) Navigator.of(context).pop();
-                          Provider.of<ResumoFinanceiroProvider>(context,
-                                  listen: false)
-                              .buscarResumo(apiClient);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Ganho adicionado!')),
-                          );
-                        } catch (e) {}
-                      },
-                    ),
+                      const SizedBox(height: 16),
+                      ganhos.isEmpty
+                          ? const Center(
+                              child: Text("Nenhum ganho registrado.",
+                                  style: TextStyle(color: Colors.black)),
+                            )
+                          : Expanded(
+                              child: NotificationListener<ScrollNotification>(
+                                onNotification: (scrollNotification) {
+                                  if (scrollNotification
+                                          is ScrollEndNotification &&
+                                      scrollController.position.pixels >=
+                                          scrollController
+                                                  .position.maxScrollExtent -
+                                              100) {
+                                    if (!carregouTudo && !carregandoMais) {
+                                      setStateModal(() {
+                                        carregarGanhos()
+                                            .then((_) => setStateModal(() {}));
+                                      });
+                                    }
+                                  }
+                                  return false;
+                                },
+                                child: ListView.separated(
+                                  controller: scrollController,
+                                  itemCount:
+                                      ganhos.length + (carregouTudo ? 0 : 1),
+                                  separatorBuilder: (_, __) => const Divider(
+                                      height: 1, color: Colors.black),
+                                  itemBuilder: (context, idx) {
+                                    if (idx >= ganhos.length) {
+                                      // Loader ao buscar mais
+                                      return const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2)),
+                                      );
+                                    }
+                                    final g = ganhos[idx];
+                                    return ListTile(
+                                      dense: true,
+                                      leading: const Icon(Icons.attach_money,
+                                          color: Colors.green),
+                                      title: Text(g.nome,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black)),
+                                      trailing: Text(
+                                          "R\$ ${g.quantia.toStringAsFixed(2)}",
+                                          style: const TextStyle(
+                                              color: Colors.green)),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      TitleText(text: 'Adicionar novo ganho', fontSize: 16),
+                      const SizedBox(height: 6),
+                      FormWidget(
+                        hintText: 'Nome do Ganho',
+                        controller: nomeController,
+                        onChanged: (_) {},
+                      ),
+                      const SizedBox(height: 8),
+                      FormWidget(
+                        hintText: 'Valor',
+                        controller: valorController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        onChanged: (_) {},
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: const Text('Adicionar Ganho'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
+                          onPressed: () async {
+                            final nome = nomeController.text.trim();
+                            final valor =
+                                double.tryParse(valorController.text.trim()) ??
+                                    0.0;
+                            if (nome.isEmpty || valor <= 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Preencha os campos corretamente')),
+                              );
+                              return;
+                            }
+                            try {
+                              await planningService.adicionarGanho(
+                                  nome: nome, quantia: valor);
+                              if (mounted) Navigator.of(context).pop();
+                              Provider.of<ResumoFinanceiroProvider>(context,
+                                      listen: false)
+                                  .buscarResumo(apiClient);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Ganho adicionado!')),
+                              );
+                            } catch (e) {}
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -195,103 +252,260 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _abrirModalAdicionarGasto() {
+  void _abrirModalAdicionarGasto() async {
     final nomeController = TextEditingController();
     final valorController = TextEditingController();
     int? caixinhaSelecionada;
 
     // Carrega as caixinhas ANTES de abrir o modal
-    planningService.listarCaixinhas().then((caixinhas) {
-      showCreateObjectModal(
+    final caixinhas = await planningService.listarCaixinhas();
+    if (caixinhas.isEmpty) {
+      // Modal padrão se não houver caixinhas
+      showModalBottomSheet(
         context: context,
-        title: 'Adicionar Gasto',
-        fields: caixinhas.isEmpty
-            ? [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Crie um Planejamento Financeiro antes de registrar um gasto.',
-                    style: TextStyle(color: Colors.red, fontSize: 15),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ]
-            : [
-                FormWidget(
-                  hintText: 'Nome do Gasto',
-                  controller: nomeController,
-                  onChanged: (_) {},
-                ),
-                FormWidget(
-                  hintText: 'Valor',
-                  controller: valorController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  onChanged: (_) {},
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, left: 4),
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Caixinha',
-                      border: OutlineInputBorder(),
-                    ),
-                    isExpanded: true,
-                    value: caixinhaSelecionada,
-                    items: caixinhas
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c.id,
-                            child: Text(c.nome),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      caixinhaSelecionada = val;
-                    },
-                  ),
-                ),
-              ],
-        onSave: () async {
-          // Impede salvar caso não haja caixinhas
-          if (caixinhas.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text(
-                      'Crie um Planejamento Financeiro para registrar um gasto.')),
-            );
-            return;
-          }
-
-          final nome = nomeController.text.trim();
-          final valor = double.tryParse(valorController.text.trim()) ?? 0.0;
-
-          if (nome.isEmpty || valor <= 0 || caixinhaSelecionada == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Preencha todos os campos corretamente')),
-            );
-            return;
-          }
-          try {
-            await planningService.adicionarGasto(
-              nome: nome,
-              quantia: valor,
-              caixinhaId: caixinhaSelecionada!,
-            );
-            Provider.of<ResumoFinanceiroProvider>(context, listen: false)
-                .buscarResumo(apiClient);
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Gasto adicionado!')),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro: $e')),
-            );
-          }
-        },
+        isScrollControlled: true,
+        builder: (_) => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Crie um Planejamento Financeiro antes de registrar um gasto.',
+            style: TextStyle(color: Colors.red, fontSize: 15),
+            textAlign: TextAlign.center,
+          ),
+        ),
       );
+      return;
+    }
+
+    int _pagina = 1;
+    bool _temMais = true;
+    bool _carregando = false;
+    List<Gasto> _gastos = [];
+    final ScrollController _scrollController = ScrollController();
+
+    Future<void> _carregarMais() async {
+      if (_carregando || !_temMais) return;
+      _carregando = true;
+      try {
+        final resp = await planningService.listarGastosPaginado(
+          pagina: _pagina,
+          elementosPorPagina: 10,
+        );
+        final novos = (resp['results'] as List<dynamic>)
+            .map((g) => Gasto.fromJson(g as Map<String, dynamic>))
+            .toList();
+        _gastos.addAll(novos);
+        final next = resp['next'];
+        _temMais = next != null;
+        if (_temMais) _pagina++;
+      } catch (_) {
+        // Ignore erro silenciosamente
+      }
+      _carregando = false;
+    }
+
+    await _carregarMais();
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100) {
+        await _carregarMais();
+        // Força rebuild para mostrar mais itens
+        (context as Element).markNeedsBuild();
+      }
     });
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollSheetController) {
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(28)),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text('Gastos do mês',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: _gastos.isEmpty
+                            ? const Center(
+                                child: Text("Nenhum gasto registrado.",
+                                    style: TextStyle(color: Colors.black)),
+                              )
+                            : ListView.separated(
+                                controller: _scrollController,
+                                itemCount: _gastos.length +
+                                    (_temMais ? 1 : 0), // Loader ao fim
+                                separatorBuilder: (_, __) => const Divider(
+                                    height: 1, color: Colors.black),
+                                itemBuilder: (context, idx) {
+                                  if (idx == _gastos.length && _temMais) {
+                                    // Loader do fim
+                                    return const Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: Center(
+                                          child: CircularProgressIndicator()),
+                                    );
+                                  }
+                                  final g = _gastos[idx];
+                                  return ListTile(
+                                    dense: true,
+                                    leading: const Icon(Icons.money_off,
+                                        color: Colors.red),
+                                    title: Text(g.nome,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black)),
+                                    trailing: Text(
+                                      "R\$ ${g.quantia.toStringAsFixed(2)}",
+                                      style: const TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      const Text('Adicionar novo gasto',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      const SizedBox(height: 6),
+                      FormWidget(
+                        hintText: 'Nome do Gasto',
+                        controller: nomeController,
+                        onChanged: (_) {},
+                      ),
+                      const SizedBox(height: 8),
+                      FormWidget(
+                        hintText: 'Valor',
+                        controller: valorController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        onChanged: (_) {},
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 12.0, left: 4),
+                          child: DropdownButtonFormField<int>(
+                            decoration: const InputDecoration(
+                              labelText: 'Caixinha',
+                              border: OutlineInputBorder(),
+                            ),
+                            isExpanded: true,
+                            value: caixinhaSelecionada,
+                            items: caixinhas
+                                .map(
+                                  (c) => DropdownMenuItem(
+                                    value: c.id,
+                                    child: Text(c
+                                        .nome), // este texto é para a lista aberta
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                caixinhaSelecionada = val;
+                              });
+                            },
+                            selectedItemBuilder: (BuildContext context) {
+                              return caixinhas.map((c) {
+                                final isSelected = caixinhaSelecionada == c.id;
+                                return Text(
+                                  c.nome,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.black
+                                        : Colors
+                                            .black,
+                                  ),
+                                );
+                              }).toList();
+                            },
+                          )),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.add, color: Colors.white),
+                          label: const Text('Adicionar Gasto',
+                              style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
+                          onPressed: () async {
+                            final nome = nomeController.text.trim();
+                            final valor =
+                                double.tryParse(valorController.text.trim()) ??
+                                    0.0;
+                            if (nome.isEmpty ||
+                                valor <= 0 ||
+                                caixinhaSelecionada == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Preencha todos os campos corretamente')),
+                              );
+                              return;
+                            }
+                            try {
+                              await planningService.adicionarGasto(
+                                nome: nome,
+                                quantia: valor,
+                                caixinhaId: caixinhaSelecionada!,
+                              );
+                              if (ctx.mounted) Navigator.of(ctx).pop();
+                              Provider.of<ResumoFinanceiroProvider>(context,
+                                      listen: false)
+                                  .buscarResumo(apiClient);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Gasto adicionado!'), 
+                                    backgroundColor: Colors.green,
+                                    ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Erro: $e')),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   void handlePlanningNavigation() async {
