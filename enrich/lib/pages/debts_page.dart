@@ -54,7 +54,7 @@ class _DebtsPageState extends State<DebtsPage> {
         TextEditingController(text: d['data_vencimento'].toString());
     showCreateObjectModal(
       context: ctx,
-      title: 'Editar Dívida',
+      title: 'Editar Obrigação Financeira',
       fields: [
         FormWidget(hintText: 'Nome', controller: nomeCtrl, onChanged: (_) {}),
         FormWidget(
@@ -98,9 +98,9 @@ class _DebtsPageState extends State<DebtsPage> {
     final ok = await showDialog<bool>(
       context: ctx,
       builder: (_) => AlertDialog(
-        title: const Text('Excluir dívida?',
+        title: const Text('Excluir obrigação financeira?',
             style: TextStyle(color: Colors.black)),
-        content: const Text('Isto excluirá esta dívida da lista.',
+        content: const Text('Isto excluirá esta obrigação da lista.',
             style: TextStyle(color: Colors.black)),
         actions: [
           TextButton(
@@ -188,13 +188,13 @@ class _DebtsPageState extends State<DebtsPage> {
         children: [
           const Padding(
             padding: EdgeInsets.only(left: 30, top: 20),
-            child: TitleText(text: 'Dívidas', fontSize: 20),
+            child: TitleText(text: 'Obrigações Financeiras', fontSize: 20),
           ),
           const SizedBox(height: 20),
           if (loading)
             const Center(child: CircularProgressIndicator())
           else if (debts.isEmpty)
-            const Center(child: LittleText(text: 'Nenhuma dívida cadastrada.'))
+            const Center(child: LittleText(text: 'Nenhuma obrigação financeira cadastrada.'))
           else
             ...debts.map((d) {
               final status = d['status'];
@@ -265,7 +265,7 @@ class _DebtsPageState extends State<DebtsPage> {
           DottedButton(
             onPressed: _novo,
             icon: const Icon(Icons.add_circle_outline),
-            text: 'Adicionar nova dívida',
+            text: 'Adicionar nova obrigação financeira',
             textSize: 14,
             iconSize: 20,
           ),
@@ -281,7 +281,7 @@ class _DebtsPageState extends State<DebtsPage> {
     final dataCtrl = TextEditingController();
     showCreateObjectModal(
       context: context,
-      title: 'Nova Dívida',
+      title: 'Nova Obrigação Financeira',
       fields: [
         FormWidget(hintText: 'Nome', controller: nomeCtrl, onChanged: (_) {}),
         FormWidget(

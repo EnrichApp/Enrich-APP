@@ -601,7 +601,7 @@ class _HomePageState extends State<HomePage> {
         });
       });
     } else {
-      throw Exception('Erro ao buscar Dívidas.');
+      throw Exception('Erro ao buscar Obrigações Financeiras.');
     }
   }
 
@@ -823,7 +823,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             LittleListTile(
                               circleColor: Color(0xFFCB6CE6),
-                              category: "Dívidas",
+                              category: "Obrigações",
                               percentage: "10%",
                             ),
                           ],
@@ -872,7 +872,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   HomePageWidget(
-                    titleText: "Dívidas",
+                    titleText: "Obrigações Financeiras",
                     content: Padding(
                       padding: const EdgeInsets.only(left: 17.0),
                       child: Column(
@@ -889,7 +889,7 @@ class _HomePageState extends State<HomePage> {
                             : dividas!.isEmpty
                                 ? [
                                     LittleText(
-                                        text: "Nenhuma dívida encontrada.")
+                                        text: "Nenhuma obrigação financeira encontrada.")
                                   ]
                                 : dividas!.take(2).map((d) {
                                     final String status =

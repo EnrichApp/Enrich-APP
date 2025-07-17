@@ -58,7 +58,7 @@ class AboutPage extends StatelessWidget {
             SizedBox(height: 8.0),
             Text(
               'No Enrich, você começa informando dados como sua renda líquida fixa mensal, fontes de renda '
-              'extra variável, possíveis dívidas (com suas respectivas parcelas e prazos), e se possui uma reserva '
+              'extra variável, possíveis obrigações financeiras (com suas respectivas parcelas e prazos), e se possui uma reserva '
               'de emergência de no mínimo 6 meses de trabalho. A partir dessas informações, o sistema cria um plano '
               'de organização financeira sob medida para você.',
               style: TextStyle(
@@ -79,8 +79,8 @@ class AboutPage extends StatelessWidget {
             ),
             SizedBox(height: 8.0),
             Text(
-              '- Planejamento financeiro personalizado com base na sua renda e dívidas\n'
-              '- Ferramentas para acompanhar dívidas\n'
+              '- Planejamento financeiro personalizado com base na sua renda e obrigações financeiras\n'
+              '- Ferramentas para acompanhar obrigações financeiras\n'
               '- Ferramentas para acompanhar sua forma de renda extra\n'
               '- Criação de metas financeiras e acompanhamento de progresso\n'
               '- Ajuda a começar a investir de forma inteligente',
