@@ -55,10 +55,10 @@ class _GoalsPageState extends State<GoalsPage> {
 
     showCreateObjectModal(
       context: context,
-      title: 'Investir Dinheiro',
+      title: 'Registrar investimento',
       fields: [
         FormWidget(
-          hintText: 'Valor a investir',
+          hintText: 'Valor investido',
           controller: valorController,
           keyboardType: TextInputType.number,
           onChanged: (_) {
@@ -86,12 +86,12 @@ class _GoalsPageState extends State<GoalsPage> {
           if (response.statusCode == 201 || response.statusCode == 200) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Dinheiro investido com sucesso!')),
+              const SnackBar(content: Text('Investimento registrado com sucesso!')),
             );
             await _buscarMetas();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Erro ao investir dinheiro')),
+              const SnackBar(content: Text('Erro ao registrar investimento.')),
             );
           }
         } catch (e) {
@@ -109,10 +109,10 @@ class _GoalsPageState extends State<GoalsPage> {
 
     showCreateObjectModal(
       context: context,
-      title: 'Remover Dinheiro',
+      title: 'Registrar retirada',
       fields: [
         FormWidget(
-          hintText: 'Valor a remover',
+          hintText: 'Valor retirado',
           controller: valorController,
           keyboardType: TextInputType.number,
           onChanged: (_) {
@@ -140,12 +140,12 @@ class _GoalsPageState extends State<GoalsPage> {
           if (response.statusCode == 201 || response.statusCode == 200) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Dinheiro removido com sucesso!')),
+              const SnackBar(content: Text('Retirada registrada com sucesso!')),
             );
             await _buscarMetas();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Erro ao remover dinheiro')),
+              const SnackBar(content: Text('Erro ao registrar retirada')),
             );
           }
         } catch (e) {
@@ -482,17 +482,17 @@ class _GoalsPageState extends State<GoalsPage> {
                               children: [
                                 LittleTextTile(
                                   iconColor: Colors.green,
-                                  text: "Investir dinheiro",
+                                  text: "Registrar investimento",
                                   icon: Icon(Icons.add_circle_sharp),
                                   iconSize: 24,
                                   fontSize: 9,
                                   onIconTap: () => _abrirModalAdicionarDinheiro(
                                       context, metaId),
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 7),
                                 LittleTextTile(
                                   iconColor: Colors.red,
-                                  text: "Remover dinheiro",
+                                  text: "Registrar retirada",
                                   icon: Icon(Icons.remove_circle_sharp),
                                   iconSize: 24,
                                   fontSize: 9,
