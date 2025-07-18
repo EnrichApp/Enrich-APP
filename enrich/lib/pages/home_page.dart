@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
   double? valorTotalReserva = 0.0;
   double? valorMetaReserva = 0.0;
   List<dynamic>? faturasCartao;
+  List<Caixinha>? caixinhas;
+  Map<String, dynamic>? planejamentoFinanceiro;
 
   @override
   void initState() {
@@ -55,6 +57,40 @@ class _HomePageState extends State<HomePage> {
     _buscarDividas();
     _consultarReservaEmergencia();
     _buscarFaturasCartao();
+    _buscarCaixinhas();
+    _buscarPlanejamentoFinanceiro();
+  }
+
+  Future<void> _buscarPlanejamentoFinanceiro() async {
+    final response = await apiClient.get('planejamento/listar/');
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        planejamentoFinanceiro = responseData['planejamento'];
+      });
+    } else if (response.statusCode == 404) {
+      setState(() {
+        planejamentoFinanceiro = null;
+      });
+    } else {
+      // Erro inesperado, pode exibir um erro ou deixar como null
+      setState(() {
+        planejamentoFinanceiro = null;
+      });
+    }
+  }
+
+  Future<void> _buscarCaixinhas() async {
+    try {
+      final lista = await planningService.listarCaixinhas();
+      setState(() {
+        caixinhas = lista;
+      });
+    } catch (e) {
+      setState(() {
+        caixinhas = [];
+      });
+    }
   }
 
   void _initResumoFinanceiro() {
@@ -438,8 +474,7 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(
                                     color: isSelected
                                         ? Colors.black
-                                        : Colors
-                                            .black,
+                                        : Colors.black,
                                   ),
                                 );
                               }).toList();
@@ -485,9 +520,9 @@ class _HomePageState extends State<HomePage> {
                                   .buscarResumo(apiClient);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content: Text('Gasto adicionado!'), 
-                                    backgroundColor: Colors.green,
-                                    ),
+                                  content: Text('Gasto adicionado!'),
+                                  backgroundColor: Colors.green,
+                                ),
                               );
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -783,52 +818,109 @@ class _HomePageState extends State<HomePage> {
                   HomePageWidget(
                     titleText: "Planejamento Financeiro",
                     onPressed: handlePlanningNavigation,
-                    content: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 110,
-                          width: 100,
-                          child: SfCircularChart(series: <CircularSeries>[
-                            PieSeries<ChartData, String>(
-                                dataSource: chartData,
-                                pointColorMapper: (ChartData data, _) =>
-                                    data.color,
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y)
-                          ]),
-                        ),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    content: Builder(
+                      builder: (context) {
+                        if (planejamentoFinanceiro == null) {
+                          return const Padding(
+                            padding: EdgeInsets.all(14.0),
+                            child: Text(
+                              "Nenhum planejamento financeiro criado.",
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                            ),
+                          );
+                        }
+                        if (caixinhas == null) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (caixinhas!.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(
+                              "Nenhuma categoria cadastrada.",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.orange),
+                            ),
+                          );
+                        }
+
+                        Color getCaixinhaColor(int idx) {
+                          final cores = [
+                            Color(0xFFF82E52), // Essenciais
+                            Color(0xFFFFCE06), // Lazer
+                            Color(0xFF2D8BBA), // Investimentos
+                            Color(0xFF5FAF46), // Educação
+                            Color(0xFFCB6CE6), // Obrigações
+                            Colors.grey, // ...
+                          ];
+                          return cores[idx % cores.length];
+                        }
+
+                        final bool temMais = caixinhas!.length > 4;
+                        final displayCaixinhas =
+                            temMais ? caixinhas!.take(3).toList() : caixinhas!;
+
+                        final chartData = [
+                          ...displayCaixinhas.asMap().entries.map((entry) =>
+                              ChartData(
+                                  entry.value.nome,
+                                  entry.value.porcentagem,
+                                  getCaixinhaColor(entry.key))),
+                          if (temMais) ChartData("...", 0.0, Colors.grey),
+                        ];
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            LittleListTile(
-                              circleColor: Color(0xFFF82E52),
-                              category: "Essenciais",
-                              percentage: "55%",
+                            SizedBox(
+                              height: 110,
+                              width: 100,
+                              child: SfCircularChart(
+                                legend: Legend(isVisible: false),
+                                series: <CircularSeries>[
+                                  PieSeries<ChartData, String>(
+                                    dataSource: chartData,
+                                    xValueMapper: (ChartData data, _) => data.x,
+                                    yValueMapper: (ChartData data, _) => data.y,
+                                    pointColorMapper: (ChartData data, _) =>
+                                        data.color,
+                                    dataLabelSettings:
+                                        DataLabelSettings(isVisible: false),
+                                  )
+                                ],
+                              ),
                             ),
-                            LittleListTile(
-                              circleColor: Color(0xFFFFCE06),
-                              category: "Lazer",
-                              percentage: "10%",
-                            ),
-                            LittleListTile(
-                              circleColor: Color(0xFF2D8BBA),
-                              category: "Investimentos",
-                              percentage: "20%",
-                            ),
-                            LittleListTile(
-                              circleColor: Color(0xFF5FAF46),
-                              category: "Educação",
-                              percentage: "5%",
-                            ),
-                            LittleListTile(
-                              circleColor: Color(0xFFCB6CE6),
-                              category: "Obrigações",
-                              percentage: "10%",
-                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...displayCaixinhas
+                                    .asMap()
+                                    .entries
+                                    .map((entry) => LittleListTile(
+                                          circleColor:
+                                              getCaixinhaColor(entry.key),
+                                          category: entry.value.nome,
+                                          percentage:
+                                              "${entry.value.porcentagem.toStringAsFixed(0)}%",
+                                        )),
+                                if (temMais)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, top: 1, bottom: 2),
+                                    child: Text(
+                                      "...",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ),
                   SizedBox(height: 20),
@@ -889,7 +981,8 @@ class _HomePageState extends State<HomePage> {
                             : dividas!.isEmpty
                                 ? [
                                     LittleText(
-                                        text: "Nenhuma obrigação financeira encontrada.")
+                                        text:
+                                            "Nenhuma obrigação financeira encontrada.")
                                   ]
                                 : dividas!.take(2).map((d) {
                                     final String status =
