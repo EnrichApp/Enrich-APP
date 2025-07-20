@@ -824,7 +824,7 @@ class _HomePageState extends State<HomePage> {
                           return const Padding(
                             padding: EdgeInsets.all(14.0),
                             child: Text(
-                              "Nenhum planejamento financeiro criado.",
+                              "Nenhum planejamento foi criado.",
                               style:
                                   TextStyle(fontSize: 14, color: Colors.black),
                             ),
