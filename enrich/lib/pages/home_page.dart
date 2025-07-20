@@ -822,11 +822,9 @@ class _HomePageState extends State<HomePage> {
                       builder: (context) {
                         if (planejamentoFinanceiro == null) {
                           return const Padding(
-                            padding: EdgeInsets.all(14.0),
-                            child: Text(
-                              "Nenhum planejamento foi criado.",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.black),
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
+                            child: LittleText(
+                              text: "Nenhum planejamento foi criado.",
                             ),
                           );
                         }
