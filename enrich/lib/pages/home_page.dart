@@ -550,21 +550,20 @@ class _HomePageState extends State<HomePage> {
       final planejamento = responseData['planejamento'];
       final nome = (planejamento?['nome'] ?? '').toString().trim();
 
-      // Compare nome para saber se é template ou personalizado
       if (nome == 'Método das 6 Jarras' || nome == '50-30-20') {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => FinancialPlanningPage(),
           ),
-        );
+        ).then((_) => _buscarPlanejamentoFinanceiro());
       } else {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CustomFinancialPlanningPage(),
           ),
-        );
+        ).then((_) => _buscarPlanejamentoFinanceiro());
       }
     } else if (response.statusCode == 404) {
       Navigator.push(
@@ -572,7 +571,7 @@ class _HomePageState extends State<HomePage> {
         MaterialPageRoute(
           builder: (context) => ChooseFinancialPlanningPage(),
         ),
-      );
+      ).then((_) => _buscarPlanejamentoFinanceiro());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -822,7 +821,8 @@ class _HomePageState extends State<HomePage> {
                       builder: (context) {
                         if (planejamentoFinanceiro == null) {
                           return const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 5),
                             child: LittleText(
                               text: "Nenhum planejamento foi criado.",
                             ),
