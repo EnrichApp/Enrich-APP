@@ -160,13 +160,13 @@ class _HomePageState extends State<HomePage> {
                         child: TitleText(text: 'Ganhos do mês', fontSize: 18),
                       ),
                       const SizedBox(height: 16),
-                      ganhos.isEmpty
-                          ? const Center(
-                              child: Text("Nenhum ganho registrado.",
-                                  style: TextStyle(color: Colors.black)),
-                            )
-                          : Expanded(
-                              child: NotificationListener<ScrollNotification>(
+                      Expanded(
+                              child: ganhos.isEmpty ? 
+                              Center(
+                                child: Text("Nenhum ganho registrado.",
+                                    style: TextStyle(color: Colors.black)),
+                              ) :
+                              NotificationListener<ScrollNotification>(
                                 onNotification: (scrollNotification) {
                                   if (scrollNotification
                                           is ScrollEndNotification &&
@@ -277,6 +277,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
+                      SizedBox(height: 25,)
                     ],
                   ),
                 );
@@ -532,6 +533,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 25),
                     ],
                   ),
                 );

@@ -82,7 +82,7 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
                 sizeFactor: _expandAnimation,
                 axisAlignment: -1,
                 child: _ActionButton(
-                  text: "Adicionar Gasto",
+                  text: "Gastos do mês",
                   icon: Icons.remove,
                   color: Colors.red,
                   alignment: Alignment.centerRight,
@@ -99,7 +99,7 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
                 sizeFactor: _expandAnimation,
                 axisAlignment: -1,
                 child: _ActionButton(
-                  text: "Adicionar Ganho",
+                  text: "Ganhos do mês",
                   icon: Icons.add,
                   color: theme.colorScheme.primary,
                   alignment: Alignment.centerRight,
