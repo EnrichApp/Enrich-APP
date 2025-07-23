@@ -348,7 +348,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
     Color corSnack;
 
     if (tipoAcao == 'REMOCAO') {
-      titulo = 'Valor a remover';
+      titulo = 'Valor retirado';
       labelBotao = 'Remover';
       corSnack = Colors.red;
     } else if (tipoAcao == 'RENDIMENTO') {
@@ -356,7 +356,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
       labelBotao = 'Informar';
       corSnack = Colors.green;
     } else {
-      titulo = 'Valor a adicionar';
+      titulo = 'Valor aportado';
       labelBotao = 'Adicionar';
       corSnack = Colors.green;
     }
@@ -372,7 +372,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
             keyboardType: TextInputType.number,
             style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
-              hintText: 'Digite o valor em reais',
+              hintText: 'Digite o valor, em reais',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
@@ -427,7 +427,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   if (response.statusCode == 200) {
                     Navigator.pop(ctx2);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Valor modificado com sucesso!'), backgroundColor: corSnack),
+                      SnackBar(content: Text('Valor modificado com sucesso!'), backgroundColor: Colors.green),
                     );
                     await _consultarReservaEmergencia();
                     await _resetarHistoricoReserva();
@@ -650,7 +650,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                               child: LittleTextTile(
                                 iconColor: Colors.green,
                                 iconSize: 22,
-                                text: "Adicionar dinheiro",
+                                text: "Informar aporte",
                                 icon: CircularIcon(
                                   iconData: Icons.add,
                                   size: 26,
@@ -682,7 +682,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                               child: LittleTextTile(
                                 iconColor: Colors.red,
                                 iconSize: 22,
-                                text: "Remover dinheiro",
+                                text: "Informar retirada",
                                 icon: CircularIcon(
                                   iconData: Icons.remove,
                                   size: 26,

@@ -26,7 +26,7 @@ class HistoricEmergence extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.green,
+            color: amountColor,
             shape: BoxShape.circle,
           ),
           child: icon,

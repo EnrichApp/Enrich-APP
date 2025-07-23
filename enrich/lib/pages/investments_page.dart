@@ -138,14 +138,15 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
         // permite setState interno ao modal
         return StatefulBuilder(
           builder: (ctx, setStateModal) => CreateObjectWidget(
-            title: 'Novo investimento',
+            title: 'Registrar investimento',
             fields: [
               // ---------- COMBO BOX DE TIPOS ----------
               DropdownButtonFormField<String>(
                 value: tipoSelecionado,
                 decoration: const InputDecoration(labelText: 'Tipo'),
-                dropdownColor: Theme.of(context).colorScheme.tertiary,
+                dropdownColor: Colors.white,
                 focusColor: Theme.of(context).colorScheme.tertiary,
+                
                 items: const [
                   DropdownMenuItem(
                       value: 'FIIs',
@@ -430,7 +431,7 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                             LittleTextTile(
                               iconColor: Colors.green,
                               iconSize: 22,
-                              text: "Adicionar investimento",
+                              text: "Registrar investimento",
                               icon: const CircularIcon(
                                 iconData: Icons.add,
                                 size: 26,
@@ -458,48 +459,6 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                       showSeeMoreText: false,
                       onPressed: () {},
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  // ---- Caixa de notificação (placeholder) ----
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: GestureDetector(
-                    onTap: () => print('tap'),
-                    child: ContainerWidget(
-                      height: 70,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      content: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 15.0, top: 9),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TitleText(
-                                  text: "Notificação para investir",
-                                  fontSize: 16,
-                                ),
-                                SubtitleText(
-                                  text:
-                                      "Escolha o dia do mês para ser lembrado de\ninvestir dinheiro.",
-                                  fontSize: 9,
-                                  textAlign: TextAlign.start,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 15.0),
-                            child: Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 24,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                                    ),
                   ),
                   const SizedBox(height: 20),
                   // ---- Carteira / gráfico ----

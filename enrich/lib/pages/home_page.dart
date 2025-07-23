@@ -1150,7 +1150,7 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   children: [
                                     AmountText(
-                                      amount: '29.657,92',
+                                      amount: '0,0',
                                       color: Theme.of(context)
                                           .colorScheme
                                           .tertiary,
@@ -1162,18 +1162,6 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TitleText(
-                                      text: 'Próximo investimento programado:',
-                                      fontSize: 13,
-                                    ),
-                                    LittleText(
-                                      text: '05/10/2024',
-                                    )
-                                  ],
-                                )
                               ],
                             ),
                           ),
