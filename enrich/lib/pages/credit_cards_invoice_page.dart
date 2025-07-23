@@ -286,6 +286,7 @@ class _CartaoTile extends StatelessWidget {
               }
             },
           ),
+          SizedBox(height: 30,)
         ],
       ),
     );
