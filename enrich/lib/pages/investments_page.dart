@@ -60,16 +60,12 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
           context,
           MaterialPageRoute(
               builder: (_) => InvestmentQuizResultPage(
-                    perfil: perfil,
-                    sugestoes: sugestoes,
-                    jaSalvo: true
-                  )),
+                  perfil: perfil, sugestoes: sugestoes, jaSalvo: true)),
         );
       } else if (response.statusCode == 404) {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (_) => InvestmentQuizPage()),
+          MaterialPageRoute(builder: (_) => InvestmentQuizPage()),
         );
       } else {
         throw Exception();
@@ -146,7 +142,6 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                 decoration: const InputDecoration(labelText: 'Tipo'),
                 dropdownColor: Colors.white,
                 focusColor: Theme.of(context).colorScheme.tertiary,
-                
                 items: const [
                   DropdownMenuItem(
                       value: 'FIIs',
@@ -385,10 +380,11 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                         const TitleText(text: 'Investimentos', fontSize: 20),
                         InkWell(
                           onTap: () async {
-                          await _consultarPerfilInvestidorEDirecionarParaPagina(context);
+                            await _consultarPerfilInvestidorEDirecionarParaPagina(
+                                context);
                           },
                           child: Text(
-                            'Ver sugestões personalizadas de investimentos.',
+                            'Sugestões de investimentos por perfil de investidor',
                             style: TextStyle(
                               color: theme.colorScheme.tertiary,
                               fontWeight: FontWeight.bold,
@@ -520,10 +516,10 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: GestureDetector(
                       onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => InvestmentSimulationPage()),
-                            ),
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => InvestmentSimulationPage()),
+                      ),
                       child: HomePageWidget(
                         height: 110,
                         showSeeMoreText: false,
@@ -537,11 +533,11 @@ class _InvestmentsPageState extends State<InvestmentsPage> {
                                     'Simule os resultados que você terá com seus investimentos ao longo do tempo.',
                                 textAlign: TextAlign.left,
                               ),
-                            ),  
-                              const Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                size: 20,
-                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              size: 20,
+                            ),
                             const SizedBox(width: 16),
                           ],
                         ),
