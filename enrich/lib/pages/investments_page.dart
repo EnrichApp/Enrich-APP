@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'package:enrich/pages/investment_quiz_result_page.dart';
 import 'package:enrich/pages/investment_wallet.dart';
 import 'package:enrich/utils/api_base_client.dart';
-import 'package:enrich/widgets/container_widget.dart';
 import 'package:enrich/widgets/searchable_dropdown_widget.dart';
-import 'package:enrich/widgets/texts/subtitle_text.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

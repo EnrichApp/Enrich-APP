@@ -1,7 +1,6 @@
 import 'package:enrich/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
-import '../extra_income_page.dart';
 import '../settings_page.dart';
 
 class BottomNavigationPage extends StatefulWidget {

@@ -11,7 +11,6 @@ import 'package:enrich/pages/reports_page.dart';
 import 'package:enrich/providers/resumo_financeiro_provider.dart';
 import 'package:enrich/services/cartao_service.dart';
 import 'package:enrich/services/financial_planning_service.dart';
-import 'package:enrich/widgets/create_object_widget.dart';
 import 'package:enrich/widgets/floating_action_menu.dart';
 import 'package:enrich/widgets/form_widget.dart';
 import 'package:enrich/widgets/home_page_divida_widget.dart';
@@ -695,13 +694,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final resumoProvider = Provider.of<ResumoFinanceiroProvider>(context);
 
-    final List<ChartData> chartData = [
-      ChartData('David', 25),
-      ChartData('Steve', 38),
-      ChartData('Jack', 34),
-      ChartData('Others', 52)
-    ];
-
     final double valorAtualReservaEmergencia = valorTotalReserva ?? 0.0;
     final double valorMetaReservaEmergencia = valorMetaReserva ?? 1;
     final double progressoReservaEmergencia =
@@ -1083,8 +1075,9 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 AmountText(
+                                    // ignore: unnecessary_null_comparison
                                     amount: valorAtualReservaEmergencia != null
-                                        ? valorAtualReservaEmergencia!
+                                        ? valorAtualReservaEmergencia
                                             .toStringAsFixed(2)
                                             .replaceAll('.', ',')
                                         : "0,00"),
@@ -1096,8 +1089,9 @@ class _HomePageState extends State<HomePage> {
                                       textAlign: TextAlign.start,
                                     ),
                                     AmountText(
+                                      // ignore: unnecessary_null_comparison
                                       amount: valorMetaReservaEmergencia != null
-                                          ? valorMetaReservaEmergencia!
+                                          ? valorMetaReservaEmergencia
                                               .toStringAsFixed(2)
                                               .replaceAll('.', ',')
                                           : "0,00",

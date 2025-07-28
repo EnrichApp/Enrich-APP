@@ -345,6 +345,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
 
     String titulo;
     String labelBotao;
+    // ignore: unused_local_variable
     Color corSnack;
 
     if (tipoAcao == 'REMOCAO') {
@@ -391,7 +392,9 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   valorController.text.replaceAll(',', '.'),
                 );
 
-                if (valorDigitado == null || valorDigitado <= 0 || valorAnterior == null) {
+                if (valorDigitado == null ||
+                    valorDigitado <= 0 ||
+                    valorAnterior == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Digite um valor válido.')),
                   );
@@ -427,7 +430,9 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   if (response.statusCode == 200) {
                     Navigator.pop(ctx2);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Valor modificado com sucesso!'), backgroundColor: Colors.green),
+                      SnackBar(
+                          content: Text('Valor modificado com sucesso!'),
+                          backgroundColor: Colors.green),
                     );
                     await _consultarReservaEmergencia();
                     await _resetarHistoricoReserva();
@@ -438,7 +443,8 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                   Navigator.pop(ctx2);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Erro ao salvar valor. Tente novamente mais tarde'),
+                      content: const Text(
+                          'Erro ao salvar valor. Tente novamente mais tarde'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -518,8 +524,7 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
           historico.addAll(novosRegistros.cast<Map<String, dynamic>>());
           paginaHistorico++;
         });
-      } else if(responseConsulta.statusCode == 404) {
-        
+      } else if (responseConsulta.statusCode == 404) {
       } else {
         throw Exception('Erro inesperado');
       }
@@ -757,10 +762,11 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                           final item = historico[index];
                           final valor = item['valor'];
                           final acao = item['acao'];
-                          final dataHora = FormatadorData.formatarUtcParaLocal(item['data_acao']);
+                          final dataHora = FormatadorData.formatarUtcParaLocal(
+                              item['data_acao']);
 
-                          final ehAdicao = acao == 'ADICAO' || acao == 'RENDIMENTO';
-
+                          final ehAdicao =
+                              acao == 'ADICAO' || acao == 'RENDIMENTO';
 
                           return HistoricEmergence(
                             icon: Icon(
@@ -768,14 +774,18 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                               color: Colors.white,
                               size: 20,
                             ),
-                            typeText: acao == 'RENDIMENTO' ? 'Rendimento' : (ehAdicao ? 'Guardado' : 'Retirado'),
+                            typeText: acao == 'RENDIMENTO'
+                                ? 'Rendimento'
+                                : (ehAdicao ? 'Guardado' : 'Retirado'),
                             time: dataHora,
-                            amount: "${ehAdicao ? '+' : '-'} R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}",
+                            amount:
+                                "${ehAdicao ? '+' : '-'} R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}",
                             amountColor: ehAdicao ? Colors.green : Colors.red,
                             fontSize: 14,
                           );
                         },
-                        separatorBuilder: (context, index) => const SizedBox(height: 20),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 20),
                       ),
                       if (!chegouNoFim)
                         Padding(
@@ -787,7 +797,10 @@ class _EmergenceReservePageState extends State<EmergenceReservePage> {
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.grey[200],
                               ),
-                              onPressed: carregandoMais ? null : () => _consultarHistoricoReservaEmergencia(carregarMaisPagina: true),
+                              onPressed: carregandoMais
+                                  ? null
+                                  : () => _consultarHistoricoReservaEmergencia(
+                                      carregarMaisPagina: true),
                               child: carregandoMais
                                   ? const CircularProgressIndicator()
                                   : const Text("Carregar mais"),

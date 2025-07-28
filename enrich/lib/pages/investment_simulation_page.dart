@@ -245,6 +245,7 @@ class _InvestmentSimulationPageState extends State<InvestmentSimulationPage> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildTextField(
       TextEditingController controller, String label, String hint) {
     return Padding(
