@@ -166,6 +166,23 @@ class _LoginPageState extends State<LoginPage> {
                 )
               ],
             ),
+            const SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const LittleText(text: 'Esqueceu a senha? ', textAlign: TextAlign.center,),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushReplacementNamed('/forgot_password_page');
+                  },
+                  child: LittleText(
+                    text: 'Clique aqui.',
+                    color: Theme.of(context).primaryColor,
+                  ),
+                )
+              ],
+            ),
           ],
         ),
       ),

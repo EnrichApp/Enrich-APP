@@ -36,60 +36,17 @@ class AboutPage extends StatelessWidget {
 
             // Descrição do aplicativo
             Text(
+              textAlign: TextAlign.justify,
               'O Enrich é um aplicativo de gestão financeira pessoal desenvolvido para ajudar você a mudar '
-              'sua vida financeira em apenas um mês. Nossa promessa é que você comece a investir dinheiro e '
+              'sua vida financeira. Nossa promessa é que você comece a investir dinheiro e '
               'alcance suas metas financeiras rapidamente, com um plano personalizado baseado em suas condições atuais.',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 14.0,
+                wordSpacing: 1.5,
               ),
             ),
             SizedBox(height: 8.0),
-
-            // Como o aplicativo funciona
-            Text(
-              'Como Funciona:',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'No Enrich, você começa informando dados como sua renda líquida fixa mensal, fontes de renda '
-              'extra variável, possíveis obrigações financeiras (com suas respectivas parcelas e prazos), e se possui uma reserva '
-              'de emergência de no mínimo 6 meses de trabalho. A partir dessas informações, o sistema cria um plano '
-              'de organização financeira sob medida para você.',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16.0,
-              ),
-            ),
-            SizedBox(height: 16.0),
-
-            // Funcionalidades principais
-            Text(
-              'Principais Funcionalidades:',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              '- Planejamento financeiro personalizado com base na sua renda e obrigações financeiras\n'
-              '- Ferramentas para acompanhar obrigações financeiras\n'
-              '- Ferramentas para acompanhar sua forma de renda extra\n'
-              '- Criação de metas financeiras e acompanhamento de progresso\n'
-              '- Ajuda a começar a investir de forma inteligente',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16.0,
-              ),
-            ),
-            SizedBox(height: 16.0),
 
             // Missão do aplicativo
             Text(
@@ -98,15 +55,18 @@ class AboutPage extends StatelessWidget {
                 color: Colors.black,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
+                
               ),
             ),
             SizedBox(height: 8.0),
             Text(
+              textAlign: TextAlign.justify,
               'No Enrich, nossa missão é oferecer uma solução prática e eficiente para você organizar suas '
               'finanças, sair das dívidas e alcançar suas metas de investimento de forma sustentável e acessível.',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 14.0,
+                wordSpacing: 1.5,
               ),
             ),
             SizedBox(height: 16.0),
@@ -122,10 +82,12 @@ class AboutPage extends StatelessWidget {
             ),
             SizedBox(height: 8.0),
             Text(
-              'Se tiver dúvidas ou sugestões, entre em contato conosco através do e-mail: contato@enrich.me',
+              textAlign: TextAlign.justify,
+              'Se tiver dúvidas ou sugestões, entre em contato conosco através do e-mail: enrichapptech@gmail.com',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16.0,
+                fontSize: 14.0,
+                wordSpacing: 0.2,
               ),
             ),
           ],
