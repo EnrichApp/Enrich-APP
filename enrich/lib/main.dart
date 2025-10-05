@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:enrich/pages/forgot_password_page.dart';
 import 'package:enrich/pages/investments_page.dart';
 import 'package:enrich/pages/questions_form_page.dart';
 import 'package:enrich/pages/verify_email_page.dart';
@@ -58,7 +59,8 @@ class Enrich extends StatelessWidget {
         '/info_to_user_page': (context) => const InfoToUserPage(),
         '/questions_form_page': (context) => const QuestionsFormPage(),
         '/bottom_navigation_page': (context) => const BottomNavigationPage(),
-        '/investments_page': (context) => const InvestmentsPage()
+        '/investments_page': (context) => const InvestmentsPage(),
+        '/forgot_password_page': (context) => const ForgotPasswordPage(),
       },
     );
   }

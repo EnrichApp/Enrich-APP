@@ -98,92 +98,113 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).colorScheme.onSurface,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              './assets/images/logo_enrich.png',
-              height: 90,
-            ),
-            const SizedBox(height: 30),
-            FormWidget(
-              hintText: 'Digite o seu e-mail.',
-              controller: emailController,
-              onChanged: (value) {
-                setState(() {
-                  email = value;
-                });
-              },
-            ),
-            const SizedBox(height: 15),
-            FormWidget(
-              hintText: 'Digite a sua senha.',
-              obscureText: true,
-              controller: senhaController,
-              onChanged: (value) {
-                setState(() {
-                  senha = value;
-                });
-              },
-            ),
-            const SizedBox(height: 15),
-            RoundedTextButton(
-              text: 'Acessar',
-              width: 300,
-              height: 55,
-              fontSize: 17,
-              onPressed: () async {
-                if (email != '' && senha != '') {
-                  await realizarLogin(email, senha);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text(
-                          'Os campos de e-mail e senha devem ser preenchidos.'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const LittleText(text: 'Ainda não tem uma conta? '),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushReplacementNamed('/register_page');
-                  },
-                  child: LittleText(
-                    text: 'Clique aqui.',
-                    color: Theme.of(context).primaryColor,
+      backgroundColor: const Color(0xFFF4F4F4),
+      // mantém o padrão de “fugir” do teclado
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return GestureDetector(
+              onTap: () => FocusScope.of(context)
+                  .unfocus(), // fecha o teclado ao tocar fora
+              child: SingleChildScrollView(
+                // empurra o conteúdo quando o teclado aparece
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                  top: 24,
+                ),
+                child: ConstrainedBox(
+                  // garante altura mínima de tela para o Spacer funcionar
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // LOGO
+                      Image.asset(
+                        './assets/images/logo_enrich.png',
+                        height: 90,
+                      ),
+                      const SizedBox(height: 30),
+
+                      // FORM
+                      FormWidget(
+                        hintText: 'Digite o seu e-mail.',
+                        controller: emailController,
+                        onChanged: (value) => setState(() => email = value),
+                      ),
+                      const SizedBox(height: 15),
+                      FormWidget(
+                        hintText: 'Digite a sua senha.',
+                        obscureText: true,
+                        controller: senhaController,
+                        onChanged: (value) => setState(() => senha = value),
+                      ),
+                      const SizedBox(height: 15),
+
+                      // BOTÃO
+                      RoundedTextButton(
+                        text: 'Acessar',
+                        width: 300,
+                        height: 55,
+                        fontSize: 17,
+                        onPressed: () async {
+                          if (email.isNotEmpty && senha.isNotEmpty) {
+                            await realizarLogin(email, senha);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Os campos de e-mail e senha devem ser preenchidos.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+
+                      // empurra os links pro rodapé sem forçar altura fixa
+                      const SizedBox(height: 20),
+
+                      // LINKS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const LittleText(text: 'Ainda não tem uma conta? '),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context)
+                                .pushReplacementNamed('/register_page'),
+                            child: LittleText(
+                              text: 'Clique aqui.',
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const LittleText(
+                              text: 'Esqueceu a senha? ',
+                              textAlign: TextAlign.center),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context)
+                                .pushReplacementNamed('/forgot_password_page'),
+                            child: LittleText(
+                              text: 'Clique aqui.',
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                )
-              ],
-            ),
-            const SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const LittleText(text: 'Esqueceu a senha? ', textAlign: TextAlign.center,),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushReplacementNamed('/forgot_password_page');
-                  },
-                  child: LittleText(
-                    text: 'Clique aqui.',
-                    color: Theme.of(context).primaryColor,
-                  ),
-                )
-              ],
-            ),
-          ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
